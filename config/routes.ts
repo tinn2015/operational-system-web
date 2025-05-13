@@ -79,6 +79,29 @@ export default [
     ],
   },
   {
+    path: '/userCenter',
+    name: '用户管理',
+    icon: 'smile',
+    component: './userCenter',
+  },
+  {
+    path: '/device',
+    name: '设备管理',
+    icon: 'smile',
+    routes: [
+      {
+        path: '/device',
+        redirect: '/device/headset',
+      },
+      {
+        name: '头显管理',
+        icon: 'smile',
+        path: '/device/headset',
+        component: './device/headset',
+      },
+    ],
+  },
+  {
     path: '/form',
     icon: 'form',
     name: 'form1',
