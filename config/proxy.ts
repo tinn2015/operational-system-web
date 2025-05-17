@@ -30,8 +30,15 @@ export default {
     // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
     '/api/': {
       target: 'https://proapi.azurewebsites.net',
+      // target: 'http://115.190.83.238:8201',
       changeOrigin: true,
       pathRewrite: { '^': '' },
+    },
+    '/wz/': {
+      // target: 'https://proapi.azurewebsites.net',
+      target: 'http://115.190.83.238:8201',
+      changeOrigin: true,
+      pathRewrite: { '/wz': '' },
     },
   },
   pre: {

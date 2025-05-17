@@ -120,9 +120,10 @@ export default {
   'POST /api/login/account': async (req: Request, res: Response) => {
     const { password, username, type } = req.body;
     console.log('/api/login/account', password, username, type)
+    alert(password)
     debugger
     await waitTime(2000);
-    if (password === '123456' && username === 'admin') {
+    if (password === 'ant.design' && username === 'admin') {
       res.send({
         status: 'ok',
         type,
@@ -131,7 +132,7 @@ export default {
       access = 'admin';
       return;
     }
-    if (password === '123456' && username === 'user') {
+    if (password === 'ant.design' && username === 'user') {
       res.send({
         status: 'ok',
         type,
@@ -154,6 +155,7 @@ export default {
       status: 'error',
       type,
       currentAuthority: 'guest',
+      errorMessage: '账户或密码错误',
     });
     access = 'guest';
   },

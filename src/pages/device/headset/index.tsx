@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import { getHeadsetList } from '@/services/headset';
+import { PlayCircleOutlined, PlusOutlined, PoweroffOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
 import {
-  ProTable,
   ModalForm,
-  ProFormText,
-  ProFormSelect,
   ProFormDigit,
+  ProFormSelect,
+  ProFormText,
+  ProTable,
 } from '@ant-design/pro-components';
-import { Button, Space, message, Tag, Progress, Modal } from 'antd';
-import { PlusOutlined, PoweroffOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { Button, message, Modal, Progress, Tag } from 'antd';
+import React, { useState } from 'react';
 
 interface VRDeviceType {
   id: number;
@@ -139,9 +140,7 @@ const VRDeviceList: React.FC = () => {
       title: '温度',
       dataIndex: 'temperature',
       render: (_, record) => (
-        <Tag color={record.temperature > 45 ? 'error' : 'success'}>
-          {record.temperature}°C
-        </Tag>
+        <Tag color={record.temperature > 45 ? 'error' : 'success'}>{record.temperature}°C</Tag>
       ),
     },
     {
@@ -183,12 +182,7 @@ const VRDeviceList: React.FC = () => {
             停止
           </Button>
         ),
-        <Button
-          key="delete"
-          type="link"
-          danger
-          onClick={() => handleDelete(record)}
-        >
+        <Button key="delete" type="link" danger onClick={() => handleDelete(record)}>
           删除
         </Button>,
       ],
@@ -201,7 +195,12 @@ const VRDeviceList: React.FC = () => {
         columns={columns}
         request={async (params, sorter, filter) => {
           // 这里替换为实际的 API 请求
-          console.log(params, sorter, filter);
+          console.log('头显查询', params, sorter, filter);
+          const headsetList = await getHeadsetList({
+            pageSize: 100,
+            pageNum: 1,
+          });
+          console.log('headsetList', headsetList);
           return {
             data: mockData,
             success: true,
