@@ -1,60 +1,19 @@
-import { getHeadsetList } from '@/services/headset';
+import { deleteHeadset, getHeadsetList, saveHeadsetList } from '@/services/headset';
 import { PlayCircleOutlined, PlusOutlined, PoweroffOutlined } from '@ant-design/icons';
-import type { ProColumns } from '@ant-design/pro-components';
-import {
-  ModalForm,
-  ProFormDigit,
-  ProFormSelect,
-  ProFormText,
-  ProTable,
-} from '@ant-design/pro-components';
-import { Button, message, Modal, Progress, Tag } from 'antd';
-import React, { useState } from 'react';
+import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
+import { Button, Col, Divider, message, Popconfirm, Row, Space, Tag } from 'antd';
+import React, { useRef, useState } from 'react';
 
-interface VRDeviceType {
-  id: number;
-  name: string;
-  status: 'running' | 'idle';
-  battery: number;
-  memory: number;
-  storage: number;
-  temperature: number;
-  lastActiveTime: string;
-  model: string;
-}
+const HeadSetList: React.FC = () => {
+  const tableRef = useRef<ActionType>();
 
-const VRDeviceList: React.FC = () => {
-  const [editingDevice, setEditingDevice] = useState<VRDeviceType | undefined>();
+  const [editingDevice, setEditingDevice] = useState<API.Headset | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
 
-  // 模拟数据
-  const mockData: VRDeviceType[] = [
-    {
-      id: 1,
-      name: 'VR-Device-001',
-      status: 'running',
-      battery: 85,
-      memory: 65,
-      storage: 45,
-      temperature: 37,
-      lastActiveTime: '2024-03-20 10:00:00',
-      model: 'Quest Pro',
-    },
-    {
-      id: 2,
-      name: 'VR-Device-002',
-      status: 'idle',
-      battery: 92,
-      memory: 30,
-      storage: 60,
-      temperature: 32,
-      lastActiveTime: '2024-03-20 11:00:00',
-      model: 'Quest 3',
-    },
-  ];
-
-  const handleDeviceOperation = async (type: 'start' | 'stop', record: VRDeviceType) => {
+  const handleDeviceOperation = async (type: 'start' | 'stop', record: API.Headset) => {
     const operationText = type === 'start' ? '启动' : '停止';
+    console.log('操作设备', type, record);
     try {
       // 这里添加实际的 API 调用
       message.success(`${operationText}设备成功`);
@@ -63,135 +22,133 @@ const VRDeviceList: React.FC = () => {
     }
   };
 
-  const handleDelete = (record: VRDeviceType) => {
-    Modal.confirm({
-      title: '确认删除',
-      content: `确定要删除设备 ${record.name} 吗？`,
-      onOk: async () => {
-        try {
-          // 这里添加实际的删除 API 调用
-          message.success('删除成功');
-        } catch (error) {
-          message.error('删除失败');
-        }
-      },
-    });
+  const handleDelete = async (record: API.Headset) => {
+    console.log('删除设备', record);
+    await deleteHeadset(record);
+    message.success('删除成功');
+    tableRef.current?.reload();
   };
 
-  const columns: ProColumns<VRDeviceType>[] = [
+  const columns: ProColumns<API.Headset>[] = [
     {
-      title: '设备名称',
-      dataIndex: 'name',
+      title: '设备编号',
+      dataIndex: 'headsetNo',
       copyable: true,
       ellipsis: true,
+      align: 'center',
+      width: 200,
     },
     {
-      title: '设备型号',
-      dataIndex: 'model',
-      filters: true,
+      title: '绑定服务器IP',
+      dataIndex: 'serverIp',
+      ellipsis: true,
+      align: 'center',
+      width: 200,
+    },
+    {
+      title: '设备类型',
+      dataIndex: 'headsetType',
       valueEnum: {
-        'Quest Pro': { text: 'Quest Pro' },
-        'Quest 3': { text: 'Quest 3' },
+        1: { text: '头显' },
+        2: { text: '一体机' },
       },
+      align: 'center',
+      width: 80,
     },
     {
       title: '状态',
       dataIndex: 'status',
-      filters: true,
+      // filters: true,
       valueEnum: {
-        running: { text: '运行中', status: 'Processing' },
-        idle: { text: '空闲', status: 'Default' },
+        1: { text: '运行中', status: 'Processing' },
+        0: { text: '空闲', status: 'Default' },
+        2: { text: '未知', status: 'Default' },
       },
+      align: 'center',
+      width: 100,
     },
     {
-      title: '电量',
-      dataIndex: 'battery',
+      title: '网络类型',
+      dataIndex: 'networkType',
+      width: 80,
+      // filters: true,
+      valueEnum: {
+        1: { text: 'wifi' },
+        2: { text: '5g' },
+      },
+      align: 'center',
+    },
+    {
+      title: '剩余电量',
+      dataIndex: 'remainElectricity',
+      align: 'center',
+      width: 100,
+
       render: (_, record) => (
-        <Progress
-          percent={record.battery}
-          size="small"
-          status={record.battery < 20 ? 'exception' : 'normal'}
-        />
+        <Tag color={record.remainElectricity > 20 ? 'success' : 'error'}>
+          {record.remainElectricity}%
+        </Tag>
       ),
-    },
-    {
-      title: '内存使用',
-      dataIndex: 'memory',
-      render: (_, record) => (
-        <Progress
-          percent={record.memory}
-          size="small"
-          status={record.memory > 80 ? 'exception' : 'normal'}
-        />
-      ),
-    },
-    {
-      title: '存储使用',
-      dataIndex: 'storage',
-      render: (_, record) => (
-        <Progress
-          percent={record.storage}
-          size="small"
-          status={record.storage > 90 ? 'exception' : 'normal'}
-        />
-      ),
-    },
-    {
-      title: '温度',
-      dataIndex: 'temperature',
-      render: (_, record) => (
-        <Tag color={record.temperature > 45 ? 'error' : 'success'}>{record.temperature}°C</Tag>
-      ),
-    },
-    {
-      title: '最后活动时间',
-      dataIndex: 'lastActiveTime',
-      sorter: true,
     },
     {
       title: '操作',
       valueType: 'option',
-      render: (_, record) => [
-        <Button
-          key="edit"
-          type="link"
-          onClick={() => {
-            setEditingDevice(record);
-            setCreateModalVisible(true);
-          }}
-        >
-          编辑
-        </Button>,
-        record.status === 'idle' ? (
+      ellipsis: true,
+      align: 'center',
+      render: (_, record) => (
+        <Space wrap split={<Divider type="vertical" />}>
           <Button
-            key="start"
+            key="edit"
             type="link"
-            icon={<PlayCircleOutlined />}
-            onClick={() => handleDeviceOperation('start', record)}
+            onClick={() => {
+              setEditingDevice(record);
+              setCreateModalVisible(true);
+            }}
           >
-            启动
+            编辑
           </Button>
-        ) : (
-          <Button
-            key="stop"
-            type="link"
-            danger
-            icon={<PoweroffOutlined />}
-            onClick={() => handleDeviceOperation('stop', record)}
+          {record.status !== 1 ? (
+            <Button
+              key="start"
+              type="link"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleDeviceOperation('start', record)}
+            >
+              启动
+            </Button>
+          ) : (
+            <Popconfirm
+              title="确认停止"
+              description="确定要停止该设备吗？"
+              okText="确认"
+              cancelText="取消"
+              onConfirm={() => handleDeviceOperation('stop', record)}
+            >
+              <Button key="stop" type="link" danger icon={<PoweroffOutlined />}>
+                停止
+              </Button>
+            </Popconfirm>
+          )}
+          <Popconfirm
+            title="确认删除"
+            description="确定要删除该设备吗？"
+            okText="确认"
+            cancelText="取消"
+            onConfirm={() => handleDelete(record)}
           >
-            停止
-          </Button>
-        ),
-        <Button key="delete" type="link" danger onClick={() => handleDelete(record)}>
-          删除
-        </Button>,
-      ],
+            <Button key="delete" type="link" danger>
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 
   return (
     <>
-      <ProTable<VRDeviceType>
+      <ProTable<API.Headset>
+        actionRef={tableRef}
         columns={columns}
         request={async (params, sorter, filter) => {
           // 这里替换为实际的 API 请求
@@ -202,9 +159,9 @@ const VRDeviceList: React.FC = () => {
           });
           console.log('headsetList', headsetList);
           return {
-            data: mockData,
+            data: headsetList.data,
             success: true,
-            total: mockData.length,
+            total: headsetList.total,
           };
         }}
         rowKey="id"
@@ -232,76 +189,69 @@ const VRDeviceList: React.FC = () => {
       />
 
       <ModalForm
-        title={editingDevice ? '编辑设备' : '新增设备'}
+        title={editingDevice ? '编辑头显设备' : '新增头显设备'}
         open={createModalVisible}
         onOpenChange={setCreateModalVisible}
         initialValues={editingDevice}
         onFinish={async (values) => {
-          console.log(values);
+          console.log('编辑或者新增头显', values, editingDevice);
+          const newValues = editingDevice ? { ...values, id: editingDevice.id } : values;
+          await saveHeadsetList(newValues);
           // 这里添加实际的保存 API 调用
           message.success('提交成功');
+          tableRef.current?.reload();
           setCreateModalVisible(false);
           return true;
         }}
       >
-        <ProFormText
-          name="name"
-          label="设备名称"
-          rules={[{ required: true, message: '请输入设备名称' }]}
-        />
-        <ProFormSelect
-          name="model"
-          label="设备型号"
-          options={[
-            { label: 'Quest Pro', value: 'Quest Pro' },
-            { label: 'Quest 3', value: 'Quest 3' },
-          ]}
-          rules={[{ required: true, message: '请选择设备型号' }]}
-        />
-        <ProFormSelect
-          name="status"
-          label="设备状态"
-          options={[
-            { label: '运行中', value: 'running' },
-            { label: '空闲', value: 'idle' },
-          ]}
-          rules={[{ required: true, message: '请选择设备状态' }]}
-        />
-        <ProFormDigit
-          name="battery"
-          label="电量"
-          min={0}
-          max={100}
-          fieldProps={{ suffix: '%' }}
-          rules={[{ required: true, message: '请输入电量' }]}
-        />
-        <ProFormDigit
-          name="memory"
-          label="内存使用"
-          min={0}
-          max={100}
-          fieldProps={{ suffix: '%' }}
-          rules={[{ required: true, message: '请输入内存使用率' }]}
-        />
-        <ProFormDigit
-          name="storage"
-          label="存储使用"
-          min={0}
-          max={100}
-          fieldProps={{ suffix: '%' }}
-          rules={[{ required: true, message: '请输入存储使用率' }]}
-        />
-        <ProFormDigit
-          name="temperature"
-          label="温度"
-          min={0}
-          max={100}
-          fieldProps={{ suffix: '°C' }}
-          rules={[{ required: true, message: '请输入温度' }]}
-        />
+        <Row gutter={20}>
+          <Col span={12}>
+            <ProFormText
+              name="headsetNo"
+              label="头显编码"
+              placeholder="请输入头显编码"
+              rules={[{ required: true, message: '请输入头显编码' }]}
+            />
+          </Col>
+          <Col span={12}>
+            <ProFormText
+              name="headsetIp"
+              label="头显IP"
+              placeholder="请输入头显IP"
+              rules={[{ required: true, message: '请输入头显IP' }]}
+            />
+          </Col>
+        </Row>
+        <Row gutter={20}>
+          <Col span={8}>
+            <ProFormText name="serverIp" label="绑定串流服务器" placeholder="请绑定串流服务器" />
+          </Col>
+          <Col span={8}>
+            <ProFormSelect
+              name="networkType"
+              label="网络类型"
+              options={[
+                { label: 'wifi', value: 1 },
+                { label: '5g', value: 2 },
+              ]}
+              rules={[{ required: true, message: '请选择网络类型' }]}
+            />
+          </Col>
+          <Col span={8}>
+            <ProFormSelect
+              name="headsetType"
+              label="头显类型"
+              options={[
+                { label: '头显', value: 1 },
+                { label: '一体机', value: 2 },
+              ]}
+              rules={[{ required: true, message: '请选头显类型' }]}
+            />
+          </Col>
+        </Row>
       </ModalForm>
     </>
   );
 };
 
-export default VRDeviceList;
+export default HeadSetList;

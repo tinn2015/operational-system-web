@@ -99,6 +99,12 @@ export default [
         path: '/device/headset',
         component: './device/headset',
       },
+      {
+        name: '服务器管理',
+        icon: 'smile',
+        path: '/device/server',
+        component: './device/server',
+      },
     ],
   },
   {
