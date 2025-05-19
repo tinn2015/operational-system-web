@@ -1,9 +1,9 @@
 // 本地代理前缀
-export const PROXY_PREFIX = '/wz';
+export const PROXY_PREFIX = process.env.NODE_ENV === 'development' ? '/wz' : '';
 
 // 服务器操作
 export const SERVER_OPERATION = {
   START: 1,
   STOP: 2,
-  RESTART: 3,
+  REBOOT: 3,
 };

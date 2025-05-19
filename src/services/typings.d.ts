@@ -23,7 +23,7 @@ declare namespace API {
     data: Headset[];
   };
 
-  type Server = {
+  type Device = {
     id: string;
     /** ServerType 枚举说明
      * 1: 串流服务器
@@ -39,20 +39,19 @@ declare namespace API {
      * 1: 正常
      * 2: 未知
      */
-    serverStatus: 0 | 1 | 2;
+    agentStatus: 0 | 1 | 2;
     /** onlineStatus 枚举说明
      * 0: 离线
      * 1: 在线
      * 2: 未知
      */
     onlineStatus: 0 | 1 | 2;
-    startTime: string;
-    lastSyncTime: string;
+    agentTime: string;
   };
-  type ServerList = {
+  type DeviceList = {
     total: number;
     pageSize: number;
     pageNum: number;
-    data: Server[];
+    data: Device[];
   };
 }

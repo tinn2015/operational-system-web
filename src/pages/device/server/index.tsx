@@ -1,6 +1,6 @@
-import { deleteServer, getServerList, saveServer, updateServer } from '@/services/server';
+import { deleteDevice, getDeviceList, rebootDevice, saveDevice } from '@/services/device';
 import { SERVER_OPERATION } from '@/utils/constant';
-import { PlayCircleOutlined, PlusOutlined, PoweroffOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Button, Col, Divider, message, Popconfirm, Row, Space } from 'antd';
@@ -9,34 +9,33 @@ import React, { useRef, useState } from 'react';
 const HeadSetList: React.FC = () => {
   const tableRef = useRef<ActionType>();
 
-  const [editingDevice, setEditingDevice] = useState<API.Server | undefined>();
+  const [editingDevice, setEditingDevice] = useState<API.Device | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
 
-  const handleDeviceOperation = async (type: number, record: API.Server) => {
-    const operationText =
-      type === SERVER_OPERATION.START ? '启动' : type === SERVER_OPERATION.STOP ? '停止' : '重启';
+  const handleDeviceOperation = async (type: number, record: API.Device) => {
+    // const operationText =
+    //   type === SERVER_OPERATION.START ? '启动' : type === SERVER_OPERATION.STOP ? '停止' : '重启';
     console.log('操作设备', type, record);
 
     try {
       // 这里添加实际的 API 调用
-      await updateServer({
+      await rebootDevice({
         id: record.id,
-        operateType: type,
       });
-      message.success(`${operationText}设备成功`);
+      message.success(`设备重启成功`);
     } catch (error) {
-      message.error(`${operationText}设备失败`);
+      message.error(`设备重启失败`);
     }
   };
 
-  const handleDelete = async (record: API.Server) => {
+  const handleDelete = async (record: API.Device) => {
     console.log('删除设备', record);
-    await deleteServer(record);
+    await deleteDevice(record);
     message.success('删除成功');
     tableRef.current?.reload();
   };
 
-  const columns: ProColumns<API.Server>[] = [
+  const columns: ProColumns<API.Device>[] = [
     {
       title: '服务器Ip',
       dataIndex: 'serverIp',
@@ -59,7 +58,7 @@ const HeadSetList: React.FC = () => {
     },
     {
       title: '服务器状态',
-      dataIndex: 'serverStatus',
+      dataIndex: 'agentStatus',
       valueEnum: {
         0: { text: '停止', color: 'red' },
         1: { text: '运行中', color: 'green' },
@@ -72,24 +71,16 @@ const HeadSetList: React.FC = () => {
       title: '在线状态',
       dataIndex: 'onlineStatus',
       valueEnum: {
-        0: { text: '离线' },
-        1: { text: '在线' },
-        2: { text: '未知' },
+        0: { text: '离线', color: 'red' },
+        1: { text: '在线', color: 'green' },
+        2: { text: '未知', color: 'orange' },
       },
       align: 'center',
       width: 200,
     },
     {
-      title: '服务器启动时间',
-      dataIndex: 'startTime',
-      copyable: true,
-      ellipsis: true,
-      align: 'center',
-      width: 200,
-    },
-    {
-      title: '服务器最后同步时间',
-      dataIndex: 'lastSyncTime',
+      title: 'agent启动时间',
+      dataIndex: 'agentTime',
       copyable: true,
       ellipsis: true,
       align: 'center',
@@ -112,7 +103,7 @@ const HeadSetList: React.FC = () => {
           >
             编辑
           </Button>
-          {record.serverStatus === 0 || record.serverStatus === 2 ? (
+          {/* {record.serverStatus === 0 || record.serverStatus === 2 ? (
             <Button
               key="start"
               type="link"
@@ -133,13 +124,13 @@ const HeadSetList: React.FC = () => {
                 停止
               </Button>
             </Popconfirm>
-          )}
+          )} */}
           <Popconfirm
             title="确认重启"
             description="确定要重启该设备吗？"
             okText="确认"
             cancelText="取消"
-            onConfirm={() => handleDeviceOperation(SERVER_OPERATION.RESTART, record)}
+            onConfirm={() => handleDeviceOperation(SERVER_OPERATION.REBOOT, record)}
           >
             <Button key="restart" variant="text" color="purple">
               重启
@@ -163,22 +154,22 @@ const HeadSetList: React.FC = () => {
 
   return (
     <>
-      <ProTable<API.Server>
+      <ProTable<API.Device>
         actionRef={tableRef}
         columns={columns}
         request={async (params, sorter, filter) => {
           // 这里替换为实际的 API 请求
           console.log('服务器查询', params, sorter, filter);
-          const headsetList = await getServerList({
+          const deviceList = await getDeviceList({
             pageSize: 100,
             pageNum: 1,
             // serverType: 1,
           });
-          console.log('headsetList', headsetList);
+          console.log('deviceList', deviceList);
           return {
-            data: headsetList.data,
+            data: deviceList.data,
             success: true,
-            total: headsetList.total,
+            total: deviceList.total,
           };
         }}
         rowKey="id"
@@ -213,7 +204,7 @@ const HeadSetList: React.FC = () => {
         onFinish={async (values) => {
           console.log('编辑或者新增服务器', values, editingDevice);
           const newValues = editingDevice ? { ...values, id: editingDevice.id } : values;
-          await saveServer(newValues);
+          await saveDevice(newValues);
           // 这里添加实际的保存 API 调用
           message.success('提交成功');
           tableRef.current?.reload();
