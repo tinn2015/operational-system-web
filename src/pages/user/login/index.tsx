@@ -1,5 +1,6 @@
-import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import { login } from '@/services/login';
+import { sha1Hash } from '@/utils/encrypt';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormText } from '@ant-design/pro-components';
 import { FormattedMessage, Helmet, useIntl, useModel } from '@umijs/max';
@@ -38,9 +39,9 @@ const useStyles = createStyles(({ token }) => {
       flexDirection: 'column',
       height: '100vh',
       overflow: 'auto',
-      // backgroundImage:
-      //   "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
-      backgroundImage: "url('/assets/login-bg2.jpg')",
+      backgroundImage:
+        "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
+      // backgroundImage: "url('/assets/login-bg2.jpg')",
       backgroundSize: '100% 100%',
     },
   };
@@ -83,8 +84,20 @@ const LoginMessage: React.FC<{
   );
 };
 
+interface LoginStateType {
+  code?: number;
+  message?: string;
+  errorInfo?: string;
+  data?: {
+    token?: string;
+    refreshToken?: string;
+  };
+  status?: 'error';
+  type?: 'account' | 'mobile';
+}
+
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState, setUserLoginState] = useState<LoginStateType>({});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
@@ -105,9 +118,16 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const msg = await login({ ...values, type });
+      const pwd = sha1Hash(values.password);
+      const msg = await login({ ...values, password: pwd });
       console.log('登录结果', msg);
-      if (msg.status === 'ok') {
+      if (msg.code === 200) {
+        // 登录成功，将token保存到localStorage
+        if (msg.data && msg.data.token) {
+          localStorage.setItem('token', msg.data.token);
+          localStorage.setItem('refreshToken', msg.data.refreshToken || '');
+        }
+
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
@@ -121,14 +141,15 @@ const Login: React.FC = () => {
       // 如果失败去设置用户错误信息
       setUserLoginState(msg);
     } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
-      });
-      console.log(error);
-      message.error(defaultLoginFailureMessage);
+      // const defaultLoginFailureMessage = intl.formatMessage({
+      //   id: 'pages.login.failure',
+      //   defaultMessage: '登录失败，请重试！',
+      // });
+      console.error(error);
+      // message.error(defaultLoginFailureMessage);
     }
   };
+  // 从userLoginState中解构出状态和类型
   const { status, type: loginType } = userLoginState;
 
   return (
@@ -184,13 +205,13 @@ const Login: React.FC = () => {
                   defaultMessage: '账户密码登录',
                 }),
               },
-              {
-                key: 'mobile',
-                label: intl.formatMessage({
-                  id: 'pages.login.phoneLogin.tab',
-                  defaultMessage: '手机号登录',
-                }),
-              },
+              // {
+              //   key: 'mobile',
+              //   label: intl.formatMessage({
+              //     id: 'pages.login.phoneLogin.tab',
+              //     defaultMessage: '手机号登录',
+              //   }),
+              // },
             ]}
           />
 
@@ -205,24 +226,16 @@ const Login: React.FC = () => {
           {type === 'account' && (
             <>
               <ProFormText
-                name="username"
+                name="loginId"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
                 }}
-                placeholder={intl.formatMessage({
-                  id: 'pages.login.username.placeholder',
-                  defaultMessage: '用户名: admin or user',
-                })}
+                placeholder="请输入用户名"
                 rules={[
                   {
                     required: true,
-                    message: (
-                      <FormattedMessage
-                        id="pages.login.username.required"
-                        defaultMessage="请输入用户名!"
-                      />
-                    ),
+                    message: '请输入用户名',
                   },
                 ]}
               />
@@ -232,10 +245,7 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <LockOutlined />,
                 }}
-                placeholder={intl.formatMessage({
-                  id: 'pages.login.password.placeholder',
-                  defaultMessage: '密码: ant.design',
-                })}
+                placeholder="请输入密码"
                 rules={[
                   {
                     required: true,

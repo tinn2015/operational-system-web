@@ -48,10 +48,26 @@ declare namespace API {
     onlineStatus: 0 | 1 | 2;
     agentTime: string;
   };
+
   type DeviceList = {
     total: number;
     pageSize: number;
     pageNum: number;
     data: Device[];
+  };
+
+  type LoginParams = {
+    loginId: string;
+    password: string;
+  };
+
+  type LoginResult = {
+    code: number;
+    message: string;
+    errorInfo: string;
+    data: {
+      token: string;
+      refreshToken: string;
+    };
   };
 }

@@ -5,7 +5,7 @@ import type { RequestConfig, RunTimeLayoutConfig } from '@umijs/max';
 import { history, Link } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { getUserInfo } from './services/login';
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
@@ -20,12 +20,15 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser({
+      const msg = await getUserInfo({
         skipErrorHandler: true,
       });
       return msg.data;
     } catch (error) {
-      history.push(loginPath);
+      // 获取用户信息失败，如果有token则不跳转
+      if (!localStorage.getItem('token')) {
+        history.push(loginPath);
+      }
     }
     return undefined;
   };
@@ -64,7 +67,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      if (
+        !initialState?.currentUser &&
+        !localStorage.getItem('token') &&
+        location.pathname !== loginPath
+      ) {
         history.push(loginPath);
       }
     },

@@ -40,6 +40,12 @@ export default {
       changeOrigin: true,
       pathRewrite: { '/wz': '' },
     },
+    '/wz-login/': {
+      // target: 'https://proapi.azurewebsites.net',
+      target: 'http://115.190.83.238:8101',
+      changeOrigin: true,
+      pathRewrite: { '/wz-login': '' },
+    },
   },
   pre: {
     '/api/': {

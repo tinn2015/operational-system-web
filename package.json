@@ -32,7 +32,11 @@
     "test:update": "npm run jest -- -u",
     "tsc": "tsc --noEmit"
   },
-  "browserslist": ["> 1%", "last 2 versions", "not ie <= 10"],
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 10"
+  ],
   "dependencies": {
     "@ant-design/icons": "^4.8.1",
     "@ant-design/plots": "^2.1.5",
@@ -44,6 +48,7 @@
     "antd": "^5.12.7",
     "antd-style": "^3.6.1",
     "classnames": "^2.5.1",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
     "numeral": "^2.0.6",
     "omit.js": "^2.0.2",
@@ -58,6 +63,7 @@
     "@testing-library/react": "^13.4.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/classnames": "^2.3.1",
+    "@types/crypto-js": "^4.2.2",
     "@types/express": "^4.17.21",
     "@types/history": "^4.7.11",
     "@types/jest": "^29.5.11",
@@ -87,5 +93,7 @@
     "typescript": "^4.9.5",
     "umi-presets-pro": "^2.0.3"
   },
-  "engines": { "node": ">=12.0.0" }
+  "engines": {
+    "node": ">=12.0.0"
+  }
 }
