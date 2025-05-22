@@ -2,7 +2,7 @@
  * 加密工具类
  * 实现加密和哈希算法
  */
-import { TripleDES, enc, mode, pad, SHA1 } from 'crypto-js';
+import { TripleDES, enc, mode, pad, SHA1, SHA256 } from 'crypto-js';
 
 // 加密密钥 (实际应用中应从环境变量或配置文件获取)
 const SECRET_KEY = '77ec31def88e7e58de6331b9a3a83d8d';
@@ -42,6 +42,26 @@ export function sha1Hash(data: string): string {
     try {
         // 计算SHA1哈希值
         const hash = SHA1(data);
+
+        // 返回十六进制编码的哈希结果
+        return hash.toString(enc.Hex);
+    } catch (error) {
+        console.error('哈希计算失败:', error);
+        return data;
+    }
+}
+
+/**
+ * SHA256哈希函数
+ * @param data 需要哈希的数据，通常是密码
+ * @returns SHA256哈希后的字符串，十六进制格式
+ */
+export function sha256Hash(data: string): string {
+    if (!data) return '';
+
+    try {
+        // 计算SHA256哈希值
+        const hash = SHA256(data);
 
         // 返回十六进制编码的哈希结果
         return hash.toString(enc.Hex);

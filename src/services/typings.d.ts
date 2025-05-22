@@ -62,12 +62,7 @@ declare namespace API {
   };
 
   type LoginResult = {
-    code: number;
-    message: string;
-    errorInfo: string;
-    data: {
-      token: string;
-      refreshToken: string;
-    };
+    token: string;
+    refreshToken: string;
   };
 }

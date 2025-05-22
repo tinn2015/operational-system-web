@@ -23,7 +23,8 @@ export async function getInitialState(): Promise<{
       const msg = await getUserInfo({
         skipErrorHandler: true,
       });
-      return msg.data;
+      // debugger;
+      return msg;
     } catch (error) {
       // 获取用户信息失败，如果有token则不跳转
       if (!localStorage.getItem('token')) {
@@ -61,7 +62,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       },
     },
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: initialState?.currentUser?.nickName,
     },
     footerRender: () => <Footer />,
     onPageChange: () => {

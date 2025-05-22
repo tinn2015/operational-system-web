@@ -29,7 +29,7 @@ export async function login(options?: { [key: string]: any }) {
 /** 获取登录用户信息 */
 export async function getUserInfo(options?: { [key: string]: any }) {
     return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/api/getLoginUserInfo`, {
-        method: 'POST',
+        method: 'GET',
     });
 }
 

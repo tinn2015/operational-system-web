@@ -1,6 +1,6 @@
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import { login } from '@/services/login';
-import { sha1Hash } from '@/utils/encrypt';
+import { sha256Hash } from '@/utils/encrypt';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormText } from '@ant-design/pro-components';
 import { FormattedMessage, Helmet, useIntl, useModel } from '@umijs/max';
@@ -118,14 +118,14 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const pwd = sha1Hash(values.password);
+      const pwd = sha256Hash(values.password);
       const msg = await login({ ...values, password: pwd });
       console.log('登录结果', msg);
-      if (msg.code === 200) {
+      if (msg) {
         // 登录成功，将token保存到localStorage
-        if (msg.data && msg.data.token) {
-          localStorage.setItem('token', msg.data.token);
-          localStorage.setItem('refreshToken', msg.data.refreshToken || '');
+        if (msg.token) {
+          localStorage.setItem('token', msg.token);
+          localStorage.setItem('refreshToken', msg.refreshToken || '');
         }
 
         const defaultLoginSuccessMessage = intl.formatMessage({

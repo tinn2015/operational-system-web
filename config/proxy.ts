@@ -42,7 +42,7 @@ export default {
     },
     '/wz-login/': {
       // target: 'https://proapi.azurewebsites.net',
-      target: 'http://115.190.83.238:8101',
+      target: 'http://1.94.137.57:8101',
       changeOrigin: true,
       pathRewrite: { '/wz-login': '' },
     },
