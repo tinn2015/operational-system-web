@@ -65,4 +65,33 @@ declare namespace API {
     token: string;
     refreshToken: string;
   };
+
+  type UserRole = 1 | 2 | 3; // 1: 管理员, 2: 普通用户, 3: 访客
+
+  type User = {
+    id: number;
+    // 用户名
+    userName: string;
+    // 用户编码
+    userId: string;
+    // 真实姓名
+    realName: string;
+    // 手机号
+    phone: string;
+    // 邮箱
+    email: string;
+    // 角色
+    role: UserRole;
+    // 状态 1: 启用, 0: 禁用
+    status: 0 | 1;
+    // 创建时间
+    createTime: string;
+  };
+
+  type UserList = {
+    total: number;
+    pageSize: number;
+    pageNum: number;
+    data: User[];
+  };
 }

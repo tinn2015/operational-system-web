@@ -168,9 +168,27 @@ const HeadSetList: React.FC = () => {
         pagination={{
           showQuickJumper: true,
           showSizeChanger: true,
+          showTotal: (total) => `共 ${total} 条`,
+          locale: {
+            items_per_page: '条/页',
+            jump_to: '跳至',
+            jump_to_confirm: '确定',
+            page: '页',
+          },
         }}
         search={{
           labelWidth: 'auto',
+          resetText: '重置',
+          searchText: '查询',
+          collapsed: false,
+          collapseRender: false,
+        }}
+        options={{
+          search: false,
+          fullScreen: false,
+          reload: true,
+          setting: false,
+          density: false,
         }}
         dateFormatter="string"
         headerTitle="VR头显设备管理"

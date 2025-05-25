@@ -1,319 +1,342 @@
-import React, { useState } from 'react';
-import {
-  Table,
-  Card,
-  Button,
-  Space,
-  Modal,
-  Form,
-  Input,
-  Select,
-  message,
-  Row,
-  Col,
-} from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+// 用户管理页面
 
-interface UserType {
-  id: number;
-  username: string;
-  realName: string;
-  email: string;
-  role: string;
-  status: 'active' | 'inactive';
-  createTime: string;
-}
-
-const { Option } = Select;
+import { deleteUser, getUserList, saveUser } from '@/services/user';
+import { PlusOutlined } from '@ant-design/icons';
+import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
+import { useModel } from '@umijs/max';
+import { Button, Col, Divider, message, Popconfirm, Row, Space } from 'antd';
+import React, { useRef, useState } from 'react';
 
 const UserCenter: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<UserType[]>([
-    {
-      id: 1,
-      username: 'admin',
-      realName: '管理员',
-      email: 'admin@example.com',
-      role: '超级管理员',
-      status: 'active',
-      createTime: '2024-03-20 10:00:00',
-    },
-    {
-      id: 2,
-      username: 'user1',
-      realName: '张三',
-      email: 'zhangsan@example.com',
-      role: '普通用户',
-      status: 'active',
-      createTime: '2024-03-20 11:00:00',
-    },
-  ]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState('添加用户');
-  const [form] = Form.useForm();
-  const [searchForm] = Form.useForm();
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 2,
-  });
+  const tableRef = useRef<ActionType>();
+  const formRef = useRef<any>();
+  const { initialState } = useModel('@@initialState');
+  const [editingUser, setEditingUser] = useState<API.User | undefined>();
+  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
 
-  // 表格列定义
-  const columns: ColumnsType<UserType> = [
+  // TODO: 替换为实际的 API 调用
+  const handleDelete = async (record: API.User) => {
+    try {
+      await deleteUser({ userId: record.userId });
+      message.success('删除成功');
+      tableRef.current?.reload();
+    } catch (error) {
+      message.error('删除失败');
+    }
+  };
+
+  const columns: ProColumns<API.User>[] = [
     {
-      title: '用户名',
-      dataIndex: 'username',
-      key: 'username',
+      title: '用户姓名',
+      dataIndex: 'userName',
+      copyable: true,
+      ellipsis: true,
+      width: 120,
+      align: 'center',
     },
     {
-      title: '姓名',
-      dataIndex: 'realName',
-      key: 'realName',
+      title: '昵称',
+      dataIndex: 'nickName',
+      ellipsis: true,
+      width: 120,
+      align: 'center',
+    },
+    {
+      title: '手机号',
+      dataIndex: 'phone',
+      width: 120,
+      align: 'center',
+    },
+    {
+      title: '性别',
+      dataIndex: 'sex',
+      width: 120,
+      align: 'center',
+      valueEnum: {
+        1: { text: '男' },
+        0: { text: '女' },
+      },
     },
     {
       title: '邮箱',
       dataIndex: 'email',
-      key: 'email',
+      width: 180,
+      align: 'center',
     },
     {
-      title: '角色',
-      dataIndex: 'role',
-      key: 'role',
-      filters: [
-        { text: '超级管理员', value: '超级管理员' },
-        { text: '普通用户', value: '普通用户' },
-      ],
+      title: '岗位',
+      dataIndex: 'post',
+      width: 180,
+      align: 'center',
     },
+    // {
+    //   title: '角色',
+    //   dataIndex: 'role',
+    //   width: 100,
+    //   align: 'center',
+    //   valueEnum: {
+    //     1: { text: '管理员', status: 'success' },
+    //     2: { text: '普通用户', status: 'default' },
+    //     3: { text: '访客', status: 'warning' },
+    //   },
+    // },
     {
       title: '状态',
       dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
-        <Select
-          value={status}
-          style={{ width: 100 }}
-          onChange={(value) => handleStatusChange(value)}
-        >
-          <Option value="active">正常</Option>
-          <Option value="inactive">禁用</Option>
-        </Select>
-      ),
+      width: 100,
+      align: 'center',
+      valueEnum: {
+        1: { text: '启用', status: 'success' },
+        0: { text: '禁用', status: 'error' },
+      },
     },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
-      sorter: true,
-    },
+    // {
+    //   title: '创建时间',
+    //   dataIndex: 'createTime',
+    //   width: 180,
+    //   align: 'center',
+    // },
     {
       title: '操作',
-      key: 'action',
+      valueType: 'option',
+      width: 180,
+      align: 'center',
       render: (_, record) => (
-        <Space size="middle">
-          <Button type="link" onClick={() => handleEdit(record)}>
+        <Space split={<Divider type="vertical" />}>
+          <Button
+            key="edit"
+            type="link"
+            onClick={() => {
+              setEditingUser(record);
+              setCreateModalVisible(true);
+            }}
+          >
             编辑
           </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.id)}>
-            删除
-          </Button>
+          <Popconfirm
+            title="确认删除"
+            description="确定要删除该用户吗？"
+            okText="确认"
+            cancelText="取消"
+            onConfirm={() => handleDelete(record)}
+          >
+            <Button key="delete" type="link" danger>
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
-  // 处理表格变化（分页、筛选、排序）
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    setLoading(true);
-    // 这里可以调用后端 API 进行数据获取
-    setPagination(pagination);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  };
-
-  // 搜索
-  const handleSearch = (values: any) => {
-    setLoading(true);
-    console.log('搜索条件：', values);
-    // 这里可以调用后端 API 进行搜索
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  };
-
-  // 重置搜索
-  const handleReset = () => {
-    searchForm.resetFields();
-    // 重置后刷新数据
-  };
-
-  // 添加用户
-  const handleAdd = () => {
-    setModalTitle('添加用户');
-    form.resetFields();
-    setIsModalOpen(true);
-  };
-
-  // 编辑用户
-  const handleEdit = (record: UserType) => {
-    setModalTitle('编辑用户');
-    form.setFieldsValue(record);
-    setIsModalOpen(true);
-  };
-
-  // 删除用户
-  const handleDelete = (id: number) => {
-    Modal.confirm({
-      title: '确认删除',
-      content: '确定要删除这个用户吗？',
-      onOk() {
-        setUsers(users.filter((user) => user.id !== id));
-        message.success('删除成功');
-      },
-    });
-  };
-
-  // 修改用户状态
-  const handleStatusChange = (value: string) => {
-    message.success('状态修改成功');
-  };
-
-  // 提交表单
-  const handleModalOk = () => {
-    form.validateFields().then((values) => {
-      const newUser = {
-        ...values,
-        id: values.id || users.length + 1,
-        createTime: new Date().toLocaleString(),
-      };
-
-      if (values.id) {
-        setUsers(users.map((user) => (user.id === values.id ? newUser : user)));
-      } else {
-        setUsers([...users, newUser]);
-      }
-
-      setIsModalOpen(false);
-      message.success('保存成功');
-    });
-  };
-
   return (
-    <div>
-      <Card>
-        {/* 搜索区域 */}
-        <Form form={searchForm} onFinish={handleSearch}>
-          <Row gutter={24}>
-            <Col span={6}>
-              <Form.Item name="username" label="用户名">
-                <Input placeholder="请输入用户名" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item name="role" label="角色">
-                <Select placeholder="请选择角色" allowClear>
-                  <Option value="超级管理员">超级管理员</Option>
-                  <Option value="普通用户">普通用户</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item name="status" label="状态">
-                <Select placeholder="请选择状态" allowClear>
-                  <Option value="active">正常</Option>
-                  <Option value="inactive">禁用</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Space>
-                <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                  搜索
-                </Button>
-                <Button onClick={handleReset}>重置</Button>
-              </Space>
-            </Col>
-          </Row>
-        </Form>
+    <>
+      <ProTable<API.User>
+        actionRef={tableRef}
+        columns={columns}
+        request={async (params) => {
+          // TODO: 替换为实际的 API 调用
+          const userList = await getUserList({
+            pageSize: params.pageSize,
+            pageNum: params.current,
+            ...params,
+          });
+          console.log('userList', userList);
+          return {
+            data: userList.items,
+            success: true,
+            total: userList.count,
+          };
+        }}
+        rowKey="id"
+        pagination={{
+          showQuickJumper: true,
+          showSizeChanger: true,
+          showTotal: (total) => `共 ${total} 条`,
+          locale: {
+            items_per_page: '条/页',
+            jump_to: '跳至',
+            jump_to_confirm: '确定',
+            page: '页',
+          },
+        }}
+        search={{
+          labelWidth: 'auto',
+          resetText: '重置',
+          searchText: '查询',
+          collapsed: false,
+          collapseRender: false,
+        }}
+        options={{
+          search: false,
+          fullScreen: false,
+          reload: true,
+          setting: false,
+          density: false,
+        }}
+        dateFormatter="string"
+        headerTitle="用户管理"
+        toolBarRender={() => [
+          <Button
+            key="add"
+            type="primary"
+            onClick={() => {
+              setEditingUser(undefined);
+              setCreateModalVisible(true);
+            }}
+          >
+            <PlusOutlined /> 新增用户
+          </Button>,
+        ]}
+      />
 
-        {/* 操作按钮 */}
-        <div style={{ marginBottom: 16 }}>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            添加用户
-          </Button>
-        </div>
+      <ModalForm
+        formRef={formRef}
+        title={editingUser ? '编辑用户' : '新增用户'}
+        open={createModalVisible}
+        onOpenChange={(visible) => {
+          if (!visible) {
+            setEditingUser(undefined);
+            formRef.current?.resetFields();
+          }
+          setCreateModalVisible(visible);
+        }}
+        initialValues={editingUser}
+        onFinish={async (values) => {
+          console.log('提交用户信息', values, editingUser);
+          // TODO: 替换为实际的 API 调用
+          const newValues = editingUser
+            ? { ...values, userId: editingUser.userId }
+            : {
+                ...values,
+                corpId: initialState?.currentUser?.corpId,
+                roleList: [
+                  {
+                    id: '5',
+                    roleCode: 'corp-admin',
+                    roleName: '企业管理员',
+                    roleType: '1',
+                    remark: null,
+                    status: 1,
+                    corpId: '1',
+                  },
+                ],
+                venueList: [
+                  {
+                    id: '1',
+                    venueCode: '1',
+                    venueName: '场馆1_横店',
+                    address: '1号路',
+                    longitude: '22.33',
+                    latitude: '45.80',
+                    thirdId: null,
+                    corpId: '1',
+                    corpName: '横店',
+                  },
+                  {
+                    id: '2',
+                    venueCode: '2',
+                    venueName: '场馆2_横店',
+                    address: '2号路',
+                    longitude: '150.89',
+                    latitude: '73.80',
+                    thirdId: null,
+                    corpId: '1',
+                    corpName: '横店',
+                  },
+                ],
+              };
+          console.log('==[新增用户]newValues==', newValues);
+          const res = await saveUser(newValues);
+          if (res) {
+            message.success('提交成功');
+            tableRef.current?.reload();
+            setCreateModalVisible(false);
+            formRef.current?.resetFields();
+            return true;
+          }
+        }}
+      >
+        <Row gutter={24}>
+          <Col span={12}>
+            <ProFormText
+              name="userName"
+              label="用户姓名"
+              placeholder="请输入用户姓名"
+              rules={[{ required: true, message: '请输入用户姓名' }]}
+            />
+          </Col>
+          <Col span={12}>
+            <ProFormText
+              name="loginId"
+              label="登录账号"
+              placeholder="请输入工号或者手机号"
+              rules={[{ required: true, message: '请输入工号或者手机号' }]}
+            />
+          </Col>
+          <Col span={12}>
+            <ProFormText
+              name="phone"
+              label="手机号"
+              placeholder="请输入手机号"
+              rules={[
+                { required: true, message: '请输入手机号' },
+                { pattern: /^1\d{10}$/, message: '请输入正确的手机号' },
+              ]}
+            />
+          </Col>
+          <Col span={12}>
+            <ProFormText name="nickName" label="昵称" placeholder="请输入昵称" />
+          </Col>
+          <Col span={12}>
+            <ProFormSelect
+              name="sex"
+              label="性别"
+              options={[
+                { label: '男', value: '1' },
+                { label: '女', value: '0' },
+              ]}
+            />
+          </Col>
 
-        {/* 用户列表 */}
-        <Table
-          columns={columns}
-          dataSource={users}
-          rowKey="id"
-          pagination={pagination}
-          loading={loading}
-          onChange={handleTableChange}
-        />
-
-        {/* 添加/编辑用户弹窗 */}
-        <Modal
-          title={modalTitle}
-          open={isModalOpen}
-          onOk={handleModalOk}
-          onCancel={() => setIsModalOpen(false)}
-          width={600}
-        >
-          <Form form={form} layout="vertical">
-            <Form.Item name="id" hidden>
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="username"
-              label="用户名"
-              rules={[{ required: true, message: '请输入用户名' }]}
-            >
-              <Input placeholder="请输入用户名" />
-            </Form.Item>
-            <Form.Item
-              name="realName"
-              label="姓名"
-              rules={[{ required: true, message: '请输入姓名' }]}
-            >
-              <Input placeholder="请输入姓名" />
-            </Form.Item>
-            <Form.Item
+          <Col span={12}>
+            <ProFormText
               name="email"
               label="邮箱"
-              rules={[
-                { required: true, message: '请输入邮箱' },
-                { type: 'email', message: '请输入有效的邮箱地址' },
-              ]}
-            >
-              <Input placeholder="请输入邮箱" />
-            </Form.Item>
-            <Form.Item
+              placeholder="请输入邮箱"
+              rules={[{ type: 'email', message: '请输入正确的邮箱格式' }]}
+            />
+          </Col>
+          <Col span={12}>
+            <ProFormText name="post" label="岗位" placeholder="请输入岗位" />
+          </Col>
+          {/* <Col span={12}>
+            <ProFormSelect
               name="role"
               label="角色"
+              options={[
+                { label: '管理员', value: 1 },
+                { label: '普通用户', value: 2 },
+                { label: '访客', value: 3 },
+              ]}
               rules={[{ required: true, message: '请选择角色' }]}
-            >
-              <Select placeholder="请选择角色">
-                <Option value="超级管理员">超级管理员</Option>
-                <Option value="普通用户">普通用户</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
+            />
+          </Col> */}
+          {/* <Col span={12}>
+            <ProFormSelect
               name="status"
               label="状态"
+              options={[
+                { label: '启用', value: 1 },
+                { label: '禁用', value: 0 },
+              ]}
               rules={[{ required: true, message: '请选择状态' }]}
-            >
-              <Select placeholder="请选择状态">
-                <Option value="active">正常</Option>
-                <Option value="inactive">禁用</Option>
-              </Select>
-            </Form.Item>
-          </Form>
-        </Modal>
-      </Card>
-    </div>
+            />
+          </Col> */}
+        </Row>
+      </ModalForm>
+    </>
   );
 };
 

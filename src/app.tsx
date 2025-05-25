@@ -1,4 +1,4 @@
-import { AvatarDropdown, AvatarName, Footer } from '@/components';
+import { AvatarDropdown, AvatarName, Footer, SelectVenue } from '@/components';
 import { LinkOutlined } from '@ant-design/icons';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import type { RequestConfig, RunTimeLayoutConfig } from '@umijs/max';
@@ -37,6 +37,9 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (![loginPath, '/user/register', '/user/register-result'].includes(location.pathname)) {
     const currentUser = await fetchUserInfo();
+    if (currentUser?.venueList) {
+      localStorage.setItem('X-Venue-Id', currentUser.venueList[0].venueCode);
+    }
     return {
       fetchUserInfo,
       currentUser,
@@ -54,6 +57,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   return {
     // 【tinn】header 的功能菜单
     // actionsRender: () => [<Question key="doc" />, <SelectLang key="SelectLang" />],
+    actionsRender: () => [
+      <SelectVenue key="SelectVenue" options={initialState?.currentUser?.venueList} />,
+    ],
     avatarProps: {
       src: initialState?.currentUser?.avatar,
       title: <AvatarName />,

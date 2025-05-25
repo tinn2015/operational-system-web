@@ -12,6 +12,7 @@ const Settings: ProLayoutProps & {
   colorPrimary: '#1890ff',
   layout: 'mix',
   contentWidth: 'Fluid',
+  locale: 'zh-CN',
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,

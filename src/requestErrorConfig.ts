@@ -2,7 +2,6 @@
 import type { RequestConfig } from '@umijs/max';
 import { message, notification } from 'antd';
 
-
 // 错误处理方案： 错误类型
 enum ErrorShowType {
   SILENT = 0,
@@ -95,9 +94,11 @@ export const errorConfig: RequestConfig = {
       // 拦截请求配置，进行个性化处理。
       const authHeader = {
         // Authorization: 'Bearer ' + localStorage.getItem('token'),
-        Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0ZW5hbnRJZExpc3QiOlsiUTE1RElLQ0sxeCJdLCJjb3JwSWQiOiJEOGNBMDZwdm5zIiwidXNlck5hbWUiOiJKb2UgQmFybmVzIiwidXNlcklkIjoiMSIsImV4cCI6MTc1NTg1NjM2Mn0.RDzTD9m0UbGiVSS0zVelvn91b4tbMNs-dzEw4AfwWxDM3a77CMk5m9xCk_oF-UwPorefyJIMb2eg3emAfN3jYb23yxfDiI7Lf7eFZUXmtIZX4uO6SRfy-4SXxUKzWwCDHuMHeEzA7VNFkuoRzKhYcZHm-pk-nlt2xsQUOhjrCaknoVkMCEQVBQm0gNVLkJgkz6XsQLmR3qZ3bu6dhoonM0yS95lK4negHY35f1tofL5KhtdEJIWbKn_7RE-ef_yzO_OBpAvkPMkC1hy4HZUM-BCngjs67Pp3PJwPp7EyeFbevWAARXhmz_kp8cfoByTdlE4JqjPo2PvSmyOXnie1qg',
+        // Authorization:
+        //   'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0ZW5hbnRJZExpc3QiOlsiUTE1RElLQ0sxeCJdLCJjb3JwSWQiOiJEOGNBMDZwdm5zIiwidXNlck5hbWUiOiJKb2UgQmFybmVzIiwidXNlcklkIjoiMSIsImV4cCI6MTc1NTg1NjM2Mn0.RDzTD9m0UbGiVSS0zVelvn91b4tbMNs-dzEw4AfwWxDM3a77CMk5m9xCk_oF-UwPorefyJIMb2eg3emAfN3jYb23yxfDiI7Lf7eFZUXmtIZX4uO6SRfy-4SXxUKzWwCDHuMHeEzA7VNFkuoRzKhYcZHm-pk-nlt2xsQUOhjrCaknoVkMCEQVBQm0gNVLkJgkz6XsQLmR3qZ3bu6dhoonM0yS95lK4negHY35f1tofL5KhtdEJIWbKn_7RE-ef_yzO_OBpAvkPMkC1hy4HZUM-BCngjs67Pp3PJwPp7EyeFbevWAARXhmz_kp8cfoByTdlE4JqjPo2PvSmyOXnie1qg',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
         'X-Tenant-Id': '0001',
+        'X-Venue-Id': localStorage.getItem('X-Venue-Id') || '',
       };
       console.log('requestInterceptors', config);
       // const url = config?.url?.concat('?token = 123');
@@ -114,7 +115,7 @@ export const errorConfig: RequestConfig = {
       const { code, errorInfo, message: msg } = data;
       if (code !== 200) {
         message.error(errorInfo || msg);
-        return response;
+        return false;
       }
       if (code === 200) {
         return data;
