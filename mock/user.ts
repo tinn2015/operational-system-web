@@ -121,7 +121,7 @@ export default {
     const { password, username, type } = req.body;
     console.log('/api/login/account', password, username, type)
     alert(password)
-    debugger
+
     await waitTime(2000);
     if (password === 'ant.design' && username === 'admin') {
       res.send({

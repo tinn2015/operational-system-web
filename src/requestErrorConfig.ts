@@ -1,5 +1,6 @@
 ﻿import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
+import { history } from '@umijs/max';
 import { message, notification } from 'antd';
 
 // 错误处理方案： 错误类型
@@ -34,6 +35,7 @@ export const errorConfig: RequestConfig = {
     errorThrower: (res) => {
       const { success, data, errorCode, errorMessage, showType } =
         res as unknown as ResponseStructure;
+
       if (!success) {
         const error: any = new Error(errorMessage);
         error.name = 'BizError';
@@ -97,7 +99,6 @@ export const errorConfig: RequestConfig = {
         // Authorization:
         //   'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0ZW5hbnRJZExpc3QiOlsiUTE1RElLQ0sxeCJdLCJjb3JwSWQiOiJEOGNBMDZwdm5zIiwidXNlck5hbWUiOiJKb2UgQmFybmVzIiwidXNlcklkIjoiMSIsImV4cCI6MTc1NTg1NjM2Mn0.RDzTD9m0UbGiVSS0zVelvn91b4tbMNs-dzEw4AfwWxDM3a77CMk5m9xCk_oF-UwPorefyJIMb2eg3emAfN3jYb23yxfDiI7Lf7eFZUXmtIZX4uO6SRfy-4SXxUKzWwCDHuMHeEzA7VNFkuoRzKhYcZHm-pk-nlt2xsQUOhjrCaknoVkMCEQVBQm0gNVLkJgkz6XsQLmR3qZ3bu6dhoonM0yS95lK4negHY35f1tofL5KhtdEJIWbKn_7RE-ef_yzO_OBpAvkPMkC1hy4HZUM-BCngjs67Pp3PJwPp7EyeFbevWAARXhmz_kp8cfoByTdlE4JqjPo2PvSmyOXnie1qg',
         Authorization: 'Bearer ' + localStorage.getItem('token'),
-        'X-Tenant-Id': '0001',
         'X-Venue-Id': localStorage.getItem('X-Venue-Id') || '',
       };
       console.log('requestInterceptors', config);
@@ -111,10 +112,14 @@ export const errorConfig: RequestConfig = {
     (response) => {
       // 拦截响应数据，进行个性化处理
       const { data } = response as unknown as ResponseStructure;
-      console.log('responseInterceptors', data, response);
+      console.log('[response]', response.request.responseURL, response);
       const { code, errorInfo, message: msg } = data;
       if (code !== 200) {
         message.error(errorInfo || msg);
+        return false;
+      }
+      if (code === 401) {
+        history.push('/user/login');
         return false;
       }
       if (code === 200) {

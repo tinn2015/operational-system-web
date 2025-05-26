@@ -18,7 +18,7 @@ import { request } from '@umijs/max';
  * @returns
  */
 export async function getUserList(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/user/getUserPageList`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/user/getUserPageList`, {
     method: 'POST',
     data: options,
     // ...(options || {}),
@@ -27,7 +27,7 @@ export async function getUserList(options?: { [key: string]: any }) {
 
 /** 添加或者修改服务器列表 */
 export async function saveUser(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/user/saveUserInfo`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/user/saveUserInfo`, {
     method: 'POST',
     data: {
       ...(options || {}),
@@ -37,7 +37,7 @@ export async function saveUser(options?: { [key: string]: any }) {
 
 /** 删除服务器 */
 export async function deleteUser(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/user/deleteByUserId`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/user/deleteByUserId`, {
     method: 'GET',
     params: {
       ...(options || {}),
@@ -47,7 +47,7 @@ export async function deleteUser(options?: { [key: string]: any }) {
 
 /** 操作服务器 */
 export async function rebootDevice(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/user/update/${options?.id}`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/user/update/${options?.id}`, {
     method: 'PUT',
     params: {
       ...(options || {}),

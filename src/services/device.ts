@@ -18,7 +18,7 @@ import { request } from '@umijs/max';
  * @returns
  */
 export async function getDeviceList(options?: { [key: string]: any }) {
-  return request<API.DeviceList>(`${PROXY_PREFIX}/device/page`, {
+  return request<API.DeviceList>(`${PROXY_PREFIX}/control/device/page`, {
     method: 'GET',
     params: options,
     // ...(options || {}),
@@ -27,7 +27,7 @@ export async function getDeviceList(options?: { [key: string]: any }) {
 
 /** 添加或者修改服务器列表 */
 export async function saveDevice(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX}/device/save`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX}/control/device/save`, {
     method: 'POST',
     data: {
       ...(options || {}),
@@ -37,7 +37,7 @@ export async function saveDevice(options?: { [key: string]: any }) {
 
 /** 删除服务器 */
 export async function deleteDevice(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX}/device/del/${options?.id}`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX}/control/device/del/${options?.id}`, {
     method: 'DELETE',
   });
 }

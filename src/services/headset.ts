@@ -9,7 +9,7 @@ import { request } from '@umijs/max';
  * @returns
  */
 export async function getHeadsetList(options?: { [key: string]: any }) {
-  return request<API.HeadsetList>(`${PROXY_PREFIX}/headset/page`, {
+  return request<API.HeadsetList>(`${PROXY_PREFIX}/control/headset/page`, {
     method: 'GET',
     params: options,
     // ...(options || {}),
@@ -18,7 +18,7 @@ export async function getHeadsetList(options?: { [key: string]: any }) {
 
 /** 添加或者修改头显 */
 export async function saveHeadsetList(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX}/headset/save`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX}/control/headset/save`, {
     method: 'POST',
     data: {
       ...(options || {}),
@@ -28,7 +28,7 @@ export async function saveHeadsetList(options?: { [key: string]: any }) {
 
 /** 删除头显 */
 export async function deleteHeadset(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX}/headset/del/${options?.id}`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX}/control/headset/del/${options?.id}`, {
     method: 'DELETE',
   });
 }

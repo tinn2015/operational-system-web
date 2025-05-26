@@ -36,7 +36,8 @@ export default {
     },
     '/wz/': {
       // target: 'https://proapi.azurewebsites.net',
-      target: 'http://115.190.83.238:8201',
+      // target: 'http://115.190.83.238:8201', //敏哥
+      target: 'http://1.94.137.57:8000',
       changeOrigin: true,
       pathRewrite: { '/wz': '' },
     },

@@ -37,9 +37,9 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (![loginPath, '/user/register', '/user/register-result'].includes(location.pathname)) {
     const currentUser = await fetchUserInfo();
-    if (currentUser?.venueList) {
-      localStorage.setItem('X-Venue-Id', currentUser.venueList[0].venueCode);
-    }
+    // if (currentUser?.venueList) {
+    //   localStorage.setItem('X-Venue-Id', currentUser.venueList[0].venueCode);
+    // }
     return {
       fetchUserInfo,
       currentUser,
@@ -58,13 +58,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     // 【tinn】header 的功能菜单
     // actionsRender: () => [<Question key="doc" />, <SelectLang key="SelectLang" />],
     actionsRender: () => [
-      <SelectVenue key="SelectVenue" options={initialState?.currentUser?.venueList} />,
+      <SelectVenue key="SelectVenue" options={initialState?.currentUser?.venueList || []} />,
     ],
     avatarProps: {
       src: initialState?.currentUser?.avatar,
       title: <AvatarName />,
       render: (_, avatarChildren) => {
-        return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
+        console.log('avatarChildren', avatarChildren);
+        return <AvatarDropdown menu={true}>{avatarChildren}</AvatarDropdown>;
       },
     },
     waterMarkProps: {
@@ -146,7 +147,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  */
 export const request: RequestConfig = {
   // baseURL: 'https://proapi.azurewebsites.net',
-  baseURL: 'http://localhost:8000',
+  // baseURL: 'http://1.94.137.57:8000',
+  baseURL: '/',
   // baseURL: 'http://115.190.83.238:8201', // 敏哥阿里云
   ...errorConfig,
 };

@@ -18,7 +18,7 @@ import { request } from '@umijs/max';
  * @returns
  */
 export async function login(options?: { [key: string]: any }) {
-    return request<API.LoginResult>(`${PROXY_PREFIX_LOGIN}/login`, {
+    return request<API.LoginResult>(`${PROXY_PREFIX_LOGIN}/admin/api/login`, {
         method: 'POST',
         data: {
             ...(options || {}),
@@ -28,14 +28,14 @@ export async function login(options?: { [key: string]: any }) {
 
 /** 获取登录用户信息 */
 export async function getUserInfo(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/api/getLoginUserInfo`, {
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/getLoginUserInfo`, {
         method: 'GET',
     });
 }
 
 /** 获取验证码 */
 export async function getCaptcha(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/captchas/images`, {
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/captchas/images`, {
         method: 'POST',
         data: {
             ...(options || {}),

@@ -32,7 +32,11 @@ export const SelectVenue = ({ options }: { options: any[] }) => {
     key: item.venueCode,
     label: item.venueName,
   }));
-  const [currentVenue, setCurrentVenue] = useState<any>(options[0]);
+  const originalVenue =
+    options.find((item) => item.venueCode === localStorage.getItem('X-Venue-Id')) || options[0];
+  console.log('X-Venue-Id', localStorage.getItem('X-Venue-Id'));
+  const [currentVenue, setCurrentVenue] = useState<any>(originalVenue);
+  console.log('SelectVenue originalVenue', originalVenue);
   const handleSelect = (key: string) => {
     const currentVenue = options.find((item) => item.venueCode === key);
     console.log('SelectVenue handleSelect', key, currentVenue);
@@ -44,6 +48,7 @@ export const SelectVenue = ({ options }: { options: any[] }) => {
     // });
     setCurrentVenue(currentVenue);
     localStorage.setItem('X-Venue-Id', currentVenue.venueCode);
+    window.location.reload();
   };
   return (
     <div style={{ height: 44, lineHeight: '44px', display: 'flex', alignItems: 'center' }}>
