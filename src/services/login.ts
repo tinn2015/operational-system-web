@@ -9,7 +9,7 @@
  * - updateDevice: 操作服务器(启动/停止等)
  */
 
-import { PROXY_PREFIX, PROXY_PREFIX_LOGIN } from '@/utils/constant';
+import { PROXY_PREFIX_LOGIN } from '@/utils/constant';
 import { request } from '@umijs/max';
 
 /**
@@ -18,27 +18,27 @@ import { request } from '@umijs/max';
  * @returns
  */
 export async function login(options?: { [key: string]: any }) {
-    return request<API.LoginResult>(`${PROXY_PREFIX_LOGIN}/admin/api/login`, {
-        method: 'POST',
-        data: {
-            ...(options || {}),
-        },
-    });
+  return request<API.LoginResult>(`${PROXY_PREFIX_LOGIN}/admin/login`, {
+    method: 'POST',
+    data: {
+      ...(options || {}),
+    },
+  });
 }
 
 /** 获取登录用户信息 */
 export async function getUserInfo(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/getLoginUserInfo`, {
-        method: 'GET',
-    });
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/getLoginUserInfo`, {
+    method: 'GET',
+  });
 }
 
 /** 获取验证码 */
 export async function getCaptcha(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/captchas/images`, {
-        method: 'POST',
-        data: {
-            ...(options || {}),
-        },
-    });
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/captchas/images`, {
+    method: 'POST',
+    data: {
+      ...(options || {}),
+    },
+  });
 }
