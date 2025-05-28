@@ -1,4 +1,5 @@
 // 修改密码
+import { updatePassword } from '@/services/user';
 import { ProForm, ProFormText } from '@ant-design/pro-components';
 import { Card, message } from 'antd';
 import React from 'react';
@@ -17,8 +18,17 @@ const PasswordSettings: React.FC = () => {
             message.error('两次输入的密码不一致');
             return false;
           }
-          message.success('密码修改成功');
-          return true;
+          const res = await updatePassword({
+            oldPassword: values.oldPassword,
+            newPassword: values.newPassword,
+          });
+          if (res.code === 200) {
+            message.success('密码修改成功');
+            return true;
+          } else {
+            message.error(res.message);
+            return false;
+          }
         }}
         submitter={{
           searchConfig: {

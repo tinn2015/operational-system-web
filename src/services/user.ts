@@ -44,13 +44,12 @@ export async function deleteUser(options?: { [key: string]: any }) {
     },
   });
 }
-
-/** 操作服务器 */
-export async function rebootDevice(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/user/update/${options?.id}`, {
-    method: 'PUT',
-    params: {
-      ...(options || {}),
-    },
+/**
+ * 更新密码
+ */
+export async function updatePassword(options?: { [key: string]: any }) {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/user/updatePassword`, {
+    method: 'POST',
+    data: { ...(options || {}) },
   });
 }

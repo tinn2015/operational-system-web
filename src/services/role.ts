@@ -1,0 +1,40 @@
+import { PROXY_PREFIX_LOGIN } from '@/utils/constant';
+import { request } from '@umijs/max';
+
+/**
+ * 获取角色列表
+ * @param options
+ * @returns
+ */
+export async function getRoleList(options?: { [key: string]: any }) {
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/getRolePageList`, {
+        method: 'POST',
+        data: options,
+    });
+}
+
+/**
+ * 添加或修改角色
+ * @param options
+ * @returns
+ */
+export async function saveRole(options?: { [key: string]: any }) {
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/saveRole`, {
+        method: 'POST',
+        data: {
+            ...(options || {}),
+        },
+    });
+}
+
+/**
+ * 删除角色
+ * @param options
+ * @returns
+ */
+export async function deleteRole(options?: { [key: string]: any }) {
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/deleteRole`, {
+        method: 'POST',
+        data: options,
+    });
+} 

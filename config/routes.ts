@@ -82,7 +82,24 @@ export default [
     path: '/userCenter',
     name: '用户管理',
     icon: 'smile',
-    component: './userCenter',
+    routes: [
+      {
+        path: '/userCenter',
+        redirect: '/userCenter/userList',
+      },
+      {
+        name: '用户列表',
+        icon: 'smile',
+        path: '/userCenter/userList',
+        component: './userCenter/userList',
+      },
+      {
+        name: '角色管理',
+        icon: 'smile',
+        path: '/userCenter/roleList',
+        component: './userCenter/roleList',
+      },
+    ],
   },
   {
     path: '/device',
@@ -147,18 +164,18 @@ export default [
         path: '/account',
         redirect: '/account/center',
       },
-      {
-        name: 'center',
-        icon: 'smile',
-        path: '/account/center',
-        component: './account/center',
-      },
-      {
-        name: 'settings',
-        icon: 'smile',
-        path: '/account/settings',
-        component: './account/settings',
-      },
+      // {
+      //   name: 'center',
+      //   icon: 'smile',
+      //   path: '/account/center',
+      //   component: './account/center',
+      // },
+      // {
+      //   name: 'settings',
+      //   icon: 'smile',
+      //   path: '/account/settings',
+      //   component: './account/settings',
+      // },
       {
         name: 'password',
         icon: 'smile',

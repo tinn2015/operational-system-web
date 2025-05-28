@@ -115,10 +115,10 @@ export const errorConfig: RequestConfig = {
       const { data } = response as unknown as ResponseStructure;
       console.log('[response]', response.request.responseURL, response);
       const { code, errorInfo, message: msg } = data;
-      if (code !== 200) {
-        message.error(errorInfo || msg);
-        return false;
-      }
+      // if (code !== 200) {
+      //   message.error(errorInfo || msg);
+      //   return false;
+      // }
       if (code === 401) {
         history.push('/user/login');
         return false;
