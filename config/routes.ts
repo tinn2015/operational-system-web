@@ -125,6 +125,23 @@ export default [
     ],
   },
   {
+    path: '/game',
+    name: '游戏管理',
+    icon: 'smile',
+    routes: [
+      {
+        path: '/game',
+        redirect: '/game/team',
+      },
+      {
+        name: '组队管理',
+        icon: 'smile',
+        path: '/game/team',
+        component: './game/team',
+      },
+    ],
+  },
+  {
     name: 'exception',
     icon: 'warning',
     path: '/exception',
