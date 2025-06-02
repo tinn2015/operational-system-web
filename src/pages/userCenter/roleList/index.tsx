@@ -11,7 +11,7 @@ import {
   ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Divider, message, Popconfirm, Space } from 'antd';
+import { Button, Col, Divider, message, Popconfirm, Row, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 
 // 角色类型定义
@@ -55,10 +55,10 @@ const RoleList: React.FC = () => {
       width: 150,
       align: 'center',
       valueEnum: {
-        'system-admin': { text: '系统管理员' },
-        'corp-admin': { text: '企业管理员' },
-        'venue-admin': { text: '场馆管理员' },
-        'normal-user': { text: '普通用户' },
+        '0': { text: '系统管理员' },
+        '1': { text: '企业管理员' },
+        '2': { text: '场馆管理员' },
+        '3': { text: '普通用户' },
       },
     },
     {
@@ -77,6 +77,7 @@ const RoleList: React.FC = () => {
       ellipsis: true,
       width: 200,
       align: 'center',
+      search: false,
     },
     {
       title: '操作',
@@ -90,6 +91,7 @@ const RoleList: React.FC = () => {
             type="link"
             onClick={() => {
               setEditingRole(record);
+              console.log('==formRef 编辑==');
               setCreateModalVisible(true);
             }}
           >
@@ -161,7 +163,9 @@ const RoleList: React.FC = () => {
             key="add"
             type="primary"
             onClick={() => {
-              setEditingRole(undefined);
+              // setEditingRole(undefined);
+              // formRef.current?.resetFields();
+              // console.log('==formRef 新增==');
               setCreateModalVisible(true);
             }}
           >
@@ -175,23 +179,27 @@ const RoleList: React.FC = () => {
         title={editingRole ? '编辑角色' : '新增角色'}
         open={createModalVisible}
         onOpenChange={(visible) => {
-          if (!visible) {
+          setCreateModalVisible(visible);
+        }}
+        modalProps={{
+          destroyOnHidden: true,
+          afterClose: () => {
+            console.log('==formRef afterClose==');
             setEditingRole(undefined);
             formRef.current?.resetFields();
-          }
-          setCreateModalVisible(visible);
+          },
         }}
         initialValues={editingRole}
         onFinish={async (values) => {
           try {
-            await saveRole({
-              ...values,
-              id: editingRole?.id,
-            });
+            if (editingRole) {
+              values.id = editingRole.id;
+            }
+            console.log('==角色==', values);
+            await saveRole(values);
             message.success('提交成功');
             tableRef.current?.reload();
             setCreateModalVisible(false);
-            formRef.current?.resetFields();
             return true;
           } catch (error) {
             message.error('提交失败');
@@ -199,35 +207,45 @@ const RoleList: React.FC = () => {
           }
         }}
       >
-        <ProFormText
-          name="roleName"
-          label="角色名称"
-          placeholder="请输入角色名称"
-          rules={[{ required: true, message: '请输入角色名称' }]}
-        />
-        <ProFormSelect
-          name="roleType"
-          label="角色类型"
-          placeholder="请选择角色类型"
-          options={[
-            { label: '系统管理员', value: 'system-admin' },
-            { label: '企业管理员', value: 'corp-admin' },
-            { label: '场馆管理员', value: 'venue-admin' },
-            { label: '普通用户', value: 'normal-user' },
-          ]}
-          rules={[{ required: true, message: '请选择角色类型' }]}
-        />
-        <ProFormSelect
-          name="status"
-          label="角色状态"
-          placeholder="请选择角色状态"
-          options={[
-            { label: '启用', value: 1 },
-            { label: '禁用', value: 0 },
-          ]}
-          rules={[{ required: true, message: '请选择角色状态' }]}
-        />
-        <ProFormTextArea name="remark" label="备注" placeholder="请输入备注信息" />
+        <Row gutter={24}>
+          <Col span={12}>
+            <ProFormText
+              name="roleName"
+              label="角色名称"
+              placeholder="请输入角色名称"
+              rules={[{ required: true, message: '请输入角色名称' }]}
+            />
+          </Col>
+          <Col span={12}>
+            <ProFormSelect
+              name="roleType"
+              label="角色类型"
+              placeholder="请选择角色类型"
+              options={[
+                { label: '系统管理员', value: '0' },
+                { label: '企业管理员', value: '1' },
+                { label: '场馆管理员', value: '2' },
+                { label: '普通用户', value: '3' },
+              ]}
+              rules={[{ required: true, message: '请选择角色类型' }]}
+            />
+          </Col>
+          <Col span={12}>
+            <ProFormSelect
+              name="status"
+              label="角色状态"
+              placeholder="请选择角色状态"
+              options={[
+                { label: '启用', value: 1 },
+                { label: '禁用', value: 0 },
+              ]}
+              rules={[{ required: true, message: '请选择角色状态' }]}
+            />
+          </Col>
+          <Col span={24}>
+            <ProFormTextArea name="remark" label="备注" placeholder="请输入备注信息" />
+          </Col>
+        </Row>
       </ModalForm>
     </>
   );

@@ -7,9 +7,9 @@ import { request } from '@umijs/max';
  * @returns
  */
 export async function getRoleList(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/getRolePageList`, {
-        method: 'POST',
-        data: options,
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/getPageList`, {
+        method: 'GET',
+        params: options,
     });
 }
 
@@ -33,8 +33,7 @@ export async function saveRole(options?: { [key: string]: any }) {
  * @returns
  */
 export async function deleteRole(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/deleteRole`, {
-        method: 'POST',
-        data: options,
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/delete/${options?.roleId}`, {
+        method: 'DELETE',
     });
 } 

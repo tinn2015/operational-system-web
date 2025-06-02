@@ -1,6 +1,7 @@
 // 用户管理页面
 
 import { deleteUser, getUserList, saveUser } from '@/services/user';
+import { ROLE_TYPE } from '@/utils/constant';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
@@ -70,17 +71,18 @@ const UserCenter: React.FC = () => {
       width: 180,
       align: 'center',
     },
-    // {
-    //   title: '角色',
-    //   dataIndex: 'role',
-    //   width: 100,
-    //   align: 'center',
-    //   valueEnum: {
-    //     1: { text: '管理员', status: 'success' },
-    //     2: { text: '普通用户', status: 'default' },
-    //     3: { text: '访客', status: 'warning' },
-    //   },
-    // },
+    {
+      title: '角色类型',
+      dataIndex: 'roleType',
+      width: 150,
+      align: 'center',
+      valueEnum: {
+        // '0': { text: '系统管理员' },
+        '1': { text: '企业管理员' },
+        '2': { text: '场馆管理员' },
+        '3': { text: '普通用户' },
+      },
+    },
     {
       title: '状态',
       dataIndex: 'status',
@@ -196,13 +198,17 @@ const UserCenter: React.FC = () => {
         title={editingUser ? '编辑用户' : '新增用户'}
         open={createModalVisible}
         onOpenChange={(visible) => {
-          if (!visible) {
-            setEditingUser(undefined);
-            formRef.current?.resetFields();
-          }
           setCreateModalVisible(visible);
         }}
         initialValues={editingUser}
+        modalProps={{
+          destroyOnClose: true,
+          afterClose: () => {
+            console.log('==formRef afterClose==');
+            setEditingUser(undefined);
+            formRef.current?.resetFields();
+          },
+        }}
         onFinish={async (values) => {
           console.log('提交用户信息', values, editingUser);
           // TODO: 替换为实际的 API 调用
@@ -299,14 +305,18 @@ const UserCenter: React.FC = () => {
               ]}
             />
           </Col>
-
           <Col span={12}>
-            <ProFormText
-              name="email"
-              label="邮箱"
-              placeholder="请输入邮箱"
-              rules={[{ type: 'email', message: '请输入正确的邮箱格式' }]}
+            <ProFormSelect
+              name="roleType"
+              label="角色类型"
+              options={Object.values(ROLE_TYPE).map((item) => ({
+                label: item.label,
+                value: item.id,
+              }))}
             />
+          </Col>
+          <Col span={12}>
+            <ProFormText name="email" label="邮箱" placeholder="请输入邮箱" />
           </Col>
           <Col span={12}>
             <ProFormText name="post" label="岗位" placeholder="请输入岗位" />
