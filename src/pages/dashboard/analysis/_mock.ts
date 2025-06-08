@@ -197,10 +197,14 @@ const getFakeChartData: AnalysisData = {
   salesTypeDataOnline,
   salesTypeDataOffline,
   radarData,
+  code: 200,
+  message: 'success',
 };
 
 const fakeChartData = (_: Request, res: Response) => {
   return res.json({
+    code: 200,
+    message: 'success',
     data: getFakeChartData,
   });
 };

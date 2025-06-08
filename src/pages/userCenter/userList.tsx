@@ -1,13 +1,13 @@
 // 用户管理页面
 
+import { getRoleListForCorp } from '@/services/role';
 import { deleteUser, getUserList, saveUser } from '@/services/user';
-import { ROLE_TYPE } from '@/utils/constant';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
 import { Button, Col, Divider, message, Popconfirm, Row, Space } from 'antd';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const UserCenter: React.FC = () => {
   const tableRef = useRef<ActionType>();
@@ -15,6 +15,21 @@ const UserCenter: React.FC = () => {
   const { initialState } = useModel('@@initialState');
   const [editingUser, setEditingUser] = useState<API.User | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+  const [roleList, setRoleList] = useState<any[]>([]);
+
+  useEffect(() => {
+    getRoleListForCorp().then((res) => {
+      // const roleListEnum: Record<string, any> = {};
+      // res.forEach((item: any) => {
+      //   roleListEnum[item.id] = {
+      //     text: item.roleName,
+      //     original: item,
+      //   };
+      // });
+      console.log('roleListEnum', res);
+      setRoleList(res);
+    });
+  }, []);
 
   // TODO: 替换为实际的 API 调用
   const handleDelete = async (record: API.User) => {
@@ -29,9 +44,16 @@ const UserCenter: React.FC = () => {
 
   const columns: ProColumns<API.User>[] = [
     {
-      title: '用户姓名',
-      dataIndex: 'userName',
+      title: '账号',
+      dataIndex: 'loginId',
       copyable: true,
+      ellipsis: true,
+      width: 120,
+      align: 'center',
+    },
+    {
+      title: '姓名',
+      dataIndex: 'userName',
       ellipsis: true,
       width: 120,
       align: 'center',
@@ -46,13 +68,14 @@ const UserCenter: React.FC = () => {
     {
       title: '手机号',
       dataIndex: 'phone',
+      copyable: true,
       width: 120,
       align: 'center',
     },
     {
       title: '性别',
       dataIndex: 'sex',
-      width: 120,
+      width: 80,
       align: 'center',
       valueEnum: {
         1: { text: '男' },
@@ -76,12 +99,10 @@ const UserCenter: React.FC = () => {
       dataIndex: 'roleType',
       width: 150,
       align: 'center',
-      valueEnum: {
-        // '0': { text: '系统管理员' },
-        '1': { text: '企业管理员' },
-        '2': { text: '场馆管理员' },
-        '3': { text: '普通用户' },
+      render: (_, record) => {
+        return record.roleList.map((item: any) => item.roleName).join(',');
       },
+      // valueEnum: roleList,
     },
     {
       title: '状态',
@@ -309,8 +330,8 @@ const UserCenter: React.FC = () => {
             <ProFormSelect
               name="roleType"
               label="角色类型"
-              options={Object.values(ROLE_TYPE).map((item) => ({
-                label: item.label,
+              options={roleList.map((item) => ({
+                label: item.roleName,
                 value: item.id,
               }))}
             />

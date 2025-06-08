@@ -14,6 +14,18 @@ export async function getRoleList(options?: { [key: string]: any }) {
 }
 
 /**
+ * 获取角色列表(院线)
+ * @param options
+ * @returns
+ */
+export async function getRoleListForCorp(options?: { [key: string]: any }) {
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/role/getRoleListForCorp`, {
+        method: 'GET',
+        params: options,
+    });
+}
+
+/**
  * 添加或修改角色
  * @param options
  * @returns

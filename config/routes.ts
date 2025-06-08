@@ -52,30 +52,30 @@ export default [
         path: '/dashboard',
         redirect: '/dashboard/analysis',
       },
-      {
-        name: '运行状态',
-        icon: 'smile',
-        path: '/dashboard/status',
-        component: './dashboard/status',
-      },
+      // {
+      //   name: '运行状态',
+      //   icon: 'smile',
+      //   path: '/dashboard/status',
+      //   component: './dashboard/status',
+      // },
       {
         name: '分析',
         icon: 'smile',
         path: '/dashboard/analysis',
         component: './dashboard/analysis',
       },
-      {
-        name: 'monitor',
-        icon: 'smile',
-        path: '/dashboard/monitor',
-        component: './dashboard/monitor',
-      },
-      {
-        name: 'workplace',
-        icon: 'smile',
-        path: '/dashboard/workplace',
-        component: './dashboard/workplace',
-      },
+      // {
+      //   name: 'monitor',
+      //   icon: 'smile',
+      //   path: '/dashboard/monitor',
+      //   component: './dashboard/monitor',
+      // },
+      // {
+      //   name: 'workplace',
+      //   icon: 'smile',
+      //   path: '/dashboard/workplace',
+      //   component: './dashboard/workplace',
+      // },
     ],
   },
   {

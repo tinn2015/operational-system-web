@@ -1,6 +1,6 @@
 import { deleteDevice, getDeviceList, rebootDevice, saveDevice } from '@/services/device';
 import { SERVER_OPERATION } from '@/utils/constant';
-import { PlusOutlined } from '@ant-design/icons';
+import { EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Button, Col, Divider, message, Popconfirm, Row, Space } from 'antd';
@@ -37,12 +37,20 @@ const HeadSetList: React.FC = () => {
 
   const columns: ProColumns<API.Device>[] = [
     {
+      title: '服务器名称',
+      dataIndex: 'deviceName',
+      copyable: true,
+      ellipsis: true,
+      align: 'center',
+      width: 200,
+    },
+    {
       title: '服务器Ip',
       dataIndex: 'serverIp',
       copyable: true,
       ellipsis: true,
       align: 'center',
-      width: 200,
+      width: 150,
     },
     {
       title: '服务器类型',
@@ -58,25 +66,25 @@ const HeadSetList: React.FC = () => {
     },
     {
       title: '服务器状态',
-      dataIndex: 'agentStatus',
+      dataIndex: 'onlineStatus',
       valueEnum: {
         0: { text: '停止', color: 'red' },
         1: { text: '运行中', color: 'green' },
         2: { text: '未知', color: 'orange' },
       },
       align: 'center',
-      width: 200,
+      width: 80,
     },
     {
-      title: '在线状态',
-      dataIndex: 'onlineStatus',
+      title: 'agent状态',
+      dataIndex: 'agentStatus',
       valueEnum: {
         0: { text: '离线', color: 'red' },
         1: { text: '在线', color: 'green' },
         2: { text: '未知', color: 'orange' },
       },
       align: 'center',
-      width: 200,
+      width: 80,
     },
     {
       title: 'agent启动时间',
@@ -125,6 +133,14 @@ const HeadSetList: React.FC = () => {
               </Button>
             </Popconfirm>
           )} */}
+          <Button
+            key="start"
+            type="link"
+            icon={<EyeOutlined />}
+            onClick={() => handleDeviceOperation(SERVER_OPERATION.START, record)}
+          >
+            查看状态
+          </Button>
           <Popconfirm
             title="确认重启"
             description="确定要重启该设备吗？"

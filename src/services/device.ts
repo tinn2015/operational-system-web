@@ -44,7 +44,7 @@ export async function deleteDevice(options?: { [key: string]: any }) {
 
 /** 操作服务器 */
 export async function rebootDevice(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${PROXY_PREFIX}/device/reboot/${options?.id}`, {
+  return request<Record<string, any>>(`${PROXY_PREFIX}/control/device/reboot/${options?.id}`, {
     method: 'PUT',
     params: {
       ...(options || {}),
