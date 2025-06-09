@@ -135,7 +135,8 @@ const Login: React.FC = () => {
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
-        window.location.href = urlParams.get('redirect') || '/';
+        window.location.href =
+          urlParams.get('redirect') || process.env.NODE_ENV === 'production' ? '/wz-admin/' : '/';
         return;
       }
       // 如果失败去设置用户错误信息
@@ -175,7 +176,12 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/vr.png" />}
+          logo={
+            <img
+              alt="logo"
+              src={process.env.NODE_ENV === 'production' ? '/wz-admin/vr.png' : '/vr.png'}
+            />
+          }
           title="吾知大空间运营系统"
           subTitle="智控大空间，畅享运营新体验"
           initialValues={{

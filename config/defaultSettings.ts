@@ -19,7 +19,7 @@ const Settings: ProLayoutProps & {
   title: '吾知大空间运营系统',
   pwa: true,
   // logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-  logo: '/vr.png',
+  logo: process.env.NODE_ENV === 'production' ? '/wz-admin/vr.png' : '/vr.png',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式
