@@ -23,12 +23,13 @@ export async function getProductList(params: {
 
 /** 保存商品 */
 export async function saveProduct(data: API.Product, listingList: API.timeRange[]) {
+  const _data = {
+    ...data,
+    listingList,
+  };
   return request<API.Product>(`${PROXY_PREFIX}/ticket/products/saveProduct`, {
     method: 'POST',
-    data: {
-      product: data,
-      listingList,
-    },
+    data: _data,
   });
 }
 
