@@ -9,10 +9,21 @@ import {
   ProFormDigit,
   ProFormText,
   ProFormTextArea,
-  ProFormUploadButton,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Col, Divider, message, Popconfirm, Row, Space, Tag, TimePicker } from 'antd';
+import {
+  Button,
+  Col,
+  DatePicker,
+  Divider,
+  InputNumber,
+  message,
+  Popconfirm,
+  Row,
+  Space,
+  Tag,
+  TimePicker,
+} from 'antd';
 import type { UploadFile } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
@@ -63,6 +74,8 @@ const ProductManagement: React.FC = () => {
   const [timeRange, setTimeRange] = useState<API.timeRange>({
     beginTime: 0,
     endTime: 0,
+    showTime: 0,
+    quantity: 100,
   });
 
   // 处理商品状态更新
@@ -202,7 +215,7 @@ const ProductManagement: React.FC = () => {
         message.error('该场次时间段已存在');
       } else {
         setTimeRanges([timeRange, ...timeRanges]);
-        setTimeRange({ beginTime: 0, endTime: 0 });
+        setTimeRange({ beginTime: 0, endTime: 0, showTime: 0, quantity: 100 });
       }
     } else {
       message.error('请选择时间范围');
@@ -224,9 +237,9 @@ const ProductManagement: React.FC = () => {
           const productList = await getProductList(_params);
           console.log('productList', productList);
           return {
-            data: productList.data,
+            data: productList.items,
             success: true,
-            total: productList.total,
+            total: productList.count,
           };
         }}
         rowKey="id"
@@ -361,7 +374,7 @@ const ProductManagement: React.FC = () => {
               rules={[{ required: true, message: '请输入商品详情' }]}
             />
           </Col>
-          <Col span={6}>
+          {/* <Col span={6}>
             <ProFormUploadButton
               name="productUrl"
               width={100}
@@ -388,19 +401,42 @@ const ProductManagement: React.FC = () => {
               }}
               rules={[{ required: true, message: '请上传商品图片' }]}
             />
-          </Col>
+          </Col> */}
         </Row>
         <Divider />
         <div style={{ marginBottom: 20, fontSize: 16, fontWeight: 500 }}>添加场次</div>
         <Row gutter={24}>
+          <InputNumber
+            style={{ width: 200 }}
+            type="number"
+            placeholder="可播放数量"
+            value={timeRange.quantity}
+            onChange={(value) => {
+              setTimeRange({ ...timeRange, quantity: value || 100 });
+            }}
+            addonAfter="个"
+            addonBefore="可播放数量"
+          />
+          <DatePicker
+            format={{
+              format: 'YYYY-MM-DD',
+              type: 'mask',
+            }}
+            onChange={(time) => {
+              console.log('time', time);
+              const date = dayjs(time).valueOf();
+              setTimeRange({ ...timeRange, showTime: date });
+            }}
+          />
           <TimePicker.RangePicker
+            style={{ marginLeft: 20 }}
             onChange={(time) => {
               if (time && time.length === 2) {
                 const beginTime = dayjs(time[0]).valueOf();
                 const endTime = dayjs(time[1]).valueOf();
-                setTimeRange({ beginTime, endTime });
+                setTimeRange({ ...timeRange, beginTime, endTime });
               } else {
-                setTimeRange({ beginTime: 0, endTime: 0 });
+                setTimeRange({ ...timeRange, beginTime: 0, endTime: 0 });
               }
             }}
             name="timeRange"
@@ -429,6 +465,7 @@ const ProductManagement: React.FC = () => {
                   setTimeRanges(newRanges);
                 }}
               >
+                {dayjs(range.showTime).format('YYYY-MM-DD') + ' '}
                 {dayjs(range.beginTime).format('HH:mm')}-{dayjs(range.endTime).format('HH:mm')}
               </Tag>
             ))}

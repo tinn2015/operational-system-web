@@ -37,9 +37,9 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (![loginPath, '/user/register', '/user/register-result'].includes(location.pathname)) {
     const currentUser = await fetchUserInfo();
-    // if (currentUser?.venueList) {
-    //   localStorage.setItem('X-Venue-Id', currentUser.venueList[0].venueCode);
-    // }
+    if (!localStorage.getItem('X-Venue-Id') && currentUser?.venueList) {
+      localStorage.setItem('X-Venue-Id', currentUser.venueList[0].venueCode);
+    }
     return {
       fetchUserInfo,
       currentUser,

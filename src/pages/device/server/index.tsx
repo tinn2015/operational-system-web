@@ -1,4 +1,10 @@
-import { deleteDevice, getDeviceList, rebootDevice, saveDevice } from '@/services/device';
+import {
+  deleteDevice,
+  getDeviceList,
+  getDeviceStatus,
+  rebootDevice,
+  saveDevice,
+} from '@/services/device';
 import { SERVER_OPERATION } from '@/utils/constant';
 import { EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -137,7 +143,7 @@ const HeadSetList: React.FC = () => {
             key="start"
             type="link"
             icon={<EyeOutlined />}
-            onClick={() => handleDeviceOperation(SERVER_OPERATION.START, record)}
+            onClick={() => getDeviceStatus(record.id)}
           >
             查看状态
           </Button>

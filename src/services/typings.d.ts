@@ -110,5 +110,5 @@ declare namespace API {
     saleBeginTime: string;
     saleEndTime: string;
   };
-  type timeRange = { beginTime: number; endTime: number };
+  type timeRange = { beginTime: number; endTime: number; showTime: number; quantity: number };
 }
