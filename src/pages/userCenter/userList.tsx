@@ -159,7 +159,6 @@ const UserCenter: React.FC = () => {
         actionRef={tableRef}
         columns={columns}
         request={async (params) => {
-          // TODO: 替换为实际的 API 调用
           const userList = await getUserList({
             pageSize: params.pageSize,
             pageNum: params.current,

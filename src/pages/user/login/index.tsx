@@ -1,12 +1,12 @@
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import { login } from '@/services/login';
-import { sha256Hash } from '@/utils/encrypt';
-import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
+import { getCaptcha, login } from '@/services/login';
+import { handleBase64Image, sha256Hash } from '@/utils/encrypt';
+import { LockOutlined, MobileOutlined, SafetyOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormText } from '@ant-design/pro-components';
 import { FormattedMessage, Helmet, useIntl, useModel } from '@umijs/max';
-import { Alert, message, Tabs } from 'antd';
+import { Alert, Col, FormInstance, message, Row, Tabs } from 'antd';
 import { createStyles } from 'antd-style';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
 
@@ -94,13 +94,17 @@ interface LoginStateType {
   };
   status?: 'error';
   type?: 'account' | 'mobile';
+  VerificationCode?: string;
+  failureCount?: number;
 }
 
 const Login: React.FC = () => {
   const [userLoginState, setUserLoginState] = useState<LoginStateType>({});
   const [type, setType] = useState<string>('account');
+  const [verificationCode, setVerificationCode] = useState<string>('');
   const { initialState, setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
+  const loginFormRef = useRef<FormInstance>(null);
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
@@ -120,8 +124,18 @@ const Login: React.FC = () => {
       // 登录
       const pwd = sha256Hash(values.password);
       const msg = await login({ ...values, password: pwd });
+      setUserLoginState(msg as LoginStateType);
       console.log('登录结果', msg);
       if (msg) {
+        if (msg.VerificationCode) {
+          const base64Str = handleBase64Image(msg.VerificationCode);
+          console.log('base64Str', base64Str);
+          setVerificationCode(base64Str);
+          return;
+        }
+        if (msg.failureCount && msg.failureCount > 0) {
+          return;
+        }
         // 登录成功，将token保存到localStorage
         if (msg.token) {
           localStorage.setItem('token', msg.token);
@@ -135,12 +149,12 @@ const Login: React.FC = () => {
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
-        window.location.href =
+        const url =
           urlParams.get('redirect') || process.env.NODE_ENV === 'production' ? '/wz-admin/' : '/';
+        window.location.href = url;
         return;
       }
       // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
     } catch (error) {
       // const defaultLoginFailureMessage = intl.formatMessage({
       //   id: 'pages.login.failure',
@@ -150,6 +164,20 @@ const Login: React.FC = () => {
       // message.error(defaultLoginFailureMessage);
     }
   };
+
+  // 获取验证码
+  const getVerificationCode = async () => {
+    const loginId = loginFormRef.current?.getFieldValue('loginId');
+    if (!loginId) {
+      message.error('请输入账号');
+      return;
+    }
+    const result = await getCaptcha({ loginId });
+    const base64Str = handleBase64Image(result);
+    console.log('获取验证码', result);
+    setVerificationCode(base64Str);
+  };
+
   // 从userLoginState中解构出状态和类型
   const { status, type: loginType } = userLoginState;
 
@@ -172,6 +200,7 @@ const Login: React.FC = () => {
         }}
       >
         <LoginForm
+          formRef={loginFormRef}
           contentStyle={{
             minWidth: 280,
             maxWidth: '75vw',
@@ -264,6 +293,32 @@ const Login: React.FC = () => {
                   },
                 ]}
               />
+              {verificationCode && (
+                <Row gutter={20}>
+                  <Col span={16}>
+                    <ProFormText
+                      name="VerificationCode"
+                      placeholder="请输入验证码"
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <SafetyOutlined />,
+                      }}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <img
+                      style={{
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => {
+                        getVerificationCode();
+                      }}
+                      src={verificationCode}
+                      alt="验证码"
+                    />
+                  </Col>
+                </Row>
+              )}
             </>
           )}
 

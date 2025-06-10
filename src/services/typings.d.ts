@@ -64,6 +64,8 @@ declare namespace API {
   type LoginResult = {
     token: string;
     refreshToken: string;
+    VerificationCode?: string;
+    failureCount?: number;
   };
 
   type UserRole = 1 | 2 | 3; // 1: 管理员, 2: 普通用户, 3: 访客
@@ -94,4 +96,19 @@ declare namespace API {
     pageNum: number;
     data: User[];
   };
+
+  // 商品类型定义
+  type Product = {
+    id: string;
+    productName: string;
+    productUrl: string; // 用于存储封面图片URL
+    pictures: string[];
+    information: string;
+    summaries: string;
+    saleStatus: number; // 0: 下架, 1: 上架
+    showTime: string;
+    saleBeginTime: string;
+    saleEndTime: string;
+  };
+  type timeRange = { beginTime: number; endTime: number };
 }

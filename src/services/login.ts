@@ -35,9 +35,9 @@ export async function getUserInfo(options?: { [key: string]: any }) {
 
 /** 获取验证码 */
 export async function getCaptcha(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/captchas/images`, {
-        method: 'POST',
-        data: {
+    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/captchas/images`, {
+        method: 'GET',
+        params: {
             ...(options || {}),
         },
     });

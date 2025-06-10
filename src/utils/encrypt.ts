@@ -2,6 +2,7 @@
  * 加密工具类
  * 实现加密和哈希算法
  */
+import CryptoJS from 'crypto-js';
 import { TripleDES, enc, mode, pad, SHA1, SHA256 } from 'crypto-js';
 
 // 加密密钥 (实际应用中应从环境变量或配置文件获取)
@@ -69,4 +70,65 @@ export function sha256Hash(data: string): string {
         console.error('哈希计算失败:', error);
         return data;
     }
-} 
+}
+
+/**
+ * Base64解码函数（用于文本数据）
+ * @param base64Str 需要解码的base64字符串
+ * @returns 解码后的字符串
+ */
+export function base64Decode(base64Str: string): string {
+    if (!base64Str) return '';
+
+    try {
+        // 移除可能存在的data URI scheme前缀
+        const actualBase64 = base64Str.replace(/^data:.*,/, '');
+
+        // 使用crypto-js的Base64模块进行解码
+        const words = CryptoJS.enc.Base64.parse(actualBase64);
+        return CryptoJS.enc.Utf8.stringify(words);
+    } catch (error) {
+        console.error('Base64解码失败:', error);
+        return '';
+    }
+}
+
+/**
+ * 处理base64图片字符串
+ * @param base64Str 原始base64字符串
+ * @returns 处理后的可显示的base64字符串
+ */
+export const handleBase64Image = (base64Str: any) => {
+    if (!base64Str) return '';
+
+    try {
+        // 如果已经是完整的data URI，直接返回
+        if (base64Str.startsWith('data:image')) {
+            return base64Str;
+        }
+
+        // 判断图片类型
+        const signatures = {
+            '/9j/': 'data:image/jpeg;base64,',  // JPEG
+            'iVBORw0KGgo': 'data:image/png;base64,',  // PNG
+            'R0lGOD': 'data:image/gif;base64,',  // GIF
+            'PHN2Zw': 'data:image/svg+xml;base64,',  // SVG
+        };
+
+        // 检查base64字符串的开头，确定图片类型
+        let imageHeader = 'data:image/jpeg;base64,';  // 默认作为JPEG处理
+        for (const [signature, header] of Object.entries(signatures)) {
+            if (base64Str.startsWith(signature)) {
+                imageHeader = header;
+                break;
+            }
+        }
+
+        // 返回添加了适当头部的base64字符串
+        return `${imageHeader}${base64Str}`;
+    } catch (error) {
+        console.error('Base64处理错误:', error);
+        return '';
+    }
+};
+

@@ -125,6 +125,23 @@ export default [
     ],
   },
   {
+    path: '/products',
+    name: '商品管理',
+    icon: 'smile',
+    routes: [
+      {
+        path: '/products',
+        redirect: '/products/list',
+      },
+      {
+        name: '商品列表',
+        icon: 'smile',
+        path: '/products/list',
+        component: './products/index',
+      }
+    ],
+  },
+  {
     path: '/game',
     name: '游戏管理',
     icon: 'smile',
