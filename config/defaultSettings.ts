@@ -21,6 +21,12 @@ const Settings: ProLayoutProps & {
   // logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   logo: process.env.NODE_ENV === 'production' ? '/wz-admin/vr.png' : '/vr.png',
   iconfontUrl: '',
+  // 设置为false，禁止菜单自动折叠
+  collapsed: false,
+  // 禁用自动折叠
+  defaultCollapsed: false,
+  // 配置菜单的宽度
+  siderWidth: 208,
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式
     //https://procomponents.ant.design/components/layout#%E9%80%9A%E8%BF%87-token-%E4%BF%AE%E6%94%B9%E6%A0%B7%E5%BC%8F

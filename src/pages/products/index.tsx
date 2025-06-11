@@ -1,6 +1,12 @@
 // 商品管理页面
 
-import { getProductList, saveProduct } from '@/services/product';
+import {
+  deleteProduct,
+  getProductList,
+  offSaleProduct,
+  onSaleProduct,
+  saveProduct,
+} from '@/services/product';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
@@ -39,17 +45,11 @@ const saveProductData = async (values: API.Product, timeRanges: API.timeRange[])
   return true;
 };
 
-const deleteProduct = async (id: string) => {
-  // TODO: 替换为实际的API调用
-  console.log('删除商品', id);
-  return true;
-};
-
-const updateProductStatus = async (id: string, status: number) => {
-  // TODO: 替换为实际的API调用
-  console.log('更新商品状态', id, status);
-  return true;
-};
+// const updateProductStatus = async (id: string, status: number) => {
+//   // TODO: 替换为实际的API调用
+//   console.log('更新商品状态', id, status);
+//   return true;
+// };
 
 // 处理图片上传
 const handleUpload = async (file: File) => {
@@ -72,21 +72,33 @@ const ProductManagement: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   const [timeRanges, setTimeRanges] = useState<API.timeRange[]>([]);
   const [timeRange, setTimeRange] = useState<API.timeRange>({
-    beginTime: 0,
-    endTime: 0,
-    showTime: 0,
+    beginTime: '',
+    endTime: '',
+    showTime: '',
     quantity: 100,
   });
 
   // 处理商品状态更新
-  const handleStatusChange = async (record: API.Product, newStatus: number) => {
-    try {
-      await updateProductStatus(record.id, newStatus);
-      message.success(newStatus === 1 ? '上架成功' : '下架成功');
-      tableRef.current?.reload();
-    } catch (error) {
-      message.error(newStatus === 1 ? '上架失败' : '下架失败');
-    }
+  //   const handleStatusChange = async (record: API.Product, newStatus: number) => {
+  //     try {
+  //       await updateProductStatus(record.id, newStatus);
+  //       message.success(newStatus === 1 ? '上架成功' : '下架成功');
+  //       tableRef.current?.reload();
+  //     } catch (error) {
+  //       message.error(newStatus === 1 ? '上架失败' : '下架失败');
+  //     }
+  //   };
+
+  const handleOnSaleProduct = async (record: API.Product) => {
+    await onSaleProduct(record.id);
+    message.success('上架成功');
+    tableRef.current?.reload();
+  };
+
+  const handleOffSaleProduct = async (record: API.Product) => {
+    await offSaleProduct(record.id);
+    message.success('下架成功');
+    tableRef.current?.reload();
   };
 
   // 处理商品删除
@@ -106,7 +118,7 @@ const ProductManagement: React.FC = () => {
       dataIndex: 'productName',
       copyable: true,
       ellipsis: true,
-      width: 200,
+      width: 150,
     },
     {
       title: '商品封面',
@@ -120,18 +132,18 @@ const ProductManagement: React.FC = () => {
         />
       ),
     },
-    {
-      title: '商品图片',
-      dataIndex: 'pictures',
-      width: 120,
-      render: (_, record) => (
-        <img
-          src={record.pictures[0]}
-          alt={record.productName}
-          style={{ width: 50, height: 50, objectFit: 'cover' }}
-        />
-      ),
-    },
+    // {
+    //   title: '商品图片',
+    //   dataIndex: 'pictures',
+    //   width: 120,
+    //   render: (_, record) => (
+    //     <img
+    //       src={record.pictures[0]}
+    //       alt={record.productName}
+    //       style={{ width: 50, height: 50, objectFit: 'cover' }}
+    //     />
+    //   ),
+    // },
     {
       title: '商品简介',
       dataIndex: 'summaries',
@@ -151,17 +163,17 @@ const ProductManagement: React.FC = () => {
     {
       title: '展示时间',
       dataIndex: 'showTime',
-      width: 180,
+      width: 100,
     },
     {
       title: '销售开始时间',
       dataIndex: 'saleBeginTime',
-      width: 180,
+      width: 150,
     },
     {
       title: '销售结束时间',
       dataIndex: 'saleEndTime',
-      width: 180,
+      width: 150,
     },
     {
       title: '操作',
@@ -170,11 +182,11 @@ const ProductManagement: React.FC = () => {
       render: (_, record) => (
         <Space split={<Divider type="vertical" />}>
           {record.saleStatus === 0 ? (
-            <Button type="link" onClick={() => handleStatusChange(record, 1)}>
+            <Button type="link" onClick={() => handleOnSaleProduct(record)}>
               上架
             </Button>
           ) : (
-            <Button type="link" onClick={() => handleStatusChange(record, 0)}>
+            <Button type="link" onClick={() => handleOffSaleProduct(record)}>
               下架
             </Button>
           )}
@@ -182,6 +194,8 @@ const ProductManagement: React.FC = () => {
             type="link"
             onClick={() => {
               setEditingProduct(record);
+              console.log('编辑商品', record);
+              setTimeRanges(record.listingList);
               setCreateModalVisible(true);
             }}
           >
@@ -205,7 +219,7 @@ const ProductManagement: React.FC = () => {
 
   const addTimeSlot = () => {
     // 获取时间范围并添加到列表
-    if (timeRange.beginTime !== 0 && timeRange.endTime !== 0) {
+    if (timeRange.beginTime !== '' && timeRange.endTime !== '') {
       // 检查时间段是否已存在
       const timeExists = timeRanges.some(
         (range) => range.beginTime === timeRange.beginTime && range.endTime === timeRange.endTime,
@@ -214,8 +228,9 @@ const ProductManagement: React.FC = () => {
       if (timeExists) {
         message.error('该场次时间段已存在');
       } else {
+        console.log('添加场次timeRange', timeRange);
         setTimeRanges([timeRange, ...timeRanges]);
-        setTimeRange({ beginTime: 0, endTime: 0, showTime: 0, quantity: 100 });
+        setTimeRange({ ...timeRange, beginTime: '', endTime: '', quantity: 100 });
       }
     } else {
       message.error('请选择时间范围');
@@ -295,6 +310,7 @@ const ProductManagement: React.FC = () => {
           maskClosable: false,
           afterClose: () => {
             setEditingProduct(undefined);
+            setTimeRanges([]);
             formRef.current?.resetFields();
           },
         }}
@@ -418,13 +434,14 @@ const ProductManagement: React.FC = () => {
             addonBefore="可播放数量"
           />
           <DatePicker
+            style={{ marginLeft: 20 }}
             format={{
               format: 'YYYY-MM-DD',
               type: 'mask',
             }}
             onChange={(time) => {
               console.log('time', time);
-              const date = dayjs(time).valueOf();
+              const date = dayjs(time).format('YYYY-MM-DD HH:mm:ss');
               setTimeRange({ ...timeRange, showTime: date });
             }}
           />
@@ -432,11 +449,11 @@ const ProductManagement: React.FC = () => {
             style={{ marginLeft: 20 }}
             onChange={(time) => {
               if (time && time.length === 2) {
-                const beginTime = dayjs(time[0]).valueOf();
-                const endTime = dayjs(time[1]).valueOf();
+                const beginTime = dayjs(time[0]).format('YYYY-MM-DD HH:mm:ss');
+                const endTime = dayjs(time[1]).format('YYYY-MM-DD HH:mm:ss');
                 setTimeRange({ ...timeRange, beginTime, endTime });
               } else {
-                setTimeRange({ ...timeRange, beginTime: 0, endTime: 0 });
+                setTimeRange({ ...timeRange, beginTime: '', endTime: '' });
               }
             }}
             name="timeRange"
@@ -444,7 +461,7 @@ const ProductManagement: React.FC = () => {
           />
           <Button
             style={{ marginLeft: 20 }}
-            disabled={timeRange.beginTime === 0 || timeRange.endTime === 0}
+            disabled={timeRange.beginTime === '' || timeRange.endTime === ''}
             type="primary"
             onClick={() => addTimeSlot()}
           >
@@ -465,7 +482,7 @@ const ProductManagement: React.FC = () => {
                   setTimeRanges(newRanges);
                 }}
               >
-                {dayjs(range.showTime).format('YYYY-MM-DD') + ' '}
+                {range.showTime + ' '}
                 {dayjs(range.beginTime).format('HH:mm')}-{dayjs(range.endTime).format('HH:mm')}
               </Tag>
             ))}

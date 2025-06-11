@@ -156,6 +156,12 @@ export default [
         path: '/game/team',
         component: './game/team',
       },
+      {
+        name: '玩家管理',
+        icon: 'smile',
+        path: '/game/player',
+        component: './game/player',
+      },
     ],
   },
   {

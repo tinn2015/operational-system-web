@@ -72,6 +72,12 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       content: initialState?.currentUser?.nickName,
     },
     footerRender: () => <Footer />,
+    // 禁用菜单自动折叠
+    collapsed: false,
+    // 不允许折叠
+    collapsedButtonRender: false,
+    // 默认不折叠
+    defaultCollapsed: false,
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login

@@ -9,7 +9,18 @@ import { SERVER_OPERATION } from '@/utils/constant';
 import { EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
-import { Button, Col, Divider, message, Popconfirm, Row, Space } from 'antd';
+import {
+  Button,
+  Col,
+  Descriptions,
+  Divider,
+  Empty,
+  message,
+  Modal,
+  Popconfirm,
+  Row,
+  Space,
+} from 'antd';
 import React, { useRef, useState } from 'react';
 
 const HeadSetList: React.FC = () => {
@@ -17,6 +28,11 @@ const HeadSetList: React.FC = () => {
 
   const [editingDevice, setEditingDevice] = useState<API.Device | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+  const [statusModalVisible, setStatusModalVisible] = useState<boolean>(false);
+  const [deviceStatusData, setDeviceStatusData] = useState<{ item: string; itemValue: string }[]>(
+    [],
+  );
+  const [currentDeviceName, setCurrentDeviceName] = useState<string>('');
 
   const handleDeviceOperation = async (type: number, record: API.Device) => {
     // const operationText =
@@ -39,6 +55,17 @@ const HeadSetList: React.FC = () => {
     await deleteDevice(record);
     message.success('删除成功');
     tableRef.current?.reload();
+  };
+
+  const handleViewStatus = async (record: API.Device) => {
+    try {
+      const response = await getDeviceStatus(record.id);
+      setDeviceStatusData(response.data || []);
+      setCurrentDeviceName(record.serverIp || '未命名设备');
+      setStatusModalVisible(true);
+    } catch (error) {
+      message.error('获取设备状态失败');
+    }
   };
 
   const columns: ProColumns<API.Device>[] = [
@@ -69,6 +96,7 @@ const HeadSetList: React.FC = () => {
         5: { text: '位姿子服务器' },
       },
       align: 'center',
+      width: 200,
     },
     {
       title: '服务器状态',
@@ -79,7 +107,7 @@ const HeadSetList: React.FC = () => {
         2: { text: '未知', color: 'orange' },
       },
       align: 'center',
-      width: 80,
+      width: 180,
     },
     {
       title: 'agent状态',
@@ -90,7 +118,7 @@ const HeadSetList: React.FC = () => {
         2: { text: '未知', color: 'orange' },
       },
       align: 'center',
-      width: 80,
+      width: 180,
     },
     {
       title: 'agent启动时间',
@@ -143,7 +171,7 @@ const HeadSetList: React.FC = () => {
             key="start"
             type="link"
             icon={<EyeOutlined />}
-            onClick={() => getDeviceStatus(record.id)}
+            onClick={() => handleViewStatus(record)}
           >
             查看状态
           </Button>
@@ -259,6 +287,30 @@ const HeadSetList: React.FC = () => {
           </Col>
         </Row>
       </ModalForm>
+
+      <Modal
+        title={`${currentDeviceName} - 服务器状态信息`}
+        open={statusModalVisible}
+        onCancel={() => setStatusModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setStatusModalVisible(false)}>
+            关闭
+          </Button>,
+        ]}
+        width={700}
+      >
+        {deviceStatusData.length > 0 ? (
+          <Descriptions bordered column={1}>
+            {deviceStatusData.map((item, index) => (
+              <Descriptions.Item key={index} label={item.item}>
+                {item.itemValue}
+              </Descriptions.Item>
+            ))}
+          </Descriptions>
+        ) : (
+          <Empty description="暂无状态信息" />
+        )}
+      </Modal>
     </>
   );
 };

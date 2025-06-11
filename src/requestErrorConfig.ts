@@ -121,7 +121,7 @@ export const errorConfig: RequestConfig = {
       }
       if (code !== 200) {
         message.error(errorInfo || msg);
-        return data;
+        return response;
       }
       if (code === 200) {
         return data;

@@ -109,6 +109,27 @@ declare namespace API {
     showTime: string;
     saleBeginTime: string;
     saleEndTime: string;
+    listingList: timeRange[];
   };
-  type timeRange = { beginTime: number; endTime: number; showTime: number; quantity: number };
+  type timeRange = {
+    id?: string;
+    beginTime: string;
+    endTime: string;
+    showTime: string;
+    quantity: number;
+  };
+
+  type Player = {
+    id: string;
+    userId: string;
+    nickName: string;
+    sexCode: string;
+    height: number;
+    age: number;
+    qrCode: string;
+    headSetId: string;
+    productId: string;
+    productName: string;
+    numberId: string;
+  };
 }
