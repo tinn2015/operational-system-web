@@ -119,9 +119,10 @@ export const errorConfig: RequestConfig = {
         history.push('/user/login');
         return false;
       }
+
       if (code !== 200) {
         message.error(errorInfo || msg);
-        return response;
+        return response.data || response;
       }
       if (code === 200) {
         return data;
