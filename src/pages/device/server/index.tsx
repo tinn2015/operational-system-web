@@ -89,9 +89,10 @@ const HeadSetList: React.FC = () => {
       title: '服务器类型',
       dataIndex: 'serverType',
       valueEnum: {
-        1: { text: '串流服务器' },
-        2: { text: '游戏client' },
-        3: { text: '游戏server' },
+        0: { text: '非位姿服务器' },
+        // 1: { text: '串流服务器' },
+        // 2: { text: '游戏client' },
+        // 3: { text: '游戏server' },
         4: { text: '位姿总服务器' },
         5: { text: '位姿子服务器' },
       },
@@ -276,9 +277,10 @@ const HeadSetList: React.FC = () => {
               name="serverType"
               label="服务器类型"
               options={[
-                { label: '串流服务器', value: 1 },
-                { label: '游戏client', value: 2 },
-                { label: '游戏server', value: 3 },
+                { label: '非位姿服务器', value: 0 },
+                // { label: '串流服务器', value: 1 },
+                // { label: '游戏client', value: 2 },
+                // { label: '游戏server', value: 3 },
                 { label: '位姿总服务器', value: 4 },
                 { label: '位姿子服务器', value: 5 },
               ]}
