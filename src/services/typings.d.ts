@@ -133,4 +133,29 @@ declare namespace API {
     productName: string;
     numberId: string;
   };
+
+  type Server = {
+    id: string;
+    /**
+     * 服务器类型1：串流服务器,2游戏client,3:游戏server,4:位姿总服务器,5:位姿子服务器
+     */
+    serverType: number;
+    serverIp: string;
+    /**
+     * 服务状态，0：停止，1正常，2未知
+     */
+    serverStatus: number;
+    /**
+     * 在线状态，0：离线，1在线，2未知
+     */
+    onlineStatus: number;
+    startTime: string;
+    lastSyncTime: string;
+  };
+  type ServerCenter = {
+    pageNum: number;
+    pageSize: number;
+    total: number;
+    data: Server[];
+  };
 }

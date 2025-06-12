@@ -125,6 +125,23 @@ export default [
     ],
   },
   {
+    path: '/device/serverCenter',
+    name: '服务器中心',
+    icon: 'smile',
+    routes: [
+      {
+        path: '/device/serverCenter',
+        redirect: '/device/serverCenter/streaming',
+      },
+      {
+        name: '串流服务器',
+        icon: 'smile',
+        path: '/device/serverCenter/streaming',
+        component: './device/serverCenter/streaming',
+      },
+    ],
+  },
+  {
     path: '/products',
     name: '商品管理',
     icon: 'smile',
@@ -138,7 +155,7 @@ export default [
         icon: 'smile',
         path: '/products/list',
         component: './products/index',
-      }
+      },
     ],
   },
   {
