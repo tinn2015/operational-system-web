@@ -1,5 +1,6 @@
 // 商品管理页面
 
+import { deleteFile, uploadFile } from '@/services/common';
 import {
   deleteProduct,
   getProductList,
@@ -22,6 +23,8 @@ import {
   Col,
   DatePicker,
   Divider,
+  Form,
+  Image,
   InputNumber,
   message,
   Popconfirm,
@@ -29,15 +32,11 @@ import {
   Space,
   Tag,
   TimePicker,
+  Upload,
 } from 'antd';
-import type { UploadFile } from 'antd/es/upload/interface';
+import type { UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
-
-// 表单值类型
-type ProductFormValues = Omit<API.Product, 'productUrl'> & {
-  productUrl?: UploadFile[];
-};
 
 const saveProductData = async (values: API.Product, timeRanges: API.timeRange[]) => {
   await saveProduct(values, timeRanges);
@@ -52,18 +51,18 @@ const saveProductData = async (values: API.Product, timeRanges: API.timeRange[])
 // };
 
 // 处理图片上传
-const handleUpload = async (file: File) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  try {
-    // TODO: 替换为实际的上传API
-    console.log('上传图片', formData);
-    return 'https://example.com/placeholder.jpg'; // 模拟返回上传后的URL
-  } catch (error) {
-    message.error('图片上传失败');
-    return '';
-  }
-};
+// const handleUpload = async (file: File) => {
+//   const formData = new FormData();
+//   formData.append('file', file);
+//   try {
+//     // TODO: 替换为实际的上传API
+//     console.log('上传图片', formData);
+//     return 'https://example.com/placeholder.jpg'; // 模拟返回上传后的URL
+//   } catch (error) {
+//     message.error('图片上传失败');
+//     return '';
+//   }
+// };
 
 const ProductManagement: React.FC = () => {
   const tableRef = useRef<ActionType>();
@@ -77,39 +76,204 @@ const ProductManagement: React.FC = () => {
     showTime: '',
     quantity: 100,
   });
+  const [productUrl, setProductUrl] = useState<string>('');
+  const [pictures, setPictures] = useState<string[]>([]);
+  const [coverFileList, setCoverFileList] = useState<UploadFile[]>([]);
+  const [pictureFileList, setPictureFileList] = useState<UploadFile[]>([]);
 
   // 处理商品状态更新
-  //   const handleStatusChange = async (record: API.Product, newStatus: number) => {
-  //     try {
-  //       await updateProductStatus(record.id, newStatus);
-  //       message.success(newStatus === 1 ? '上架成功' : '下架成功');
-  //       tableRef.current?.reload();
-  //     } catch (error) {
-  //       message.error(newStatus === 1 ? '上架失败' : '下架失败');
-  //     }
-  //   };
-
   const handleOnSaleProduct = async (record: API.Product) => {
+    console.log('上架商品', record);
     await onSaleProduct(record.id);
     message.success('上架成功');
     tableRef.current?.reload();
   };
 
   const handleOffSaleProduct = async (record: API.Product) => {
+    console.log('下架商品', record);
     await offSaleProduct(record.id);
     message.success('下架成功');
     tableRef.current?.reload();
   };
 
-  // 处理商品删除
+  // 删除商品
   const handleDelete = async (record: API.Product) => {
-    try {
-      await deleteProduct(record.id);
-      message.success('删除成功');
-      tableRef.current?.reload();
-    } catch (error) {
-      message.error('删除失败');
+    console.log('删除商品', record);
+    await deleteProduct(record.id);
+    message.success('删除成功');
+    tableRef.current?.reload();
+  };
+
+  // 初始化编辑状态
+  const handleEdit = (record: API.Product) => {
+    console.log('编辑商品', record);
+    setEditingProduct(record);
+    setTimeRanges(record.listingList || []);
+    setProductUrl(record.productUrl || '');
+    setPictures(record.pictures || []);
+
+    // 设置封面文件列表
+    if (record.productUrl) {
+      setCoverFileList([
+        {
+          uid: '-1',
+          name: 'cover.jpg',
+          status: 'done' as UploadFileStatus,
+          url: record.productUrl,
+        },
+      ]);
+    } else {
+      setCoverFileList([]);
     }
+
+    // 设置介绍图片文件列表
+    if (record.pictures && record.pictures.length > 0) {
+      setPictureFileList(
+        record.pictures.map((url, index) => ({
+          uid: `${record.id}-${index + 1}`,
+          name: `picture-${index + 1}.jpg`,
+          status: 'done' as UploadFileStatus,
+          url,
+        })),
+      );
+    } else {
+      setPictureFileList([]);
+    }
+
+    setCreateModalVisible(true);
+  };
+
+  // 添加时间段
+  const addTimeSlot = () => {
+    if (timeRange.beginTime === '' || timeRange.endTime === '' || timeRange.showTime === '') {
+      message.error('请先选择完整的时间段信息');
+      return;
+    }
+    const newTimeRange = { ...timeRange };
+    setTimeRanges([...timeRanges, newTimeRange]);
+    setTimeRange({
+      beginTime: '',
+      endTime: '',
+      showTime: '',
+      quantity: 100,
+    });
+    message.success('添加成功');
+  };
+
+  // 重置状态
+  const resetState = () => {
+    setEditingProduct(undefined);
+    setTimeRanges([]);
+    setProductUrl('');
+    setPictures([]);
+    setCoverFileList([]);
+    setPictureFileList([]);
+    formRef.current?.resetFields();
+  };
+
+  // 处理封面图片上传
+  const handleCoverUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('attach', file);
+
+    try {
+      const res = await uploadFile(formData, {
+        projectName: 'products',
+      });
+
+      if (res && res.allUrl) {
+        setProductUrl(res.allUrl);
+        setCoverFileList([
+          {
+            uid: '-1',
+            name: file.name,
+            status: 'done' as UploadFileStatus,
+            url: res.allUrl,
+          },
+        ]);
+        message.success('封面上传成功');
+        return res.allUrl;
+      } else {
+        message.error('封面上传失败');
+        return '';
+      }
+    } catch (error) {
+      console.error('上传出错', error);
+      message.error('封面上传失败');
+      return '';
+    }
+  };
+
+  // 处理介绍图片上传
+  const handlePictureUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('attach', file);
+
+    try {
+      const res = await uploadFile(formData, {
+        projectName: 'products',
+      });
+
+      if (res && res.allUrl) {
+        const newPictures = [...pictures, res.allUrl];
+        setPictures(newPictures);
+
+        // 更新文件列表
+        const newFile = {
+          uid: `-${pictureFileList.length + 1}`,
+          name: file.name,
+          status: 'done' as UploadFileStatus,
+          url: res.allUrl,
+        };
+        setPictureFileList([...pictureFileList, newFile]);
+
+        message.success('介绍图片上传成功');
+        return res.allUrl;
+      } else {
+        message.error('介绍图片上传失败');
+        return '';
+      }
+    } catch (error) {
+      console.error('上传出错', error);
+      message.error('介绍图片上传失败');
+      return '';
+    }
+  };
+
+  // 处理封面删除
+  const handleCoverRemove = async (file: UploadFile) => {
+    if (file.url) {
+      try {
+        await deleteFile(file.url);
+        setProductUrl('');
+        setCoverFileList([]);
+        message.success('封面删除成功');
+      } catch (error) {
+        console.error('删除失败', error);
+        message.error('封面删除失败');
+      }
+    }
+    return true;
+  };
+
+  // 处理介绍图片删除
+  const handlePictureRemove = async (file: UploadFile) => {
+    if (file.url) {
+      try {
+        await deleteFile(file.url);
+        const newPictures = pictures.filter((url) => url !== file.url);
+        setPictures(newPictures);
+
+        const newFileList = pictureFileList.filter((item) => item.url !== file.url);
+        setPictureFileList(newFileList);
+
+        message.success('介绍图片删除成功');
+      } catch (error) {
+        console.error('删除失败', error);
+        message.error('介绍图片删除失败');
+      }
+    }
+    return true;
   };
 
   const columns: ProColumns<API.Product>[] = [
@@ -124,31 +288,33 @@ const ProductManagement: React.FC = () => {
       title: '商品封面',
       dataIndex: 'productUrl',
       width: 120,
-      render: (_, record) => (
-        <img
-          src={record.productUrl}
-          alt={record.productName}
-          style={{ width: 50, height: 50, objectFit: 'cover' }}
-        />
-      ),
+      render: (_, record) => <Image src={record.productUrl} width={50} />,
     },
     // {
     //   title: '商品图片',
     //   dataIndex: 'pictures',
-    //   width: 120,
+    //   width: 200,
     //   render: (_, record) => (
-    //     <img
-    //       src={record.pictures[0]}
-    //       alt={record.productName}
-    //       style={{ width: 50, height: 50, objectFit: 'cover' }}
-    //     />
+    //     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+    //       {<Image src={record.pictures} width={50} />}
+    //       {/* {record.pictures &&
+    //         record.pictures.length > 0 &&
+    //         record.pictures.map((pic, index) => (
+    //           <img
+    //             key={index}
+    //             src={pic}
+    //             alt={`${record.productName}-${index}`}
+    //             style={{ width: 30, height: 30, objectFit: 'cover' }}
+    //           />
+    //         ))} */}
+    //     </div>
     //   ),
     // },
     {
       title: '商品简介',
       dataIndex: 'summaries',
       ellipsis: true,
-      width: 200,
+      width: 150,
     },
     {
       title: '销售状态',
@@ -163,24 +329,24 @@ const ProductManagement: React.FC = () => {
     {
       title: '展示时间',
       dataIndex: 'showTime',
-      width: 100,
+      width: 80,
     },
     {
       title: '销售开始时间',
       dataIndex: 'saleBeginTime',
-      width: 150,
+      width: 100,
     },
     {
       title: '销售结束时间',
       dataIndex: 'saleEndTime',
-      width: 150,
+      width: 100,
     },
     {
       title: '操作',
       valueType: 'option',
       width: 200,
       render: (_, record) => (
-        <Space split={<Divider type="vertical" />}>
+        <Space wrap split={<Divider type="vertical" />}>
           {record.saleStatus === 0 ? (
             <Button type="link" onClick={() => handleOnSaleProduct(record)}>
               上架
@@ -190,15 +356,7 @@ const ProductManagement: React.FC = () => {
               下架
             </Button>
           )}
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingProduct(record);
-              console.log('编辑商品', record);
-              setTimeRanges(record.listingList);
-              setCreateModalVisible(true);
-            }}
-          >
+          <Button key="edit" type="link" onClick={() => handleEdit(record)}>
             编辑
           </Button>
           <Popconfirm
@@ -216,26 +374,6 @@ const ProductManagement: React.FC = () => {
       ),
     },
   ];
-
-  const addTimeSlot = () => {
-    // 获取时间范围并添加到列表
-    if (timeRange.beginTime !== '' && timeRange.endTime !== '') {
-      // 检查时间段是否已存在
-      const timeExists = timeRanges.some(
-        (range) => range.beginTime === timeRange.beginTime && range.endTime === timeRange.endTime,
-      );
-
-      if (timeExists) {
-        message.error('该场次时间段已存在');
-      } else {
-        console.log('添加场次timeRange', timeRange);
-        setTimeRanges([timeRange, ...timeRanges]);
-        setTimeRange({ ...timeRange, beginTime: '', endTime: '', quantity: 100 });
-      }
-    } else {
-      message.error('请选择时间范围');
-    }
-  };
 
   return (
     <>
@@ -273,7 +411,7 @@ const ProductManagement: React.FC = () => {
             key="add"
             type="primary"
             onClick={() => {
-              setEditingProduct(undefined);
+              resetState();
               setCreateModalVisible(true);
             }}
           >
@@ -282,56 +420,38 @@ const ProductManagement: React.FC = () => {
         ]}
       />
 
-      <ModalForm<ProductFormValues>
+      <ModalForm<API.Product>
         title={editingProduct ? '编辑商品' : '新增商品'}
         width={1200}
         formRef={formRef}
         open={createModalVisible}
-        onOpenChange={setCreateModalVisible}
-        initialValues={
-          editingProduct
-            ? {
-                ...editingProduct,
-                productUrl: editingProduct.productUrl
-                  ? [
-                      {
-                        uid: '-1',
-                        name: 'image.png',
-                        status: 'done',
-                        url: editingProduct.productUrl,
-                      },
-                    ]
-                  : undefined,
-              }
-            : undefined
-        }
+        onOpenChange={(visible) => {
+          if (!visible) {
+            resetState();
+          }
+          setCreateModalVisible(visible);
+        }}
+        initialValues={editingProduct}
         modalProps={{
           destroyOnClose: true,
           maskClosable: false,
           afterClose: () => {
-            setEditingProduct(undefined);
-            setTimeRanges([]);
-            formRef.current?.resetFields();
+            resetState();
           },
         }}
         onFinish={async (values) => {
           try {
-            let productUrl = '';
-            if (values.productUrl?.[0]?.originFileObj) {
-              productUrl = await handleUpload(values.productUrl[0].originFileObj);
-            } else if (values.productUrl?.[0]?.url) {
-              productUrl = values.productUrl[0].url;
-            }
-
             const submitData: API.Product = {
               ...values,
               id: editingProduct?.id || '',
               productUrl,
+              // pictures,
             };
 
             await saveProductData(submitData, timeRanges);
             message.success('提交成功');
             tableRef.current?.reload();
+            setCreateModalVisible(false);
             return true;
           } catch (error) {
             message.error('提交失败');
@@ -390,34 +510,66 @@ const ProductManagement: React.FC = () => {
               rules={[{ required: true, message: '请输入商品详情' }]}
             />
           </Col>
-          {/* <Col span={6}>
-            <ProFormUploadButton
-              name="productUrl"
-              width={100}
+          <Col span={6}>
+            <Form.Item
               label="商品封面"
-              max={1}
-              fieldProps={{
-                name: 'file',
-                listType: 'picture-card',
-                maxCount: 1,
-              }}
-              rules={[{ required: true, message: '请上传商品封面' }]}
-            />
+              name="productUrl"
+              rules={[{ required: !productUrl, message: '请上传商品封面' }]}
+            >
+              <Upload
+                listType="picture-card"
+                fileList={coverFileList}
+                maxCount={1}
+                onRemove={handleCoverRemove}
+                onPreview={(file) => {
+                  if (file.url) {
+                    window.open(file.url, '_blank');
+                  }
+                }}
+                beforeUpload={async (file) => {
+                  await handleCoverUpload(file);
+                  return false; // 阻止自动上传
+                }}
+              >
+                {coverFileList.length < 1 && (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>上传封面</div>
+                  </div>
+                )}
+              </Upload>
+            </Form.Item>
           </Col>
           <Col span={18}>
-            <ProFormUploadButton
-              width={60}
-              name="pictures"
-              label="商品图片"
-              max={5}
-              fieldProps={{
-                name: 'file',
-                listType: 'picture-card',
-                multiple: true,
-              }}
-              rules={[{ required: true, message: '请上传商品图片' }]}
-            />
-          </Col> */}
+            <Form.Item label="商品介绍图片" name="pictures">
+              <Upload
+                listType="picture-card"
+                fileList={pictureFileList}
+                maxCount={5}
+                onRemove={handlePictureRemove}
+                onPreview={(file) => {
+                  if (file.url) {
+                    window.open(file.url, '_blank');
+                  }
+                }}
+                beforeUpload={async (file) => {
+                  if (pictureFileList.length >= 5) {
+                    message.error('最多上传5张介绍图片');
+                    return false;
+                  }
+                  await handlePictureUpload(file);
+                  return false; // 阻止自动上传
+                }}
+              >
+                {pictureFileList.length < 5 && (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>上传介绍图</div>
+                  </div>
+                )}
+              </Upload>
+            </Form.Item>
+          </Col>
         </Row>
         <Divider />
         <div style={{ marginBottom: 20, fontSize: 16, fontWeight: 500 }}>添加场次</div>
