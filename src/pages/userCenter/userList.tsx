@@ -16,6 +16,7 @@ const UserCenter: React.FC = () => {
   const [editingUser, setEditingUser] = useState<API.User | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   const [roleList, setRoleList] = useState<any[]>([]);
+  const [roleValueEnum, setRoleValueEnum] = useState<any>({});
 
   useEffect(() => {
     getRoleListForCorp().then((res) => {
@@ -27,7 +28,13 @@ const UserCenter: React.FC = () => {
       //   };
       // });
       console.log('roleListEnum', res);
-      setRoleList(res);
+      setRoleList(res as any[]);
+      const roleValueEnum: Record<string, { text: string }> = {};
+      res.forEach((item: any) => {
+        roleValueEnum[item.id] = { text: item.roleName };
+      });
+      console.log('roleValueEnum', roleValueEnum);
+      setRoleValueEnum(roleValueEnum);
     });
   }, []);
 
@@ -102,7 +109,7 @@ const UserCenter: React.FC = () => {
       render: (_, record) => {
         return record.roleList.map((item: any) => item.roleName).join(',');
       },
-      // valueEnum: roleList,
+      valueEnum: roleValueEnum,
     },
     {
       title: '状态',
@@ -231,23 +238,13 @@ const UserCenter: React.FC = () => {
         }}
         onFinish={async (values) => {
           console.log('提交用户信息', values, editingUser);
-          // TODO: 替换为实际的 API 调用
+          const _roleList = roleList.filter((item) => values.roleType.includes(item.id));
           const newValues = editingUser
             ? { ...values, userId: editingUser.userId }
             : {
                 ...values,
                 corpId: initialState?.currentUser?.corpId,
-                roleList: [
-                  {
-                    id: '5',
-                    roleCode: 'corp-admin',
-                    roleName: '企业管理员',
-                    roleType: '1',
-                    remark: null,
-                    status: 1,
-                    corpId: '1',
-                  },
-                ],
+                roleList: _roleList,
                 venueList: [
                   {
                     id: '1',
@@ -329,6 +326,7 @@ const UserCenter: React.FC = () => {
             <ProFormSelect
               name="roleType"
               label="角色类型"
+              mode="multiple"
               options={roleList.map((item) => ({
                 label: item.roleName,
                 value: item.id,

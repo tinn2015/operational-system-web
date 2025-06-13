@@ -146,6 +146,7 @@ const ProductManagement: React.FC = () => {
   // 添加时间段
   const addTimeSlot = () => {
     if (timeRange.beginTime === '' || timeRange.endTime === '' || timeRange.showTime === '') {
+      debugger;
       message.error('请先选择完整的时间段信息');
       return;
     }
@@ -154,7 +155,7 @@ const ProductManagement: React.FC = () => {
     setTimeRange({
       beginTime: '',
       endTime: '',
-      showTime: '',
+      showTime: newTimeRange.showTime,
       quantity: 100,
     });
     message.success('添加成功');
@@ -290,26 +291,33 @@ const ProductManagement: React.FC = () => {
       width: 120,
       render: (_, record) => <Image src={record.productUrl} width={50} />,
     },
-    // {
-    //   title: '商品图片',
-    //   dataIndex: 'pictures',
-    //   width: 200,
-    //   render: (_, record) => (
-    //     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-    //       {<Image src={record.pictures} width={50} />}
-    //       {/* {record.pictures &&
-    //         record.pictures.length > 0 &&
-    //         record.pictures.map((pic, index) => (
-    //           <img
-    //             key={index}
-    //             src={pic}
-    //             alt={`${record.productName}-${index}`}
-    //             style={{ width: 30, height: 30, objectFit: 'cover' }}
-    //           />
-    //         ))} */}
-    //     </div>
-    //   ),
-    // },
+    {
+      title: '商品图片',
+      dataIndex: 'pictures',
+      width: 200,
+      render: (_, record) => (
+        <div
+          style={{
+            display: 'flex',
+            gap: '4px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {record.pictures &&
+            record.pictures.length > 0 &&
+            record.pictures.map((pic, index) => (
+              <Image
+                key={index}
+                src={pic}
+                width={50}
+                style={{ display: 'flex', alignItems: 'center' }}
+              />
+            ))}
+        </div>
+      ),
+    },
     {
       title: '商品简介',
       dataIndex: 'summaries',
@@ -445,7 +453,7 @@ const ProductManagement: React.FC = () => {
               ...values,
               id: editingProduct?.id || '',
               productUrl,
-              // pictures,
+              pictures,
             };
 
             await saveProductData(submitData, timeRanges);

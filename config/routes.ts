@@ -126,7 +126,7 @@ export default [
   },
   {
     path: '/device/serverCenter',
-    name: '服务器中心',
+    name: '服务中心',
     icon: 'smile',
     routes: [
       {
@@ -138,6 +138,30 @@ export default [
         icon: 'smile',
         path: '/device/serverCenter/streaming',
         component: './device/serverCenter/streaming',
+      },
+      {
+        name: '游戏client',
+        icon: 'smile',
+        path: '/device/serverCenter/gameClient',
+        component: './device/serverCenter/gameClient',
+      },
+      {
+        name: '游戏server',
+        icon: 'smile',
+        path: '/device/serverCenter/gameServer',
+        component: './device/serverCenter/gameServer',
+      },
+      {
+        name: '位姿总服务器',
+        icon: 'smile',
+        path: '/device/serverCenter/poseHub',
+        component: './device/serverCenter/poseHub',
+      },
+      {
+        name: '位姿子服务器',
+        icon: 'smile',
+        path: '/device/serverCenter/pose',
+        component: './device/serverCenter/pose',
       },
     ],
   },

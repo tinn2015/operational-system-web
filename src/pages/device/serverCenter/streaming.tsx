@@ -153,7 +153,7 @@ const StreamingManager: React.FC = () => {
           labelWidth: 'auto',
         }}
         dateFormatter="string"
-        headerTitle="串流服务管理"
+        headerTitle="串流服务"
       />
     </>
   );
