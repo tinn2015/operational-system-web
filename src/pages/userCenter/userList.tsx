@@ -245,30 +245,6 @@ const UserCenter: React.FC = () => {
                 ...values,
                 corpId: initialState?.currentUser?.corpId,
                 roleList: _roleList,
-                venueList: [
-                  {
-                    id: '1',
-                    venueCode: '1',
-                    venueName: '场馆1_横店',
-                    address: '1号路',
-                    longitude: '22.33',
-                    latitude: '45.80',
-                    thirdId: null,
-                    corpId: '1',
-                    corpName: '横店',
-                  },
-                  {
-                    id: '2',
-                    venueCode: '2',
-                    venueName: '场馆2_横店',
-                    address: '2号路',
-                    longitude: '150.89',
-                    latitude: '73.80',
-                    thirdId: null,
-                    corpId: '1',
-                    corpName: '横店',
-                  },
-                ],
               };
           console.log('==[新增用户]newValues==', newValues);
           const res = await saveUser(newValues);

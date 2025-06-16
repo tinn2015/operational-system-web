@@ -53,7 +53,7 @@ export async function rebootDevice(options?: { [key: string]: any }) {
 }
 /** 查询设备状态 */
 export async function getDeviceStatus(id: string) {
-  return request<Record<string, any>>(`${PROXY_PREFIX}/control/device/status/${id}`, {
+  return request<Record<string, any>[]>(`${PROXY_PREFIX}/control/device/status/${id}`, {
     method: 'GET',
   });
 }

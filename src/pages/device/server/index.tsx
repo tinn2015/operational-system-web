@@ -6,7 +6,7 @@ import {
   saveDevice,
 } from '@/services/device';
 import { SERVER_OPERATION } from '@/utils/constant';
-import { EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import {
@@ -29,9 +29,7 @@ const HeadSetList: React.FC = () => {
   const [editingDevice, setEditingDevice] = useState<API.Device | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   const [statusModalVisible, setStatusModalVisible] = useState<boolean>(false);
-  const [deviceStatusData, setDeviceStatusData] = useState<{ item: string; itemValue: string }[]>(
-    [],
-  );
+  const [deviceStatusData, setDeviceStatusData] = useState<Record<string, any>[]>([]);
   const [currentDeviceName, setCurrentDeviceName] = useState<string>('');
 
   const handleDeviceOperation = async (type: number, record: API.Device) => {
@@ -60,7 +58,7 @@ const HeadSetList: React.FC = () => {
   const handleViewStatus = async (record: API.Device) => {
     try {
       const response = await getDeviceStatus(record.id);
-      setDeviceStatusData(response.data || []);
+      setDeviceStatusData(response || []);
       setCurrentDeviceName(record.serverIp || '未命名设备');
       setStatusModalVisible(true);
     } catch (error) {
@@ -108,7 +106,7 @@ const HeadSetList: React.FC = () => {
         2: { text: '未知', color: 'orange' },
       },
       align: 'center',
-      width: 180,
+      width: 100,
     },
     {
       title: 'agent状态',
@@ -119,7 +117,7 @@ const HeadSetList: React.FC = () => {
         2: { text: '未知', color: 'orange' },
       },
       align: 'center',
-      width: 180,
+      width: 100,
     },
     {
       title: 'agent启动时间',
@@ -168,12 +166,7 @@ const HeadSetList: React.FC = () => {
               </Button>
             </Popconfirm>
           )} */}
-          <Button
-            key="start"
-            type="link"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewStatus(record)}
-          >
+          <Button key="start" type="link" onClick={() => handleViewStatus(record)}>
             查看状态
           </Button>
           <Popconfirm
@@ -305,7 +298,7 @@ const HeadSetList: React.FC = () => {
           <Descriptions bordered column={1}>
             {deviceStatusData.map((item, index) => (
               <Descriptions.Item key={index} label={item.item}>
-                {item.itemValue}
+                <pre style={{ whiteSpace: 'pre-wrap' }}>{item.itemValue}</pre>
               </Descriptions.Item>
             ))}
           </Descriptions>

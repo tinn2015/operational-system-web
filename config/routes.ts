@@ -134,7 +134,7 @@ export default [
         redirect: '/device/serverCenter/streaming',
       },
       {
-        name: '串流服务器',
+        name: '串流服务',
         icon: 'smile',
         path: '/device/serverCenter/streaming',
         component: './device/serverCenter/streaming',
@@ -189,7 +189,13 @@ export default [
     routes: [
       {
         path: '/game',
-        redirect: '/game/team',
+        redirect: '/game/checkIn',
+      },
+      {
+        name: '签到管理',
+        icon: 'smile',
+        path: '/game/checkIn',
+        component: './game/checkIn',
       },
       {
         name: '组队管理',

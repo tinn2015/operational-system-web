@@ -80,6 +80,7 @@ export default defineConfig({
    * @doc https://umijs.org/docs/max/layout-menu
    */
   title: '大空间运营系统',
+  favicons: ['/wz-admin/vr.png', '/vr.png'],
   layout: {
     locale: false,
     ...defaultSettings,

@@ -1,15 +1,29 @@
 import { deleteHeadset, getHeadsetList, saveHeadsetList } from '@/services/headset';
+import { getServerList } from '@/services/serverCenter';
 import { PlayCircleOutlined, PlusOutlined, PoweroffOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Button, Col, Divider, message, Popconfirm, Row, Space, Tag } from 'antd';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const HeadSetList: React.FC = () => {
   const tableRef = useRef<ActionType>();
+  const formRef = useRef<any>(null);
 
   const [editingDevice, setEditingDevice] = useState<API.Headset | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+
+  // 获取串流服务列表
+  const [streamingServerList, setStreamingServerList] = useState<API.Server[]>([]);
+  useEffect(() => {
+    getServerList({
+      pageSize: 10000,
+      pageNum: 1,
+      serverType: 2,
+    }).then((res) => {
+      setStreamingServerList(res.data);
+    });
+  }, []);
 
   const handleDeviceOperation = async (type: 'start' | 'stop', record: API.Headset) => {
     const operationText = type === 'start' ? '启动' : '停止';
@@ -44,6 +58,13 @@ const HeadSetList: React.FC = () => {
       ellipsis: true,
       align: 'center',
       width: 200,
+      valueEnum: () => {
+        const values = {};
+        streamingServerList.forEach((item) => {
+          values[item.id] = { text: item.serverIp };
+        });
+        return values;
+      },
     },
     {
       title: '设备类型',
@@ -207,10 +228,18 @@ const HeadSetList: React.FC = () => {
       />
 
       <ModalForm
+        key={editingDevice?.id}
         title={editingDevice ? '编辑头显设备' : '新增头显设备'}
         open={createModalVisible}
-        onOpenChange={setCreateModalVisible}
+        onOpenChange={(visible) => {
+          setCreateModalVisible(visible);
+          if (!visible) {
+            setEditingDevice(undefined);
+            formRef.current?.resetFields();
+          }
+        }}
         initialValues={editingDevice}
+        formRef={formRef}
         onFinish={async (values) => {
           console.log('编辑或者新增头显', values, editingDevice);
           const newValues = editingDevice ? { ...values, id: editingDevice.id } : values;
@@ -242,7 +271,16 @@ const HeadSetList: React.FC = () => {
         </Row>
         <Row gutter={20}>
           <Col span={8}>
-            <ProFormText name="serverIp" label="绑定串流服务器" placeholder="请绑定串流服务器" />
+            {/* <ProFormText name="serverIp" label="绑定串流服务" placeholder="请绑定串流服务" /> */}
+            <ProFormSelect
+              name="serverIp"
+              label="绑定串流服务"
+              placeholder="请绑定串流服务"
+              options={streamingServerList.map((server) => ({
+                label: server.serverIp,
+                value: server.id,
+              }))}
+            />
           </Col>
           <Col span={8}>
             <ProFormSelect

@@ -121,7 +121,7 @@ const TeamList: React.FC = () => {
   // 打开玩家管理模态框
   const showPlayerModal = async (record: TeamType) => {
     setCurrentTeam(record);
-    // await fetchTeamDetail(record.teamId);
+    await fetchTeamDetail(record.teamId);
     setPlayerModalVisible(true);
   };
 
@@ -169,7 +169,7 @@ const TeamList: React.FC = () => {
     {
       title: '游戏状态',
       dataIndex: 'gameStatus',
-      width: 200,
+      width: 100,
       align: 'center',
       valueEnum: {
         0: { text: '组队中', status: 'processing' },
@@ -181,7 +181,7 @@ const TeamList: React.FC = () => {
     {
       title: '游戏服务器',
       dataIndex: 'gameServer',
-      width: 200,
+      width: 150,
       align: 'center',
       search: false,
     },
@@ -277,6 +277,7 @@ const TeamList: React.FC = () => {
       <ProTable<TeamType>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params) => {
           const teamList = await getTeamList({
             pageSize: params.pageSize,
