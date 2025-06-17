@@ -89,6 +89,8 @@ declare namespace API {
     status: 0 | 1;
     // 创建时间
     createTime: string;
+    roleList: any[];
+    roleType: number[];
   };
 
   type UserList = {

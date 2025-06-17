@@ -138,7 +138,12 @@ const UserCenter: React.FC = () => {
             key="edit"
             type="link"
             onClick={() => {
-              setEditingUser(record);
+              console.log('编辑用户', record);
+
+              setEditingUser({
+                ...record,
+                roleType: record.roleList.map((item: any) => item.id),
+              });
               setCreateModalVisible(true);
             }}
           >
@@ -240,7 +245,7 @@ const UserCenter: React.FC = () => {
           console.log('提交用户信息', values, editingUser);
           const _roleList = roleList.filter((item) => values.roleType.includes(item.id));
           const newValues = editingUser
-            ? { ...values, userId: editingUser.userId }
+            ? { ...values, userId: editingUser.userId, roleList: _roleList }
             : {
                 ...values,
                 corpId: initialState?.currentUser?.corpId,
