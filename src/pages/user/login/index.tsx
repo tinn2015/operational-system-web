@@ -297,7 +297,7 @@ const Login: React.FC = () => {
                 <Row gutter={20}>
                   <Col span={16}>
                     <ProFormText
-                      name="VerificationCode"
+                      name="verificationCode"
                       placeholder="请输入验证码"
                       fieldProps={{
                         size: 'large',

@@ -2,6 +2,7 @@
 import { getPlayerCheckinCode } from '@/services/checkIn';
 import { getRecentProducts } from '@/services/product';
 import usePrint from '@/utils/printHook';
+import { createBatchPrintData } from '@/utils/printHook/printData/Batch';
 import { CheckCircleTwoTone } from '@ant-design/icons';
 import {
   Button,
@@ -28,7 +29,7 @@ const CheckInPage = () => {
   const [playerIds, setPlayerIds] = useState<string[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const [printLoading, setPrintLoading] = useState(false);
   const { styles } = useStyles();
 
   // 打印hook
@@ -54,6 +55,21 @@ const CheckInPage = () => {
           await logic?.selectOnLineUsbPrinter();
           // 初始化打印机
           logic?.init();
+          // 设置标签类型
+          // 标签类型选项:
+          // 1: 间隙纸
+          // 2: 黑标纸
+          // 3: 连续纸
+          // 4: 过孔纸
+          // 5: 透明纸
+          // 6: 标牌
+          // 10: 黑标间隙纸
+          logic?.setLabelType('2');
+          // 打印模式选项:
+          // 1: 热敏打印
+          // 2: 热转印打印
+          logic?.setPrintMode('1');
+          // logic?.setAutoShutDown('1');
         }
       }
     };
@@ -71,7 +87,7 @@ const CheckInPage = () => {
 
   const handleSessionChange = (listingId: string) => {
     const listing = sessionList.find((item) => item.id === listingId);
-    console.log(listing);
+    console.log('选择场次', listing);
     setSelectedListing(listing);
   };
 
@@ -115,10 +131,19 @@ const CheckInPage = () => {
   };
 
   // 批量打印
-  const handleBatchPrint = () => {
-    selectedIds.forEach((id) => {
-      handlePrint(id);
-    });
+  const handleBatchPrint = async () => {
+    setPrintLoading(true);
+    const printData = createBatchPrintData(
+      selectedIds,
+      selectedProduct?.productName || '',
+      selectedListing?.beginTime || '',
+      selectedListing?.endTime || '',
+    );
+    console.log('打印数据', printData);
+    await logic?.startBatchPrintJobTest(printData);
+    setTimeout(() => {
+      setPrintLoading(false);
+    }, selectedIds.length * 1000);
   };
 
   const handlePrinterChange = (value: string) => {
@@ -212,11 +237,11 @@ const CheckInPage = () => {
                 name="listingId"
                 label="选择场次"
                 rules={[{ required: true, message: '请选择场次' }]}
-                onChange={handleSessionChange}
               >
                 <Select
                   placeholder="请选择场次"
                   notFoundContent="今日暂无场次"
+                  onChange={handleSessionChange}
                   options={sessionList.map((item) => ({
                     label: `${dayjs(item.beginTime).format('HH:mm')} - ${dayjs(item.endTime).format('HH:mm')}`,
                     value: item.id,
@@ -269,6 +294,7 @@ const CheckInPage = () => {
                   type="primary"
                   onClick={handleBatchPrint}
                   disabled={selectedIds.length === 0}
+                  loading={printLoading}
                 >
                   批量打印 ({selectedIds.length})
                 </Button>
@@ -301,7 +327,7 @@ const CheckInPage = () => {
                   </div>
                 </div>
                 <Space>
-                  <Button type="primary" onClick={() => handlePrint(item)}>
+                  <Button type="primary" loading={printLoading} onClick={() => handleBatchPrint()}>
                     打印
                   </Button>
                 </Space>
