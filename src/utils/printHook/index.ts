@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { HomeLogic } from "./HomeLogic";
+// import { combinationPrintData } from './printData/Combination';
+// import { batchPrintData } from './printData/Batch';
 
 function usePrint() {
     /**
