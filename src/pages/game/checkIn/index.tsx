@@ -48,9 +48,14 @@ const CheckInPage = () => {
         const usbPrinterId = localStorage.getItem('usbPrinterId');
         console.log('usbPrinterId', usbPrinterId);
         if (usbPrinterId) {
-          logic?.setUsbSelectPrinter(usbPrinterId);
           // 更新打印机列表
-          await logic?.getPrinters();
+          const res = await logic?.getPrinters();
+          if (res) {
+            alert(res);
+            return;
+          }
+          // 选择默认打印机
+          logic?.setUsbSelectPrinter(usbPrinterId);
           // 连接打印机
           await logic?.selectOnLineUsbPrinter();
           // 初始化打印机

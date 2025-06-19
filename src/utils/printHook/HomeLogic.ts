@@ -184,11 +184,11 @@ export class HomeLogic {
      * 获取所有USB打印机
      * 通过API调用获取所有已连接的USB打印机
      */
-    public async getPrinters(): Promise<void> {
+    public async getPrinters(): Promise<string | undefined> {
         if (!this.printSocketOpen || !this.nMPrintSocket) {
             // alert("打印服务未开启");
             console.log("打印服务未开启");
-            return;
+            return '打印服务未开启,请先安装打印服务';
         }
         console.log("开始获取打印机");
         try {
@@ -202,13 +202,13 @@ export class HomeLogic {
             } else {
                 this.usbPrinters = {};
                 this.usbSelectPrinter = "";
-                alert("没有在线的USB打印机");
+                return '没有在线的USB打印机,请检查打印机是否连接';
             }
         } catch (err) {
             console.error(err);
             this.usbPrinters = {};
             this.usbSelectPrinter = "";
-            alert("获取USB打印机列表失败");
+            return '获取USB打印机列表失败,请检查打印机是否连接';
         }
         this._updateReactState();
     }
