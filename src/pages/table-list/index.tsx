@@ -208,6 +208,7 @@ const TableList: React.FC = () => {
         })}
         actionRef={actionRef}
         rowKey="key"
+        scroll={{ x: 'max-content' }}
         search={{
           labelWidth: 120,
         }}

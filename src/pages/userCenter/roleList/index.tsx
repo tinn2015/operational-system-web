@@ -49,18 +49,18 @@ const RoleList: React.FC = () => {
       width: 200,
       align: 'center',
     },
-    {
-      title: '角色类型',
-      dataIndex: 'roleType',
-      width: 150,
-      align: 'center',
-      valueEnum: {
-        '0': { text: '系统管理员' },
-        '1': { text: '企业管理员' },
-        '2': { text: '场馆管理员' },
-        '3': { text: '普通用户' },
-      },
-    },
+    // {
+    //   title: '角色类型',
+    //   dataIndex: 'roleType',
+    //   width: 150,
+    //   align: 'center',
+    //   valueEnum: {
+    //     '0': { text: '系统管理员' },
+    //     '1': { text: '企业管理员' },
+    //     '2': { text: '场馆管理员' },
+    //     '3': { text: '普通用户' },
+    //   },
+    // },
     {
       title: '角色状态',
       dataIndex: 'status',
@@ -86,28 +86,32 @@ const RoleList: React.FC = () => {
       align: 'center',
       render: (_, record) => (
         <Space split={<Divider type="vertical" />}>
-          <Button
-            key="edit"
-            type="link"
-            onClick={() => {
-              setEditingRole(record);
-              console.log('==formRef 编辑==');
-              setCreateModalVisible(true);
-            }}
-          >
-            编辑
-          </Button>
-          <Popconfirm
-            title="确认删除"
-            description="确定要删除该角色吗？"
-            okText="确认"
-            cancelText="取消"
-            onConfirm={() => handleDelete(record)}
-          >
-            <Button key="delete" type="link" danger>
-              删除
+          {record.roleType !== '1' && (
+            <Button
+              key="edit"
+              type="link"
+              onClick={() => {
+                setEditingRole(record);
+                console.log('==formRef 编辑==');
+                setCreateModalVisible(true);
+              }}
+            >
+              编辑
             </Button>
-          </Popconfirm>
+          )}
+          {record.roleType !== '1' && (
+            <Popconfirm
+              title="确认删除"
+              description="确定要删除该角色吗？"
+              okText="确认"
+              cancelText="取消"
+              onConfirm={() => handleDelete(record)}
+            >
+              <Button key="delete" type="link" danger>
+                删除
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
@@ -118,6 +122,7 @@ const RoleList: React.FC = () => {
       <ProTable<RoleType>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params) => {
           const roleList = await getRoleList({
             pageSize: params.pageSize,
@@ -182,7 +187,7 @@ const RoleList: React.FC = () => {
           setCreateModalVisible(visible);
         }}
         modalProps={{
-          destroyOnHidden: true,
+          destroyOnClose: true,
           afterClose: () => {
             console.log('==formRef afterClose==');
             setEditingRole(undefined);
@@ -216,7 +221,7 @@ const RoleList: React.FC = () => {
               rules={[{ required: true, message: '请输入角色名称' }]}
             />
           </Col>
-          <Col span={12}>
+          {/* <Col span={12}>
             <ProFormSelect
               name="roleType"
               label="角色类型"
@@ -229,7 +234,7 @@ const RoleList: React.FC = () => {
               ]}
               rules={[{ required: true, message: '请选择角色类型' }]}
             />
-          </Col>
+          </Col> */}
           <Col span={12}>
             <ProFormSelect
               name="status"

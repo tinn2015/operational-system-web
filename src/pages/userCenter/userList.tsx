@@ -170,6 +170,7 @@ const UserCenter: React.FC = () => {
       <ProTable<API.User>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params) => {
           const userList = await getUserList({
             pageSize: params.pageSize,

@@ -321,8 +321,8 @@ const ProductManagement: React.FC = () => {
     {
       title: '商品简介',
       dataIndex: 'summaries',
-      ellipsis: true,
-      width: 150,
+      // ellipsis: true,
+      width: 200,
     },
     {
       title: '销售状态',
@@ -388,6 +388,7 @@ const ProductManagement: React.FC = () => {
       <ProTable<API.Product>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params) => {
           const _params = {
             pageSize: params.pageSize,

@@ -225,6 +225,7 @@ const Basic: FC = () => {
           toolBarRender={false}
           dataSource={basicProgress}
           columns={progressColumns}
+          scroll={{ x: 'max-content' }}
         />
       </Card>
     </PageContainer>

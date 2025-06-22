@@ -294,6 +294,23 @@ export default [
     ],
   },
   {
+    path: '/fire',
+    name: '消防告警',
+    icon: 'smile',
+    routes: [
+      {
+        path: '/fire',
+        redirect: '/fire/list',
+      },
+      {
+        name: '告警列表',
+        icon: 'smile',
+        path: '/fire/list',
+        component: './fire/list',
+      },
+    ],
+  },
+  {
     path: '/marketing',
     name: '营销相关',
     icon: 'smile',

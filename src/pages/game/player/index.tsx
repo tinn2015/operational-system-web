@@ -210,6 +210,7 @@ const PlayerList: React.FC = () => {
       <ProTable<Player>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params) => {
           try {
             const playerList = await getPlayerList({
@@ -286,7 +287,6 @@ const PlayerList: React.FC = () => {
             <SearchOutlined /> 查询玩家
           </Button>,
         ]}
-        scroll={{ x: 'max-content' }}
       />
     </>
   );

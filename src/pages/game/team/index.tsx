@@ -16,7 +16,6 @@ import {
   ModalForm,
   ProFormDigit,
   ProFormSelect,
-  ProFormText,
   ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
@@ -140,14 +139,14 @@ const TeamList: React.FC = () => {
   };
 
   const columns: ProColumns<TeamType>[] = [
-    {
-      title: '队伍名称',
-      dataIndex: 'teamName',
-      copyable: true,
-      ellipsis: true,
-      width: 200,
-      align: 'center',
-    },
+    // {
+    //   title: '队伍名称',
+    //   dataIndex: 'teamName',
+    //   copyable: true,
+    //   ellipsis: true,
+    //   width: 200,
+    //   align: 'center',
+    // },
     {
       title: '游戏名称',
       dataIndex: 'productName',
@@ -159,6 +158,7 @@ const TeamList: React.FC = () => {
       dataIndex: 'teamCode',
       width: 150,
       align: 'center',
+      search: false,
     },
     {
       title: '玩家数量',
@@ -411,12 +411,12 @@ const TeamList: React.FC = () => {
           }
         }}
       >
-        <ProFormText
+        {/* <ProFormText
           name="teamName"
           label="队伍名称"
           placeholder="请输入队伍名称"
           rules={[{ required: true, message: '请输入队伍名称' }]}
-        />
+        /> */}
         <ProFormSelect
           name="productId"
           label="游戏名称"
