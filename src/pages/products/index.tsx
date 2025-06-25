@@ -12,7 +12,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   ModalForm,
-  ProFormDateTimePicker,
+  ProFormDatePicker,
   ProFormDigit,
   ProFormText,
   ProFormTextArea,
@@ -21,7 +21,6 @@ import {
 import {
   Button,
   Col,
-  DatePicker,
   Divider,
   Form,
   Image,
@@ -80,6 +79,15 @@ const ProductManagement: React.FC = () => {
   const [pictures, setPictures] = useState<string[]>([]);
   const [coverFileList, setCoverFileList] = useState<UploadFile[]>([]);
   const [pictureFileList, setPictureFileList] = useState<UploadFile[]>([]);
+  const [saleDates, setSaleDates] = useState<string[]>([]);
+  const [saleTime, setSaleTime] = useState<{
+    saleBeginTime?: string;
+    saleEndTime?: string;
+  }>({
+    saleBeginTime: '',
+    saleEndTime: '',
+  });
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
 
   // 处理商品状态更新
   const handleOnSaleProduct = async (record: API.Product) => {
@@ -146,7 +154,6 @@ const ProductManagement: React.FC = () => {
   // 添加时间段
   const addTimeSlot = () => {
     if (timeRange.beginTime === '' || timeRange.endTime === '' || timeRange.showTime === '') {
-      debugger;
       message.error('请先选择完整的时间段信息');
       return;
     }
@@ -275,6 +282,39 @@ const ProductManagement: React.FC = () => {
       }
     }
     return true;
+  };
+
+  const saleDateChange = (value: { saleBeginTime?: string; saleEndTime?: string }) => {
+    setSaleTime({ ...saleTime, ...value });
+
+    // 新增逻辑：判断并生成日期数组
+    const { saleBeginTime, saleEndTime } = value;
+    if (saleBeginTime && saleEndTime) {
+      const begin = dayjs(saleBeginTime);
+      const end = dayjs(saleEndTime);
+      if (end.isBefore(begin, 'day')) {
+        message.error('结束日期不能早于开始日期');
+        setSaleDates([]);
+        return;
+      }
+      // 生成日期数组
+      const dates: string[] = [];
+      let current = begin.clone();
+      while (!current.isAfter(end, 'day')) {
+        dates.push(current.format('YYYY-MM-DD'));
+        current = current.add(1, 'day');
+      }
+      console.log('dates', dates);
+      setSaleDates(dates);
+    } else {
+      setSaleDates([]);
+    }
+  };
+
+  const handleTagClick = (date: string) => {
+    setSelectedDates((prev) =>
+      prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date],
+    );
   };
 
   const columns: ProColumns<API.Product>[] = [
@@ -490,16 +530,34 @@ const ProductManagement: React.FC = () => {
             />
           </Col>
           <Col span={6}>
-            <ProFormDateTimePicker
+            <ProFormDatePicker
               name="saleBeginTime"
               label="销售开始时间"
+              fieldProps={{
+                onChange: (value: any) => {
+                  console.log('销售开始时间', value);
+                  saleDateChange({
+                    saleBeginTime: dayjs(value).format('YYYY-MM-DD'),
+                    saleEndTime: saleTime.saleEndTime,
+                  });
+                },
+              }}
               rules={[{ required: true, message: '请选择销售开始时间' }]}
             />
           </Col>
           <Col span={6}>
-            <ProFormDateTimePicker
+            <ProFormDatePicker
               name="saleEndTime"
               label="销售结束时间"
+              fieldProps={{
+                onChange: (value: any) => {
+                  console.log('销售结束时间', value);
+                  saleDateChange({
+                    saleBeginTime: saleTime.saleBeginTime,
+                    saleEndTime: dayjs(value).format('YYYY-MM-DD'),
+                  });
+                },
+              }}
               rules={[{ required: true, message: '请选择销售结束时间' }]}
             />
           </Col>
@@ -582,6 +640,19 @@ const ProductManagement: React.FC = () => {
         </Row>
         <Divider />
         <div style={{ marginBottom: 20, fontSize: 16, fontWeight: 500 }}>添加场次</div>
+        <div>
+          {saleDates.map((date) => (
+            <Tag
+              style={{ marginBottom: 10, cursor: 'pointer' }}
+              key={date}
+              color={selectedDates.includes(date) ? 'blue' : 'default'}
+              onClick={() => handleTagClick(date)}
+            >
+              {date}
+            </Tag>
+          ))}
+        </div>
+
         <Row gutter={24}>
           <InputNumber
             style={{ width: 200 }}
@@ -594,7 +665,7 @@ const ProductManagement: React.FC = () => {
             addonAfter="个"
             addonBefore="可播放数量"
           />
-          <DatePicker
+          {/* <DatePicker
             style={{ marginLeft: 20 }}
             format={{
               format: 'YYYY-MM-DD',
@@ -605,7 +676,7 @@ const ProductManagement: React.FC = () => {
               const date = dayjs(time).format('YYYY-MM-DD HH:mm:ss');
               setTimeRange({ ...timeRange, showTime: date });
             }}
-          />
+          /> */}
           <TimePicker.RangePicker
             style={{ marginLeft: 20 }}
             onChange={(time) => {
@@ -640,9 +711,10 @@ const ProductManagement: React.FC = () => {
         </Row>
 
         {timeRanges.length > 0 && (
-          <Space style={{ marginTop: 20 }}>
+          <div>
             {timeRanges.map((range, index) => (
               <Tag
+                style={{ marginTop: 15, fontSize: 14 }}
                 key={index}
                 closable
                 color="green"
@@ -656,7 +728,7 @@ const ProductManagement: React.FC = () => {
                 {dayjs(range.beginTime).format('HH:mm')}-{dayjs(range.endTime).format('HH:mm')}
               </Tag>
             ))}
-          </Space>
+          </div>
         )}
       </ModalForm>
     </>

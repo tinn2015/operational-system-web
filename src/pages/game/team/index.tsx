@@ -521,15 +521,19 @@ const TeamList: React.FC = () => {
                 <p>年龄段: {player.age === 1 ? '成人' : player.age === 2 ? '儿童' : '未知'}</p>
                 <p>二维码: {player.qrCode}</p>
                 <p>
-                  头盔ID: {player.headSetId}
-                  <Button
-                    type="link"
-                    size="small"
-                    style={{ marginLeft: 8 }}
-                    onClick={() => handleUnbindHeadset(player)}
-                  >
-                    解绑
-                  </Button>
+                  头显ID: {player.headsetId}
+                  {player.headsetId ? (
+                    <Button
+                      size="small"
+                      type="primary"
+                      style={{ marginLeft: 8 }}
+                      onClick={() => handleUnbindHeadset(player)}
+                    >
+                      解绑
+                    </Button>
+                  ) : (
+                    <Tag color="red">未绑定</Tag>
+                  )}
                 </p>
                 <p>游戏名称: {player.productName}</p>
               </Card>

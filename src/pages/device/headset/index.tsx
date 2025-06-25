@@ -171,6 +171,7 @@ const HeadSetList: React.FC = () => {
       <ProTable<API.Headset>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params, sorter, filter) => {
           // 这里替换为实际的 API 请求
           console.log('头显查询', params, sorter, filter);

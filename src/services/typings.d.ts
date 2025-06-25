@@ -130,7 +130,7 @@ declare namespace API {
     height: number;
     age: number;
     qrCode: string;
-    headSetId: string;
+    headsetId: string;
     productId: string;
     productName: string;
     numberId: string;

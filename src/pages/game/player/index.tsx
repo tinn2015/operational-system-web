@@ -177,17 +177,33 @@ const PlayerList: React.FC = () => {
           icon={<QrcodeOutlined />}
           onClick={() => {
             if (record.gamePictureList && record.gamePictureList.length > 0) {
-              Modal.info({
+              Modal.success({
                 title: '游戏图片',
                 width: 800,
                 content: (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: 16 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '16px',
+                      marginTop: 16,
+                      justifyContent: 'center',
+                      padding: '0 24px',
+                    }}
+                  >
                     {record.gamePictureList.map((pic, index) => (
                       <Image
                         key={index}
                         src={pic}
                         alt={`游戏图片${index + 1}`}
-                        style={{ width: 180, height: 120, objectFit: 'cover' }}
+                        style={{
+                          width: 220,
+                          height: 120,
+                          objectFit: 'contain',
+                          border: '1px solid #e5e6eb',
+                          borderRadius: 4,
+                          background: '#fafbfc',
+                        }}
                       />
                     ))}
                   </div>

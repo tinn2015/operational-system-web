@@ -132,6 +132,7 @@ const StreamingManager: React.FC = () => {
       <ProTable<API.Server>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params) => {
           const deviceList = await getServerList({
             pageSize: params.pageSize,

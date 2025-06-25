@@ -201,6 +201,7 @@ const HeadSetList: React.FC = () => {
       <ProTable<API.Device>
         actionRef={tableRef}
         columns={columns}
+        scroll={{ x: 'max-content' }}
         request={async (params, sorter, filter) => {
           // 这里替换为实际的 API 请求
           console.log('服务器查询', params, sorter, filter);

@@ -313,7 +313,7 @@ const CheckInPage = () => {
                     onChange={(e) => handleSelectChange(item, e.target.checked)}
                     style={{ marginRight: 8 }}
                   />
-                  <QRCode value={item} size={100} />
+                  <QRCode value={String(item)} size={120} level="H" bordered={false} />
                   <div
                     style={{
                       marginLeft: 10,
