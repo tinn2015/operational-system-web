@@ -12,7 +12,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   ModalForm,
-  ProFormDatePicker,
+  ProFormDateTimePicker,
   ProFormDigit,
   ProFormText,
   ProFormTextArea,
@@ -36,12 +36,6 @@ import {
 import type { UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
-
-const saveProductData = async (values: API.Product, timeRanges: API.timeRange[]) => {
-  await saveProduct(values, timeRanges);
-  console.log('保存商品', values);
-  return true;
-};
 
 // const updateProductStatus = async (id: string, status: number) => {
 //   // TODO: 替换为实际的API调用
@@ -72,7 +66,7 @@ const ProductManagement: React.FC = () => {
   const [timeRange, setTimeRange] = useState<API.timeRange>({
     beginTime: '',
     endTime: '',
-    showTime: '',
+    // showTime: '',
     quantity: 100,
   });
   const [productUrl, setProductUrl] = useState<string>('');
@@ -153,7 +147,7 @@ const ProductManagement: React.FC = () => {
 
   // 添加时间段
   const addTimeSlot = () => {
-    if (timeRange.beginTime === '' || timeRange.endTime === '' || timeRange.showTime === '') {
+    if (timeRange.beginTime === '' || timeRange.endTime === '') {
       message.error('请先选择完整的时间段信息');
       return;
     }
@@ -162,7 +156,7 @@ const ProductManagement: React.FC = () => {
     setTimeRange({
       beginTime: '',
       endTime: '',
-      showTime: newTimeRange.showTime,
+      // showTime: newTimeRange.showTime,
       quantity: 100,
     });
     message.success('添加成功');
@@ -316,7 +310,21 @@ const ProductManagement: React.FC = () => {
       prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date],
     );
   };
-
+  const saveProductData = async (values: API.Product) => {
+    const listingList: any[] = [];
+    saleDates.forEach((date) => {
+      timeRanges.forEach((timeObj) => {
+        listingList.push({
+          ...timeObj,
+          showTime: date + ' 00:00:00',
+        });
+      });
+    });
+    console.log('listingList', listingList);
+    await saveProduct(values, listingList);
+    console.log('保存商品', values);
+    return true;
+  };
   const columns: ProColumns<API.Product>[] = [
     {
       title: '商品名称',
@@ -497,7 +505,7 @@ const ProductManagement: React.FC = () => {
               pictures,
             };
 
-            await saveProductData(submitData, timeRanges);
+            await saveProductData(submitData);
             message.success('提交成功');
             tableRef.current?.reload();
             setCreateModalVisible(false);
@@ -530,7 +538,7 @@ const ProductManagement: React.FC = () => {
             />
           </Col>
           <Col span={6}>
-            <ProFormDatePicker
+            <ProFormDateTimePicker
               name="saleBeginTime"
               label="销售开始时间"
               fieldProps={{
@@ -546,7 +554,7 @@ const ProductManagement: React.FC = () => {
             />
           </Col>
           <Col span={6}>
-            <ProFormDatePicker
+            <ProFormDateTimePicker
               name="saleEndTime"
               label="销售结束时间"
               fieldProps={{
@@ -710,26 +718,49 @@ const ProductManagement: React.FC = () => {
           </Button>
         </Row>
 
-        {timeRanges.length > 0 && (
-          <div>
-            {timeRanges.map((range, index) => (
-              <Tag
-                style={{ marginTop: 15, fontSize: 14 }}
-                key={index}
-                closable
-                color="green"
-                onClose={() => {
-                  const newRanges = [...timeRanges];
-                  newRanges.splice(index, 1);
-                  setTimeRanges(newRanges);
-                }}
-              >
-                {range.showTime + ' '}
-                {dayjs(range.beginTime).format('HH:mm')}-{dayjs(range.endTime).format('HH:mm')}
-              </Tag>
-            ))}
-          </div>
-        )}
+        {/* 分组显示时间段标签 */}
+        {(() => {
+          type TimeRangeWithShowTime = (typeof timeRanges)[number] & { showTime: string };
+          const grouped = (timeRanges as TimeRangeWithShowTime[]).reduce<
+            Record<string, TimeRangeWithShowTime[]>
+          >((acc, cur) => {
+            if (!acc[cur.showTime]) acc[cur.showTime] = [];
+            acc[cur.showTime].push(cur);
+            return acc;
+          }, {});
+          return Object.entries(grouped).map(([date, ranges]) => (
+            <div key={date} style={{ marginBottom: 16 }}>
+              <div style={{ fontWeight: 'bold', marginBottom: 8 }}>{date}</div>
+              {ranges.map((range, idx) => (
+                <Tag
+                  style={{ marginTop: 8, fontSize: 14 }}
+                  key={idx}
+                  closable
+                  color="green"
+                  onClose={() => {
+                    // 删除逻辑
+                    const newRanges = (timeRanges as TimeRangeWithShowTime[]).filter(
+                      (item, i) =>
+                        !(
+                          item.showTime === date &&
+                          i ===
+                            (timeRanges as TimeRangeWithShowTime[]).findIndex(
+                              (t) =>
+                                t.showTime === date &&
+                                t.beginTime === range.beginTime &&
+                                t.endTime === range.endTime,
+                            )
+                        ),
+                    );
+                    setTimeRanges(newRanges);
+                  }}
+                >
+                  {dayjs(range.beginTime).format('HH:mm')}-{dayjs(range.endTime).format('HH:mm')}
+                </Tag>
+              ))}
+            </div>
+          ));
+        })()}
       </ModalForm>
     </>
   );
