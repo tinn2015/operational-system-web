@@ -118,7 +118,7 @@ declare namespace API {
     id?: string;
     beginTime: string;
     endTime: string;
-    // showTime: string;
+    showTime: string;
     quantity: number;
   };
 

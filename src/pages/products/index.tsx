@@ -36,6 +36,7 @@ import {
 import type { UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
+import useStyles from './index.style';
 
 // const updateProductStatus = async (id: string, status: number) => {
 //   // TODO: 替换为实际的API调用
@@ -58,12 +59,13 @@ import React, { useRef, useState } from 'react';
 // };
 
 const ProductManagement: React.FC = () => {
+  const { styles } = useStyles();
   const tableRef = useRef<ActionType>();
   const formRef = useRef<any>();
   const [editingProduct, setEditingProduct] = useState<API.Product | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   const [timeRanges, setTimeRanges] = useState<API.timeRange[]>([]);
-  const [timeRange, setTimeRange] = useState<API.timeRange>({
+  const [timeRange, setTimeRange] = useState<Omit<API.timeRange, 'showTime'>>({
     beginTime: '',
     endTime: '',
     // showTime: '',
@@ -111,6 +113,8 @@ const ProductManagement: React.FC = () => {
     console.log('编辑商品', record);
     setEditingProduct(record);
     setTimeRanges(record.listingList || []);
+    const saleDates = record.listingList?.map((item) => item.showTime);
+    setSaleDates(saleDates || []);
     setProductUrl(record.productUrl || '');
     setPictures(record.pictures || []);
 
@@ -151,14 +155,26 @@ const ProductManagement: React.FC = () => {
       message.error('请先选择完整的时间段信息');
       return;
     }
-    const newTimeRange = { ...timeRange };
-    setTimeRanges([...timeRanges, newTimeRange]);
-    setTimeRange({
-      beginTime: '',
-      endTime: '',
-      // showTime: newTimeRange.showTime,
-      quantity: 100,
+    // 遍历所有选中的 selectedDates
+    const listingList: any[] = [];
+    selectedDates.forEach((date) => {
+      // 先判断当前date是否已存在于timeRanges中（通过showTime字段和时间段）
+      const existRanges = timeRanges.filter((tr) => tr.showTime === date);
+      const isExist = existRanges.some(
+        (tr) => tr.beginTime === timeRange.beginTime && tr.endTime === timeRange.endTime,
+      );
+      if (isExist) {
+        // 已存在则跳过
+        return;
+      }
+      // 不存在则添加
+      listingList.push({
+        ...timeRange,
+        showTime: date,
+      });
     });
+    // const newTimeRange = { ...timeRange };
+    setTimeRanges([...timeRanges, ...listingList]);
     message.success('添加成功');
   };
 
@@ -311,17 +327,9 @@ const ProductManagement: React.FC = () => {
     );
   };
   const saveProductData = async (values: API.Product) => {
-    const listingList: any[] = [];
-    saleDates.forEach((date) => {
-      timeRanges.forEach((timeObj) => {
-        listingList.push({
-          ...timeObj,
-          showTime: date + ' 00:00:00',
-        });
-      });
-    });
-    console.log('listingList', listingList);
-    await saveProduct(values, listingList);
+    console.log('listingList', timeRanges);
+    // debugger;
+    await saveProduct(values, timeRanges);
     console.log('保存商品', values);
     return true;
   };
@@ -668,7 +676,9 @@ const ProductManagement: React.FC = () => {
             placeholder="可播放数量"
             value={timeRange.quantity}
             onChange={(value) => {
-              setTimeRange({ ...timeRange, quantity: value || 100 });
+              if (value) {
+                setTimeRange({ ...timeRange, quantity: value });
+              }
             }}
             addonAfter="个"
             addonBefore="可播放数量"
@@ -718,48 +728,85 @@ const ProductManagement: React.FC = () => {
           </Button>
         </Row>
 
-        {/* 分组显示时间段标签 */}
+        {/* 日期分组，每行4个 */}
         {(() => {
           type TimeRangeWithShowTime = (typeof timeRanges)[number] & { showTime: string };
-          const grouped = (timeRanges as TimeRangeWithShowTime[]).reduce<
-            Record<string, TimeRangeWithShowTime[]>
-          >((acc, cur) => {
-            if (!acc[cur.showTime]) acc[cur.showTime] = [];
-            acc[cur.showTime].push(cur);
-            return acc;
-          }, {});
-          return Object.entries(grouped).map(([date, ranges]) => (
-            <div key={date} style={{ marginBottom: 16 }}>
-              <div style={{ fontWeight: 'bold', marginBottom: 8 }}>{date}</div>
-              {ranges.map((range, idx) => (
-                <Tag
-                  style={{ marginTop: 8, fontSize: 14 }}
-                  key={idx}
-                  closable
-                  color="green"
-                  onClose={() => {
-                    // 删除逻辑
-                    const newRanges = (timeRanges as TimeRangeWithShowTime[]).filter(
-                      (item, i) =>
-                        !(
-                          item.showTime === date &&
-                          i ===
-                            (timeRanges as TimeRangeWithShowTime[]).findIndex(
-                              (t) =>
-                                t.showTime === date &&
-                                t.beginTime === range.beginTime &&
-                                t.endTime === range.endTime,
-                            )
-                        ),
-                    );
-                    setTimeRanges(newRanges);
-                  }}
-                >
-                  {dayjs(range.beginTime).format('HH:mm')}-{dayjs(range.endTime).format('HH:mm')}
-                </Tag>
+          // 按日期分组
+          const grouped: Record<string, TimeRangeWithShowTime[]> = (
+            timeRanges as TimeRangeWithShowTime[]
+          ).reduce(
+            (acc, cur) => {
+              if (!acc[cur.showTime]) acc[cur.showTime] = [];
+              acc[cur.showTime].push(cur);
+              return acc;
+            },
+            {} as Record<string, TimeRangeWithShowTime[]>,
+          );
+          // 分组转为数组，便于分行
+          const groupArr = Object.entries(grouped).sort(
+            ([a], [b]) => new Date(a).getTime() - new Date(b).getTime(),
+          );
+          const rows = [];
+          for (let i = 0; i < groupArr.length; i += 4) {
+            rows.push(groupArr.slice(i, i + 4));
+          }
+          return (
+            <div style={{ marginBottom: 16 }}>
+              {rows.map((row, rowIdx) => (
+                <div key={rowIdx} style={{ display: 'flex', gap: 16, marginTop: 24 }}>
+                  {row.map(([date, ranges]) => (
+                    <div key={date} className={styles.dateBox} style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 'bold', marginBottom: 8, textAlign: 'center' }}>
+                        {date}
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: 8,
+                          justifyContent: 'space-around',
+                        }}
+                      >
+                        {ranges.map((range, idx) => (
+                          <Tag
+                            style={{
+                              marginTop: 8,
+                              fontSize: 14,
+                              display: 'block',
+                              textAlign: 'center',
+                            }}
+                            key={idx}
+                            closable
+                            color="green"
+                            onClose={() => {
+                              // 删除逻辑
+                              const newRanges = (timeRanges as TimeRangeWithShowTime[]).filter(
+                                (item, i) =>
+                                  !(
+                                    item.showTime === date &&
+                                    i ===
+                                      (timeRanges as TimeRangeWithShowTime[]).findIndex(
+                                        (t) =>
+                                          t.showTime === date &&
+                                          t.beginTime === range.beginTime &&
+                                          t.endTime === range.endTime,
+                                      )
+                                  ),
+                              );
+                              setTimeRanges(newRanges);
+                            }}
+                          >
+                            {dayjs(range.beginTime).format('HH:mm')}-
+                            {dayjs(range.endTime).format('HH:mm')}
+                          </Tag>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ))}
             </div>
-          ));
+          );
         })()}
       </ModalForm>
     </>
