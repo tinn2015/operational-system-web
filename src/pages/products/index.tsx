@@ -115,6 +115,7 @@ const ProductManagement: React.FC = () => {
     setTimeRanges(record.listingList || []);
     const saleDates = record.listingList?.map((item) => item.showTime);
     setSaleDates(saleDates || []);
+    setSelectedDates(saleDates || []);
     setProductUrl(record.productUrl || '');
     setPictures(record.pictures || []);
 
@@ -182,6 +183,7 @@ const ProductManagement: React.FC = () => {
   const resetState = () => {
     setEditingProduct(undefined);
     setTimeRanges([]);
+    setSaleDates([]);
     setProductUrl('');
     setPictures([]);
     setCoverFileList([]);
@@ -316,8 +318,10 @@ const ProductManagement: React.FC = () => {
       }
       console.log('dates', dates);
       setSaleDates(dates);
+      setSelectedDates(dates);
     } else {
       setSaleDates([]);
+      setSelectedDates([]);
     }
   };
 

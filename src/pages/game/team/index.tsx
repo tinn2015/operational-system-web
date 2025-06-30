@@ -30,6 +30,7 @@ import {
   message,
   Modal,
   Popconfirm,
+  QRCode,
   Row,
   Space,
   Tag,
@@ -519,7 +520,9 @@ const TeamList: React.FC = () => {
                 </p>
                 <p>身高: {player.height}</p>
                 <p>年龄段: {player.age === 1 ? '成人' : player.age === 2 ? '儿童' : '未知'}</p>
-                <p>二维码: {player.qrCode}</p>
+                <p style={{ display: 'flex', alignItems: 'center' }}>
+                  玩家二维码: <QRCode level="H" size={100} bordered={false} value={player.qrCode} />
+                </p>
                 <p>
                   头显ID: {player.headsetId}
                   {player.headsetId ? (
