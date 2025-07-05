@@ -101,6 +101,7 @@ export const errorConfig: RequestConfig = {
         //   'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0ZW5hbnRJZExpc3QiOlsiUTE1RElLQ0sxeCJdLCJjb3JwSWQiOiJEOGNBMDZwdm5zIiwidXNlck5hbWUiOiJKb2UgQmFybmVzIiwidXNlcklkIjoiMSIsImV4cCI6MTc1NTg1NjM2Mn0.RDzTD9m0UbGiVSS0zVelvn91b4tbMNs-dzEw4AfwWxDM3a77CMk5m9xCk_oF-UwPorefyJIMb2eg3emAfN3jYb23yxfDiI7Lf7eFZUXmtIZX4uO6SRfy-4SXxUKzWwCDHuMHeEzA7VNFkuoRzKhYcZHm-pk-nlt2xsQUOhjrCaknoVkMCEQVBQm0gNVLkJgkz6XsQLmR3qZ3bu6dhoonM0yS95lK4negHY35f1tofL5KhtdEJIWbKn_7RE-ef_yzO_OBpAvkPMkC1hy4HZUM-BCngjs67Pp3PJwPp7EyeFbevWAARXhmz_kp8cfoByTdlE4JqjPo2PvSmyOXnie1qg',
         Authorization: token ? 'Bearer ' + token : '',
         'X-Venue-Id': localStorage.getItem('X-Venue-Id') || '',
+        'X-App-Code': 'Web_Manager',
       };
       console.log('requestInterceptors', config);
       // const url = config?.url?.concat('?token = 123');

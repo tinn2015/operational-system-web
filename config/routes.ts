@@ -188,53 +188,53 @@ export default [
       },
     ],
   },
-  {
-    path: '/ticket',
-    name: '票务管理',
-    icon: 'smile',
-    routes: [
-      {
-        path: '/ticket',
-        redirect: '/ticket/list',
-      },
-      {
-        name: '报表统计',
-        icon: 'smile',
-        path: '/ticket/report',
-        component: './ticket/report',
-      },
-      {
-        name: '票务列表',
-        icon: 'smile',
-        path: '/ticket/list',
-        component: './ticket/index',
-      },
-      {
-        name: 'SKU管理',
-        icon: 'smile',
-        path: '/ticket/sku',
-        component: './ticket/sku',
-      },
-      {
-        name: '预约管理',
-        icon: 'smile',
-        path: '/ticket/appointment',
-        component: './ticket/appointment',
-      },
-      {
-        name: '订单管理',
-        icon: 'smile',
-        path: '/ticket/order',
-        component: './ticket/order',
-      },
-      {
-        name: '财务管理',
-        icon: 'smile',
-        path: '/ticket/finance',
-        component: './ticket/finance',
-      },
-    ],
-  },
+  // {
+  //   path: '/ticket',
+  //   name: '票务管理',
+  //   icon: 'smile',
+  //   routes: [
+  //     {
+  //       path: '/ticket',
+  //       redirect: '/ticket/list',
+  //     },
+  //     {
+  //       name: '报表统计',
+  //       icon: 'smile',
+  //       path: '/ticket/report',
+  //       component: './ticket/report',
+  //     },
+  //     {
+  //       name: '票务列表',
+  //       icon: 'smile',
+  //       path: '/ticket/list',
+  //       component: './ticket/index',
+  //     },
+  //     {
+  //       name: 'SKU管理',
+  //       icon: 'smile',
+  //       path: '/ticket/sku',
+  //       component: './ticket/sku',
+  //     },
+  //     {
+  //       name: '预约管理',
+  //       icon: 'smile',
+  //       path: '/ticket/appointment',
+  //       component: './ticket/appointment',
+  //     },
+  //     {
+  //       name: '订单管理',
+  //       icon: 'smile',
+  //       path: '/ticket/order',
+  //       component: './ticket/order',
+  //     },
+  //     {
+  //       name: '财务管理',
+  //       icon: 'smile',
+  //       path: '/ticket/finance',
+  //       component: './ticket/finance',
+  //     },
+  //   ],
+  // },
   {
     path: '/game',
     name: '游戏管理',
@@ -242,14 +242,14 @@ export default [
     routes: [
       {
         path: '/game',
-        redirect: '/game/checkIn',
+        redirect: '/game/team',
       },
-      {
-        name: '签到管理',
-        icon: 'smile',
-        path: '/game/checkIn',
-        component: './game/checkIn',
-      },
+      // {
+      //   name: '签到管理',
+      //   icon: 'smile',
+      //   path: '/game/checkIn',
+      //   component: './game/checkIn',
+      // },
       {
         name: '组队管理',
         icon: 'smile',
@@ -264,75 +264,75 @@ export default [
       },
     ],
   },
-  {
-    path: '/show',
-    name: '放映管理',
-    icon: 'smile',
-    routes: [
-      {
-        path: '/show',
-        redirect: '/show/content',
-      },
-      {
-        name: '放映内容管理',
-        icon: 'smile',
-        path: '/show/content',
-        component: './show/content',
-      },
-      {
-        name: '放映计划管理',
-        icon: 'smile',
-        path: '/show/plan',
-        component: './show/plan',
-      },
-      {
-        name: '秘钥管理',
-        icon: 'smile',
-        path: '/show/key',
-        component: './show/key',
-      },
-    ],
-  },
-  {
-    path: '/fire',
-    name: '消防告警',
-    icon: 'smile',
-    routes: [
-      {
-        path: '/fire',
-        redirect: '/fire/list',
-      },
-      {
-        name: '告警列表',
-        icon: 'smile',
-        path: '/fire/list',
-        component: './fire/list',
-      },
-    ],
-  },
-  {
-    path: '/marketing',
-    name: '营销相关',
-    icon: 'smile',
-    routes: [
-      {
-        path: '/marketing',
-        redirect: '/marketing/coupon',
-      },
-      {
-        name: '优惠券管理',
-        icon: 'smile',
-        path: '/marketing/coupon',
-        component: './marketing/coupon',
-      },
-      {
-        name: '用户反馈',
-        icon: 'smile',
-        path: '/marketing/feedback',
-        component: './marketing/feedback',
-      },
-    ],
-  },
+  // {
+  //   path: '/show',
+  //   name: '放映管理',
+  //   icon: 'smile',
+  //   routes: [
+  //     {
+  //       path: '/show',
+  //       redirect: '/show/content',
+  //     },
+  //     {
+  //       name: '放映内容管理',
+  //       icon: 'smile',
+  //       path: '/show/content',
+  //       component: './show/content',
+  //     },
+  //     {
+  //       name: '放映计划管理',
+  //       icon: 'smile',
+  //       path: '/show/plan',
+  //       component: './show/plan',
+  //     },
+  //     {
+  //       name: '秘钥管理',
+  //       icon: 'smile',
+  //       path: '/show/key',
+  //       component: './show/key',
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: '/fire',
+  //   name: '消防告警',
+  //   icon: 'smile',
+  //   routes: [
+  //     {
+  //       path: '/fire',
+  //       redirect: '/fire/list',
+  //     },
+  //     {
+  //       name: '告警列表',
+  //       icon: 'smile',
+  //       path: '/fire/list',
+  //       component: './fire/list',
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: '/marketing',
+  //   name: '营销相关',
+  //   icon: 'smile',
+  //   routes: [
+  //     {
+  //       path: '/marketing',
+  //       redirect: '/marketing/coupon',
+  //     },
+  //     {
+  //       name: '优惠券管理',
+  //       icon: 'smile',
+  //       path: '/marketing/coupon',
+  //       component: './marketing/coupon',
+  //     },
+  //     {
+  //       name: '用户反馈',
+  //       icon: 'smile',
+  //       path: '/marketing/feedback',
+  //       component: './marketing/feedback',
+  //     },
+  //   ],
+  // },
   {
     name: 'exception',
     icon: 'warning',
@@ -393,35 +393,35 @@ export default [
       },
     ],
   },
-  {
-    path: '/log',
-    name: '日志管理',
-    icon: 'smile',
-    routes: [
-      {
-        path: '/log',
-        redirect: '/log/server',
-      },
-      {
-        name: '服务日志',
-        icon: 'smile',
-        path: '/log/server',
-        component: './log/server',
-      },
-      {
-        name: '游戏日志',
-        icon: 'smile',
-        path: '/log/game',
-        component: './log/game',
-      },
-      {
-        name: '设备日志',
-        icon: 'smile',
-        path: '/log/device',
-        component: './log/device',
-      },
-    ],
-  },
+  // {
+  //   path: '/log',
+  //   name: '日志管理',
+  //   icon: 'smile',
+  //   routes: [
+  //     {
+  //       path: '/log',
+  //       redirect: '/log/server',
+  //     },
+  //     {
+  //       name: '服务日志',
+  //       icon: 'smile',
+  //       path: '/log/server',
+  //       component: './log/server',
+  //     },
+  //     {
+  //       name: '游戏日志',
+  //       icon: 'smile',
+  //       path: '/log/game',
+  //       component: './log/game',
+  //     },
+  //     {
+  //       name: '设备日志',
+  //       icon: 'smile',
+  //       path: '/log/device',
+  //       component: './log/device',
+  //     },
+  //   ],
+  // },
   {
     path: '/',
     redirect: '/dashboard/analysis',
