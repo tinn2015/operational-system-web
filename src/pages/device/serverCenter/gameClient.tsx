@@ -31,6 +31,7 @@ const GameClient: React.FC = () => {
     {
       title: '服务器类型',
       dataIndex: 'serverType',
+      search: false,
       valueEnum: {
         1: { text: '串流服务器' },
         2: { text: '游戏client' },
@@ -71,6 +72,7 @@ const GameClient: React.FC = () => {
       ellipsis: true,
       align: 'center',
       width: 180,
+      search: false,
     },
     {
       title: '最后同步时间',
@@ -80,6 +82,7 @@ const GameClient: React.FC = () => {
       ellipsis: true,
       align: 'center',
       width: 180,
+      search: false,
     },
     {
       title: '操作',

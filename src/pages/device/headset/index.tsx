@@ -58,24 +58,24 @@ const HeadSetList: React.FC = () => {
       ellipsis: true,
       align: 'center',
       width: 200,
-      valueEnum: () => {
-        const values = {};
-        streamingServerList.forEach((item) => {
-          values[item.id] = { text: item.serverIp };
-        });
-        return values;
-      },
+      // valueEnum: () => {
+      //   const values = {};
+      //   streamingServerList.forEach((item) => {
+      //     values[item.id] = { text: item.serverIp };
+      //   });
+      //   return values;
+      // },
     },
-    {
-      title: '设备类型',
-      dataIndex: 'headsetType',
-      valueEnum: {
-        1: { text: '头显' },
-        2: { text: '一体机' },
-      },
-      align: 'center',
-      width: 80,
-    },
+    // {
+    //   title: '设备类型',
+    //   dataIndex: 'headsetType',
+    //   valueEnum: {
+    //     1: { text: '头显' },
+    //     2: { text: '一体机' },
+    //   },
+    //   align: 'center',
+    //   width: 80,
+    // },
     {
       title: '状态',
       dataIndex: 'status',
@@ -86,12 +86,12 @@ const HeadSetList: React.FC = () => {
         2: { text: '未知', status: 'Default' },
       },
       align: 'center',
-      width: 100,
+      width: 200,
     },
     {
       title: '网络类型',
       dataIndex: 'networkType',
-      width: 80,
+      width: 200,
       // filters: true,
       valueEnum: {
         1: { text: 'wifi' },
@@ -104,7 +104,7 @@ const HeadSetList: React.FC = () => {
       dataIndex: 'remainElectricity',
       align: 'center',
       width: 100,
-
+      search: false,
       render: (_, record) => (
         <Tag color={record.remainElectricity > 20 ? 'success' : 'error'}>
           {record.remainElectricity}%
@@ -128,28 +128,29 @@ const HeadSetList: React.FC = () => {
           >
             编辑
           </Button>
-          {record.status !== 1 ? (
-            <Button
-              key="start"
-              type="link"
-              icon={<PlayCircleOutlined />}
-              onClick={() => handleDeviceOperation('start', record)}
-            >
-              启动
-            </Button>
-          ) : (
-            <Popconfirm
-              title="确认停止"
-              description="确定要停止该设备吗？"
-              okText="确认"
-              cancelText="取消"
-              onConfirm={() => handleDeviceOperation('stop', record)}
-            >
-              <Button key="stop" type="link" danger icon={<PoweroffOutlined />}>
-                停止
+          {record.status !== 2 &&
+            (record.status !== 1 ? (
+              <Button
+                key="start"
+                type="link"
+                icon={<PlayCircleOutlined />}
+                onClick={() => handleDeviceOperation('start', record)}
+              >
+                启动
               </Button>
-            </Popconfirm>
-          )}
+            ) : (
+              <Popconfirm
+                title="确认停止"
+                description="确定要停止该设备吗？"
+                okText="确认"
+                cancelText="取消"
+                onConfirm={() => handleDeviceOperation('stop', record)}
+              >
+                <Button key="stop" type="link" danger icon={<PoweroffOutlined />}>
+                  停止
+                </Button>
+              </Popconfirm>
+            ))}
           <Popconfirm
             title="确认删除"
             description="确定要删除该设备吗？"
@@ -176,8 +177,9 @@ const HeadSetList: React.FC = () => {
           // 这里替换为实际的 API 请求
           console.log('头显查询', params, sorter, filter);
           const headsetList = await getHeadsetList({
-            pageSize: 100,
+            pageSize: 1000,
             pageNum: 1,
+            ...params,
           });
           console.log('headsetList', headsetList);
           return {

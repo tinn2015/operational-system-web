@@ -166,20 +166,24 @@ const HeadSetList: React.FC = () => {
               </Button>
             </Popconfirm>
           )} */}
-          <Button key="start" type="link" onClick={() => handleViewStatus(record)}>
-            查看状态
-          </Button>
-          <Popconfirm
-            title="确认重启"
-            description="确定要重启该设备吗？"
-            okText="确认"
-            cancelText="取消"
-            onConfirm={() => handleDeviceOperation(SERVER_OPERATION.REBOOT, record)}
-          >
-            <Button key="restart" variant="text" color="purple">
-              重启
-            </Button>
-          </Popconfirm>
+          {record.agentStatus === 1 && (
+            <>
+              <Button key="start" type="link" onClick={() => handleViewStatus(record)}>
+                查看状态
+              </Button>
+              <Popconfirm
+                title="确认重启"
+                description="确定要重启该设备吗？"
+                okText="确认"
+                cancelText="取消"
+                onConfirm={() => handleDeviceOperation(SERVER_OPERATION.REBOOT, record)}
+              >
+                <Button key="restart" variant="text" color="purple">
+                  重启
+                </Button>
+              </Popconfirm>
+            </>
+          )}
           <Popconfirm
             title="确认删除"
             description="确定要删除该设备吗？"
@@ -206,9 +210,9 @@ const HeadSetList: React.FC = () => {
           // 这里替换为实际的 API 请求
           console.log('服务器查询', params, sorter, filter);
           const deviceList = await getDeviceList({
-            pageSize: 100,
+            pageSize: 1000,
             pageNum: 1,
-            // serverType: 1,
+            ...params,
           });
           console.log('deviceList', deviceList);
           return {

@@ -109,7 +109,7 @@ const TeamList: React.FC = () => {
     try {
       const res = await quitTeam({ teamId: currentTeam?.teamId, uid: playerId });
       console.log('踢出成功', res);
-      if (res.code === 200) {
+      if (res) {
         message.success('踢出成功');
         fetchTeamDetail(currentTeam?.teamId || '');
       }

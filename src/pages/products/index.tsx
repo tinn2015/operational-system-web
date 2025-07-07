@@ -349,12 +349,14 @@ const ProductManagement: React.FC = () => {
       title: '商品封面',
       dataIndex: 'productUrl',
       width: 120,
+      search: false,
       render: (_, record) => <Image src={record.productUrl} width={50} />,
     },
     {
       title: '商品图片',
       dataIndex: 'pictures',
       width: 200,
+      search: false,
       render: (_, record) => (
         <div
           style={{
@@ -383,11 +385,13 @@ const ProductManagement: React.FC = () => {
       dataIndex: 'summaries',
       // ellipsis: true,
       width: 200,
+      search: false,
     },
     {
       title: '销售状态',
       dataIndex: 'saleStatus',
       width: 100,
+      search: false,
       render: (_, record) => (
         <Tag color={record.saleStatus === 1 ? 'success' : 'default'}>
           {record.saleStatus === 1 ? '已上架' : '已下架'}

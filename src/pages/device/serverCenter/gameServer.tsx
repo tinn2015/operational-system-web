@@ -40,6 +40,7 @@ const GameServer: React.FC = () => {
       },
       align: 'center',
       width: 150,
+      search: false,
     },
     {
       title: '服务状态',
@@ -71,6 +72,7 @@ const GameServer: React.FC = () => {
       ellipsis: true,
       align: 'center',
       width: 180,
+      search: false,
     },
     {
       title: '最后同步时间',
@@ -80,6 +82,7 @@ const GameServer: React.FC = () => {
       ellipsis: true,
       align: 'center',
       width: 180,
+      search: false,
     },
     {
       title: '操作',
