@@ -4,7 +4,7 @@ import { request } from '@umijs/max';
 /** 获取商品列表 */
 export async function getProductList(params: {
     pageSize?: number;
-    pageIndex?: number;
+    pageNum?: number;
     productName?: string;
     saleStatus?: number;
 }) {
@@ -16,7 +16,7 @@ export async function getProductList(params: {
         params: {
             ...params,
             pageSize: params.pageSize,
-            pageIndex: params.pageIndex || 1,
+            pageNum: params.pageNum || 1,
         },
     });
 }

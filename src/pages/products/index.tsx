@@ -456,7 +456,7 @@ const ProductManagement: React.FC = () => {
         request={async (params) => {
           const _params = {
             pageSize: params.pageSize,
-            pageIndex: params.current,
+            pageNum: params.current,
             ...params,
           };
           delete _params.current;
