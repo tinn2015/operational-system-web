@@ -131,6 +131,16 @@ export default defineConfig({
     // 解决首次加载时白屏的问题
     { src: '/scripts/loading.js', async: true },
   ],
+  /**
+   * @name <head> 中额外的 meta 标签
+   * @description 配置 <head> 中额外的 meta 标签
+   */
+  metas: [
+    {
+      name: 'viewport',
+      content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
+    },
+  ],
   //================ pro 插件配置 =================
   presets: ['umi-presets-pro'],
   /**

@@ -268,7 +268,14 @@ const HeadSetList: React.FC = () => {
               name="headsetIp"
               label="头显IP"
               placeholder="请输入头显IP"
-              rules={[{ required: true, message: '请输入头显IP' }]}
+              rules={[
+                { required: true, message: '请输入头显IP' },
+                {
+                  pattern:
+                    /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                  message: '请输入正确的IP地址格式，如：192.168.1.1',
+                },
+              ]}
             />
           </Col>
         </Row>
@@ -279,6 +286,7 @@ const HeadSetList: React.FC = () => {
               name="serverIp"
               label="绑定串流服务"
               placeholder="请绑定串流服务"
+              rules={[{ required: true, message: '请选择串流服务' }]}
               options={streamingServerList.map((server) => ({
                 label: server.serverIp,
                 value: server.id,
