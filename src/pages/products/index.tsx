@@ -147,16 +147,18 @@ const ProductManagement: React.FC = () => {
     console.log('编辑商品', record);
     setEditingProduct(record);
     setTimeRanges(record.listingList || []);
-    const saleDates = Array.from(new Set(record.listingList?.map((item) => item.showTime)));
-    if (saleDates.length === 0) {
-      saleDateChange({
-        saleBeginTime: record.saleBeginTime,
-        saleEndTime: record.saleEndTime,
-      });
-    } else {
-      setSaleDates(saleDates || []);
-      setSelectedDates(saleDates || []);
-    }
+    // const saleDates = Array.from(new Set(record.listingList?.map((item) => item.showTime)));
+    // if (saleDates.length === 0) {
+    //   debugger;
+
+    // } else {
+    //   setSaleDates(saleDates || []);
+    //   setSelectedDates(saleDates || []);
+    // }
+    saleDateChange({
+      saleBeginTime: record.saleBeginTime,
+      saleEndTime: record.saleEndTime,
+    });
     // setSaleDates(saleDates || []);
     // setSelectedDates(saleDates || []);
     setProductUrl(record.productUrl || '');
@@ -231,6 +233,11 @@ const ProductManagement: React.FC = () => {
     setEditingProduct(undefined);
     setTimeRanges([]);
     setSaleDates([]);
+    setSelectedDates([]);
+    setSaleTime({
+      saleBeginTime: '',
+      saleEndTime: '',
+    });
     setProductUrl('');
     setPictures([]);
     setCoverFileList([]);
@@ -350,7 +357,10 @@ const ProductManagement: React.FC = () => {
   };
   const saveProductData = async (values: API.Product) => {
     console.log('listingList', timeRanges);
-    // debugger;
+    timeRanges.forEach((item) => {
+      item.beginTime = item.showTime + ' ' + dayjs(item.beginTime).format('HH:mm:ss');
+      item.endTime = item.showTime + ' ' + dayjs(item.endTime).format('HH:mm:ss');
+    });
     await saveProduct(values, timeRanges);
     console.log('保存商品', values);
     return true;

@@ -7,7 +7,7 @@ import {
 } from '@/services/device';
 import { SERVER_OPERATION } from '@/utils/constant';
 import { PlusOutlined } from '@ant-design/icons';
-import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import type { ActionType, ProColumns, ProFormInstance } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import {
   Button,
@@ -31,7 +31,7 @@ const HeadSetList: React.FC = () => {
   const [statusModalVisible, setStatusModalVisible] = useState<boolean>(false);
   const [deviceStatusData, setDeviceStatusData] = useState<Record<string, any>[]>([]);
   const [currentDeviceName, setCurrentDeviceName] = useState<string>('');
-
+  const formRef = useRef<ProFormInstance>();
   const handleDeviceOperation = async (type: number, record: API.Device) => {
     // const operationText =
     //   type === SERVER_OPERATION.START ? '启动' : type === SERVER_OPERATION.STOP ? '停止' : '重启';
@@ -138,6 +138,8 @@ const HeadSetList: React.FC = () => {
             key="edit"
             type="link"
             onClick={() => {
+              console.log('编辑设备', record);
+              formRef.current?.setFieldsValue(record);
               setEditingDevice(record);
               setCreateModalVisible(true);
             }}
@@ -248,8 +250,15 @@ const HeadSetList: React.FC = () => {
       <ModalForm
         title={editingDevice ? '编辑服务器设备' : '新增服务器设备'}
         open={createModalVisible}
-        onOpenChange={setCreateModalVisible}
+        formRef={formRef}
         initialValues={editingDevice}
+        onOpenChange={(visible) => {
+          setCreateModalVisible(visible);
+          if (!visible) {
+            setEditingDevice(undefined);
+            formRef.current?.resetFields();
+          }
+        }}
         onFinish={async (values) => {
           console.log('编辑或者新增服务器', values, editingDevice);
           const newValues = editingDevice ? { ...values, id: editingDevice.id } : values;

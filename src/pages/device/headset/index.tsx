@@ -289,7 +289,7 @@ const HeadSetList: React.FC = () => {
               rules={[{ required: true, message: '请选择串流服务' }]}
               options={streamingServerList.map((server) => ({
                 label: server.serverIp,
-                value: server.id,
+                value: server.serverIp,
               }))}
             />
           </Col>
