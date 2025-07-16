@@ -19,18 +19,15 @@ const PasswordSettings: React.FC = () => {
             message.error('两次输入的密码不一致');
             return false;
           }
-          const oldPassword = sha256Hash(values.oldPassword);
-          const newPassword = sha256Hash(values.newPassword);
+          const oldPasswd = sha256Hash(values.oldPassword);
+          const newPasswd = sha256Hash(values.newPassword);
           const res = await updatePassword({
-            oldPassword,
-            newPassword,
+            oldPasswd,
+            newPasswd,
           });
-          if (res.code === 200) {
+          if (res) {
             message.success('密码修改成功');
             return true;
-          } else {
-            message.error(res.message);
-            return false;
           }
         }}
         submitter={{

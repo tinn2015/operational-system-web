@@ -10,7 +10,7 @@ import {
   saveTeam,
   unbindHeadset,
 } from '@/services/team';
-import { DeleteOutlined, PlusOutlined, SearchOutlined, UserAddOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined, UserAddOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   ModalForm,
@@ -345,20 +345,20 @@ const TeamList: React.FC = () => {
           >
             <SearchOutlined /> 查询队伍
           </Button>,
-          <Button
-            key="add"
-            type="primary"
-            onClick={async () => {
-              const optionalProducts = await getRecentProducts();
-              setOptionalProducts(optionalProducts);
-              setEditingTeam(undefined);
-              setListingList([]);
-              setSession(null);
-              setCreateModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 创建队伍
-          </Button>,
+          // <Button
+          //   key="add"
+          //   type="primary"
+          //   onClick={async () => {
+          //     const optionalProducts = await getRecentProducts();
+          //     setOptionalProducts(optionalProducts);
+          //     setEditingTeam(undefined);
+          //     setListingList([]);
+          //     setSession(null);
+          //     setCreateModalVisible(true);
+          //   }}
+          // >
+          //   <PlusOutlined /> 创建队伍
+          // </Button>,
         ]}
       />
 

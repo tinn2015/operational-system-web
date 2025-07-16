@@ -108,16 +108,59 @@ const ProductManagement: React.FC = () => {
     tableRef.current?.reload();
   };
 
+  const saleDateChange = (value: { saleBeginTime?: string; saleEndTime?: string }) => {
+    setSaleTime({ ...saleTime, ...value });
+
+    // 新增逻辑：判断并生成日期数组
+    const { saleBeginTime, saleEndTime } = value;
+    if (saleBeginTime && saleEndTime) {
+      const begin = dayjs(saleBeginTime);
+      const end = dayjs(saleEndTime);
+      if (end.isBefore(begin, 'day')) {
+        message.error('结束日期不能早于开始日期');
+        setSaleDates([]);
+        return;
+      }
+      // 生成日期数组
+      const dates: string[] = [];
+      let current = begin.clone();
+      while (!current.isAfter(end, 'day')) {
+        dates.push(current.format('YYYY-MM-DD'));
+        current = current.add(1, 'day');
+      }
+      console.log('dates', dates);
+      // 遍历已存在的 timeRanges，通过 showTime 判断是否在 dates 内，如果不在则删除
+      if (timeRanges.length > 0) {
+        const filteredTimeRanges = timeRanges.filter((item) => dates.includes(item.showTime));
+        setTimeRanges(filteredTimeRanges);
+      }
+      setSaleDates(dates);
+      setSelectedDates(dates);
+    } else {
+      setSaleDates([]);
+      setSelectedDates([]);
+    }
+  };
+
   // 初始化编辑状态
   const handleEdit = (record: API.Product) => {
     console.log('编辑商品', record);
     setEditingProduct(record);
     setTimeRanges(record.listingList || []);
-    const saleDates = record.listingList?.map((item) => item.showTime);
-    setSaleDates(saleDates || []);
-    setSelectedDates(saleDates || []);
+    const saleDates = Array.from(new Set(record.listingList?.map((item) => item.showTime)));
+    if (saleDates.length === 0) {
+      saleDateChange({
+        saleBeginTime: record.saleBeginTime,
+        saleEndTime: record.saleEndTime,
+      });
+    } else {
+      setSaleDates(saleDates || []);
+      setSelectedDates(saleDates || []);
+    }
+    // setSaleDates(saleDates || []);
+    // setSelectedDates(saleDates || []);
     setProductUrl(record.productUrl || '');
-    setPictures(record.pictures || []);
+    setPictures(record.pictureList || []);
 
     // 设置封面文件列表
     if (record.productUrl) {
@@ -134,9 +177,9 @@ const ProductManagement: React.FC = () => {
     }
 
     // 设置介绍图片文件列表
-    if (record.pictures && record.pictures.length > 0) {
+    if (record.pictureList && record.pictureList.length > 0) {
       setPictureFileList(
-        record.pictures.map((url, index) => ({
+        record.pictureList.map((url, index) => ({
           uid: `${record.id}-${index + 1}`,
           name: `picture-${index + 1}.jpg`,
           status: 'done' as UploadFileStatus,
@@ -146,7 +189,6 @@ const ProductManagement: React.FC = () => {
     } else {
       setPictureFileList([]);
     }
-
     setCreateModalVisible(true);
   };
 
@@ -154,6 +196,10 @@ const ProductManagement: React.FC = () => {
   const addTimeSlot = () => {
     if (timeRange.beginTime === '' || timeRange.endTime === '') {
       message.error('请先选择完整的时间段信息');
+      return;
+    }
+    if (timeRange.beginTime === timeRange.endTime) {
+      message.error('开始时间和结束时间不能相同');
       return;
     }
     // 遍历所有选中的 selectedDates
@@ -176,6 +222,7 @@ const ProductManagement: React.FC = () => {
     });
     // const newTimeRange = { ...timeRange };
     setTimeRanges([...timeRanges, ...listingList]);
+    console.log('timeRanges', timeRanges);
     message.success('添加成功');
   };
 
@@ -296,35 +343,6 @@ const ProductManagement: React.FC = () => {
     return true;
   };
 
-  const saleDateChange = (value: { saleBeginTime?: string; saleEndTime?: string }) => {
-    setSaleTime({ ...saleTime, ...value });
-
-    // 新增逻辑：判断并生成日期数组
-    const { saleBeginTime, saleEndTime } = value;
-    if (saleBeginTime && saleEndTime) {
-      const begin = dayjs(saleBeginTime);
-      const end = dayjs(saleEndTime);
-      if (end.isBefore(begin, 'day')) {
-        message.error('结束日期不能早于开始日期');
-        setSaleDates([]);
-        return;
-      }
-      // 生成日期数组
-      const dates: string[] = [];
-      let current = begin.clone();
-      while (!current.isAfter(end, 'day')) {
-        dates.push(current.format('YYYY-MM-DD'));
-        current = current.add(1, 'day');
-      }
-      console.log('dates', dates);
-      setSaleDates(dates);
-      setSelectedDates(dates);
-    } else {
-      setSaleDates([]);
-      setSelectedDates([]);
-    }
-  };
-
   const handleTagClick = (date: string) => {
     setSelectedDates((prev) =>
       prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date],
@@ -354,7 +372,7 @@ const ProductManagement: React.FC = () => {
     },
     {
       title: '商品图片',
-      dataIndex: 'pictures',
+      dataIndex: 'pictureList',
       width: 200,
       search: false,
       render: (_, record) => (
@@ -367,9 +385,9 @@ const ProductManagement: React.FC = () => {
             alignItems: 'center',
           }}
         >
-          {record.pictures &&
-            record.pictures.length > 0 &&
-            record.pictures.map((pic, index) => (
+          {record.pictureList &&
+            record.pictureList.length > 0 &&
+            record.pictureList.map((pic, index) => (
               <Image
                 key={index}
                 src={pic}
@@ -399,19 +417,24 @@ const ProductManagement: React.FC = () => {
       ),
     },
     {
-      title: '展示时间',
+      title: '放映时长',
       dataIndex: 'showTime',
+      search: false,
       width: 80,
     },
     {
       title: '销售开始时间',
       dataIndex: 'saleBeginTime',
       width: 100,
+      valueType: 'dateTime',
+      sorter: true,
     },
     {
       title: '销售结束时间',
       dataIndex: 'saleEndTime',
       width: 100,
+      valueType: 'dateTime',
+      sorter: true,
     },
     {
       title: '操作',
@@ -518,7 +541,7 @@ const ProductManagement: React.FC = () => {
               ...values,
               id: editingProduct?.id || '',
               productUrl,
-              pictures,
+              pictureList: pictures,
             };
 
             await saveProductData(submitData);
@@ -560,10 +583,12 @@ const ProductManagement: React.FC = () => {
               fieldProps={{
                 onChange: (value: any) => {
                   console.log('销售开始时间', value);
-                  saleDateChange({
-                    saleBeginTime: dayjs(value).format('YYYY-MM-DD'),
-                    saleEndTime: saleTime.saleEndTime,
-                  });
+                  if (value) {
+                    saleDateChange({
+                      saleBeginTime: dayjs(value).format('YYYY-MM-DD'),
+                      saleEndTime: saleTime.saleEndTime,
+                    });
+                  }
                 },
               }}
               rules={[{ required: true, message: '请选择销售开始时间' }]}
@@ -576,10 +601,12 @@ const ProductManagement: React.FC = () => {
               fieldProps={{
                 onChange: (value: any) => {
                   console.log('销售结束时间', value);
-                  saleDateChange({
-                    saleBeginTime: saleTime.saleBeginTime,
-                    saleEndTime: dayjs(value).format('YYYY-MM-DD'),
-                  });
+                  if (value) {
+                    saleDateChange({
+                      saleBeginTime: saleTime.saleBeginTime,
+                      saleEndTime: dayjs(value).format('YYYY-MM-DD'),
+                    });
+                  }
                 },
               }}
               rules={[{ required: true, message: '请选择销售结束时间' }]}
@@ -632,7 +659,7 @@ const ProductManagement: React.FC = () => {
             </Form.Item>
           </Col>
           <Col span={18}>
-            <Form.Item label="商品介绍图片" name="pictures">
+            <Form.Item label="商品介绍图片" name="pictureList">
               <Upload
                 listType="picture-card"
                 fileList={pictureFileList}
@@ -683,6 +710,7 @@ const ProductManagement: React.FC = () => {
             type="number"
             placeholder="可播放数量"
             value={timeRange.quantity}
+            max={1000}
             onChange={(value) => {
               if (value) {
                 setTimeRange({ ...timeRange, quantity: value });
@@ -761,9 +789,13 @@ const ProductManagement: React.FC = () => {
           return (
             <div style={{ marginBottom: 16 }}>
               {rows.map((row, rowIdx) => (
-                <div key={rowIdx} style={{ display: 'flex', gap: 16, marginTop: 24 }}>
+                <div key={rowIdx + 'row'} style={{ display: 'flex', gap: 16, marginTop: 24 }}>
                   {row.map(([date, ranges]) => (
-                    <div key={date} className={styles.dateBox} style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      key={date + rowIdx}
+                      className={styles.dateBox}
+                      style={{ flex: 1, minWidth: 0 }}
+                    >
                       <div style={{ fontWeight: 'bold', marginBottom: 8, textAlign: 'center' }}>
                         {date}
                       </div>
@@ -783,7 +815,7 @@ const ProductManagement: React.FC = () => {
                               display: 'block',
                               textAlign: 'center',
                             }}
-                            key={idx}
+                            key={`${date}-${idx}`}
                             closable
                             color="green"
                             onClose={() => {

@@ -105,7 +105,7 @@ declare namespace API {
     id: string;
     productName: string;
     productUrl: string; // 用于存储封面图片URL
-    pictures: string[];
+    pictureList: string[];
     information: string;
     summaries: string;
     saleStatus: number; // 0: 下架, 1: 上架
