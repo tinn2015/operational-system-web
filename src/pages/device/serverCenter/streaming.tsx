@@ -47,7 +47,7 @@ const StreamingManager: React.FC = () => {
       dataIndex: 'serverStatus',
       valueEnum: {
         0: { text: '停止', color: 'red' },
-        1: { text: '正常', color: 'green' },
+        1: { text: '运行中', color: 'green' },
         2: { text: '未知', color: 'orange' },
       },
       align: 'center',
@@ -89,31 +89,27 @@ const StreamingManager: React.FC = () => {
       valueType: 'option',
       ellipsis: true,
       align: 'center',
-      width: 200,
       render: (_, record) => (
         <Space wrap split={<Divider type="vertical" />}>
-          {record.serverStatus === 0 || record.serverStatus === 2 ? (
-            <Button
-              key="start"
-              type="link"
-              icon={<PlayCircleOutlined />}
-              onClick={() => handleDeviceOperation(SERVER_OPERATION.START, record)}
-            >
-              启动
+          <Button
+            key="start"
+            type="link"
+            icon={<PlayCircleOutlined />}
+            onClick={() => handleDeviceOperation(SERVER_OPERATION.START, record)}
+          >
+            启动
+          </Button>
+          <Popconfirm
+            title="确认停止"
+            description="确定要停止该设备吗？"
+            okText="确认"
+            cancelText="取消"
+            onConfirm={() => handleDeviceOperation(SERVER_OPERATION.STOP, record)}
+          >
+            <Button key="stop" type="link" danger icon={<PoweroffOutlined />}>
+              停止
             </Button>
-          ) : (
-            <Popconfirm
-              title="确认停止"
-              description="确定要停止该设备吗？"
-              okText="确认"
-              cancelText="取消"
-              onConfirm={() => handleDeviceOperation(SERVER_OPERATION.STOP, record)}
-            >
-              <Button key="stop" type="link" danger icon={<PoweroffOutlined />}>
-                停止
-              </Button>
-            </Popconfirm>
-          )}
+          </Popconfirm>
           <Popconfirm
             title="确认重启"
             description="确定要重启该设备吗？"

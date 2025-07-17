@@ -11,7 +11,7 @@ declare namespace API {
     headsetType: number;
     // 头显状态
     headsetStatus: number;
-    // 串流状态，0：停止，1正常，2未知
+    // 串流状态，0：停止，1运行中，2未知
     status: number;
     // 剩余电量
     remainElectricity: number;
@@ -36,7 +36,7 @@ declare namespace API {
     serverIp: string;
     /** serverStatus 枚举说明
      * 0: 停止
-     * 1: 正常
+     * 1: 运行中
      * 2: 未知
      */
     agentStatus: 0 | 1 | 2;
@@ -144,7 +144,7 @@ declare namespace API {
     serverType: number;
     serverIp: string;
     /**
-     * 服务状态，0：停止，1正常，2未知
+     * 服务状态，0：停止，1运行中，2未知
      */
     serverStatus: number;
     /**
