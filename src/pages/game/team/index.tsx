@@ -1,6 +1,8 @@
 /**
  * 组队管理
  */
+import AutoRefreshControls from '@/components/AutoRefreshControls';
+import useAutoRefresh from '@/hooks/useAutoRefresh';
 import { getRecentProducts } from '@/services/product';
 import {
   disbandTeam,
@@ -82,6 +84,13 @@ const TeamList: React.FC = () => {
     quantity: number;
     id?: string;
   } | null>(null);
+
+  // 使用自定义Hook管理自动刷新
+  const { autoRefresh, setAutoRefresh, refreshInterval, setRefreshInterval } = useAutoRefresh(
+    () => {
+      tableRef.current?.reload();
+    },
+  );
 
   // 删除队伍
   const handleDisband = async (record: TeamType) => {
@@ -273,6 +282,16 @@ const TeamList: React.FC = () => {
     },
   ];
 
+  // 使用自定义组件替代原来的刷新控制
+  const refreshControls = (
+    <AutoRefreshControls
+      autoRefresh={autoRefresh}
+      setAutoRefresh={setAutoRefresh}
+      refreshInterval={refreshInterval}
+      setRefreshInterval={setRefreshInterval}
+    />
+  );
+
   return (
     <>
       <ProTable<TeamType>
@@ -322,6 +341,7 @@ const TeamList: React.FC = () => {
         dateFormatter="string"
         headerTitle="组队管理"
         toolBarRender={() => [
+          refreshControls,
           <DatePicker.RangePicker
             key="datePicker"
             defaultValue={[dayjs(), dayjs()]}

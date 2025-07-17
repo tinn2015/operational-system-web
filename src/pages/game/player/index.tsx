@@ -1,11 +1,13 @@
 /**
  * 玩家信息表
  */
+import AutoRefreshControls from '@/components/AutoRefreshControls';
+import useAutoRefresh from '@/hooks/useAutoRefresh';
 import { getPlayerList } from '@/services/player';
 import { QrcodeOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, DatePicker, Image, message, Modal } from 'antd';
+import { Button, DatePicker, Image, message, Modal, Space } from 'antd';
 import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
 
@@ -37,6 +39,13 @@ const PlayerList: React.FC = () => {
     dayjs().format('YYYY-MM-DD'),
     dayjs().format('YYYY-MM-DD'),
   ]);
+
+  // 使用自定义Hook管理自动刷新
+  const { autoRefresh, setAutoRefresh, refreshInterval, setRefreshInterval } = useAutoRefresh(
+    () => {
+      tableRef.current?.reload();
+    },
+  );
 
   const columns: ProColumns<Player>[] = [
     {
@@ -221,6 +230,16 @@ const PlayerList: React.FC = () => {
     },
   ];
 
+  // 使用自定义组件作为刷新控制
+  const refreshControls = (
+    <AutoRefreshControls
+      autoRefresh={autoRefresh}
+      setAutoRefresh={setAutoRefresh}
+      refreshInterval={refreshInterval}
+      setRefreshInterval={setRefreshInterval}
+    />
+  );
+
   return (
     <>
       <ProTable<Player>
@@ -272,8 +291,8 @@ const PlayerList: React.FC = () => {
         options={{
           search: false,
           fullScreen: false,
-          reload: false,
-          setting: false,
+          reload: true,
+          setting: true,
           density: false,
         }}
         dateFormatter="string"
@@ -302,6 +321,7 @@ const PlayerList: React.FC = () => {
           >
             <SearchOutlined /> 查询玩家
           </Button>,
+          <Space key="refreshControls">{refreshControls}</Space>,
         ]}
       />
     </>

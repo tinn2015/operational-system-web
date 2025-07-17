@@ -1,3 +1,5 @@
+import AutoRefreshControls from '@/components/AutoRefreshControls';
+import useAutoRefresh from '@/hooks/useAutoRefresh';
 import { getServerList, operateServer } from '@/services/serverCenter';
 import { SERVER_OPERATION } from '@/utils/constant';
 import { PlayCircleOutlined, PoweroffOutlined } from '@ant-design/icons';
@@ -8,6 +10,13 @@ import React, { useRef } from 'react';
 
 const PoseHub: React.FC = () => {
   const tableRef = useRef<ActionType>();
+
+  // 使用自定义Hook管理自动刷新
+  const { autoRefresh, setAutoRefresh, refreshInterval, setRefreshInterval } = useAutoRefresh(
+    () => {
+      tableRef.current?.reload();
+    },
+  );
 
   const handleDeviceOperation = async (type: number, record: API.Server) => {
     const operationText =
@@ -126,6 +135,16 @@ const PoseHub: React.FC = () => {
     },
   ];
 
+  // 使用自定义组件作为刷新控制
+  const refreshControls = (
+    <AutoRefreshControls
+      autoRefresh={autoRefresh}
+      setAutoRefresh={setAutoRefresh}
+      refreshInterval={refreshInterval}
+      setRefreshInterval={setRefreshInterval}
+    />
+  );
+
   return (
     <>
       <ProTable<API.Server>
@@ -154,6 +173,13 @@ const PoseHub: React.FC = () => {
         }}
         dateFormatter="string"
         headerTitle="位姿总服务器"
+        options={{
+          setting: true,
+          reload: true,
+        }}
+        toolbar={{
+          actions: [refreshControls],
+        }}
       />
     </>
   );

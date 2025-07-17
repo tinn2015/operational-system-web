@@ -1,3 +1,5 @@
+import AutoRefreshControls from '@/components/AutoRefreshControls';
+import useAutoRefresh from '@/hooks/useAutoRefresh';
 import {
   deleteDevice,
   getDeviceList,
@@ -32,6 +34,14 @@ const HeadSetList: React.FC = () => {
   const [deviceStatusData, setDeviceStatusData] = useState<Record<string, any>[]>([]);
   const [currentDeviceName, setCurrentDeviceName] = useState<string>('');
   const formRef = useRef<ProFormInstance>();
+
+  // 使用自定义Hook管理自动刷新
+  const { autoRefresh, setAutoRefresh, refreshInterval, setRefreshInterval } = useAutoRefresh(
+    () => {
+      tableRef.current?.reload();
+    },
+  );
+
   const handleDeviceOperation = async (type: number, record: API.Device) => {
     // const operationText =
     //   type === SERVER_OPERATION.START ? '启动' : type === SERVER_OPERATION.STOP ? '停止' : '重启';
@@ -66,6 +76,16 @@ const HeadSetList: React.FC = () => {
     }
   };
 
+  // 使用自定义组件作为刷新控制
+  const refreshControls = (
+    <AutoRefreshControls
+      autoRefresh={autoRefresh}
+      setAutoRefresh={setAutoRefresh}
+      refreshInterval={refreshInterval}
+      setRefreshInterval={setRefreshInterval}
+    />
+  );
+
   const columns: ProColumns<API.Device>[] = [
     {
       title: '服务器名称',
@@ -73,7 +93,7 @@ const HeadSetList: React.FC = () => {
       copyable: true,
       ellipsis: true,
       align: 'center',
-      width: 200,
+      width: 150,
     },
     {
       title: '服务器Ip',
@@ -95,7 +115,7 @@ const HeadSetList: React.FC = () => {
         5: { text: '位姿子服务器' },
       },
       align: 'center',
-      width: 200,
+      width: 150,
     },
     {
       title: '服务器状态',
@@ -125,7 +145,7 @@ const HeadSetList: React.FC = () => {
       copyable: true,
       ellipsis: true,
       align: 'center',
-      width: 200,
+      width: 150,
     },
     {
       title: '操作',
@@ -231,6 +251,13 @@ const HeadSetList: React.FC = () => {
         search={{
           labelWidth: 'auto',
         }}
+        options={{
+          search: false,
+          fullScreen: false,
+          reload: true,
+          setting: true,
+          density: false,
+        }}
         dateFormatter="string"
         headerTitle="服务器设备管理"
         toolBarRender={() => [
@@ -244,6 +271,7 @@ const HeadSetList: React.FC = () => {
           >
             <PlusOutlined /> 新增设备
           </Button>,
+          <Space key="refreshControls">{refreshControls}</Space>,
         ]}
       />
 

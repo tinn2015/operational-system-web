@@ -1,3 +1,5 @@
+import AutoRefreshControls from '@/components/AutoRefreshControls';
+import useAutoRefresh from '@/hooks/useAutoRefresh';
 import { deleteHeadset, getHeadsetList, saveHeadsetList } from '@/services/headset';
 import { getServerList } from '@/services/serverCenter';
 import { PlayCircleOutlined, PlusOutlined, PoweroffOutlined } from '@ant-design/icons';
@@ -12,6 +14,13 @@ const HeadSetList: React.FC = () => {
 
   const [editingDevice, setEditingDevice] = useState<API.Headset | undefined>();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+
+  // 使用自定义Hook管理自动刷新
+  const { autoRefresh, setAutoRefresh, refreshInterval, setRefreshInterval } = useAutoRefresh(
+    () => {
+      tableRef.current?.reload();
+    },
+  );
 
   // 获取串流服务列表
   const [streamingServerList, setStreamingServerList] = useState<API.Server[]>([]);
@@ -43,6 +52,16 @@ const HeadSetList: React.FC = () => {
     tableRef.current?.reload();
   };
 
+  // 使用自定义组件作为刷新控制
+  const refreshControls = (
+    <AutoRefreshControls
+      autoRefresh={autoRefresh}
+      setAutoRefresh={setAutoRefresh}
+      refreshInterval={refreshInterval}
+      setRefreshInterval={setRefreshInterval}
+    />
+  );
+
   const columns: ProColumns<API.Headset>[] = [
     {
       title: '设备编号',
@@ -50,14 +69,14 @@ const HeadSetList: React.FC = () => {
       copyable: true,
       ellipsis: true,
       align: 'center',
-      width: 200,
+      width: 150,
     },
     {
       title: '绑定服务器IP',
       dataIndex: 'serverIp',
       ellipsis: true,
       align: 'center',
-      width: 200,
+      width: 150,
       // valueEnum: () => {
       //   const values = {};
       //   streamingServerList.forEach((item) => {
@@ -86,12 +105,12 @@ const HeadSetList: React.FC = () => {
         2: { text: '未知', status: 'Default' },
       },
       align: 'center',
-      width: 200,
+      width: 100,
     },
     {
       title: '网络类型',
       dataIndex: 'networkType',
-      width: 200,
+      width: 100,
       // filters: true,
       valueEnum: {
         1: { text: 'wifi' },
@@ -211,7 +230,7 @@ const HeadSetList: React.FC = () => {
           search: false,
           fullScreen: false,
           reload: true,
-          setting: false,
+          setting: true,
           density: false,
         }}
         dateFormatter="string"
@@ -227,6 +246,7 @@ const HeadSetList: React.FC = () => {
           >
             <PlusOutlined /> 新增设备
           </Button>,
+          <Space key="refreshControls">{refreshControls}</Space>,
         ]}
       />
 
