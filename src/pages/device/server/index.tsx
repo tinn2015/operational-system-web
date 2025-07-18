@@ -153,7 +153,7 @@ const HeadSetList: React.FC = () => {
       ellipsis: true,
       align: 'center',
       render: (_, record) => (
-        <Space wrap split={<Divider type="vertical" />}>
+        <Space split={<Divider type="vertical" />}>
           <Button
             key="edit"
             type="link"

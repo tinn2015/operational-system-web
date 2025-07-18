@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
  */
 const useAutoRefresh = (
     refreshCallback: () => void,
-    defaultInterval: number = 6,
+    defaultInterval: number = 120,
     defaultAutoRefresh: boolean = true,
 ) => {
     const [refreshInterval, setRefreshInterval] = useState<number>(defaultInterval);
