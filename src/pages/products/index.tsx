@@ -88,24 +88,30 @@ const ProductManagement: React.FC = () => {
   // 处理商品状态更新
   const handleOnSaleProduct = async (record: API.Product) => {
     console.log('上架商品', record);
-    await onSaleProduct(record.id);
-    message.success('上架成功');
-    tableRef.current?.reload();
+    const res = await onSaleProduct(record.id);
+    if (res) {
+      message.success('上架成功');
+      tableRef.current?.reload();
+    }
   };
 
   const handleOffSaleProduct = async (record: API.Product) => {
     console.log('下架商品', record);
-    await offSaleProduct(record.id);
-    message.success('下架成功');
-    tableRef.current?.reload();
+    const res = await offSaleProduct(record.id);
+    if (res) {
+      message.success('下架成功');
+      tableRef.current?.reload();
+    }
   };
 
   // 删除商品
   const handleDelete = async (record: API.Product) => {
     console.log('删除商品', record);
-    await deleteProduct(record.id);
-    message.success('删除成功');
-    tableRef.current?.reload();
+    const res = await deleteProduct(record.id);
+    if (res) {
+      message.success('删除成功');
+      tableRef.current?.reload();
+    }
   };
 
   const saleDateChange = (value: { saleBeginTime?: string; saleEndTime?: string }) => {
@@ -318,10 +324,12 @@ const ProductManagement: React.FC = () => {
   const handleCoverRemove = async (file: UploadFile) => {
     if (file.url) {
       try {
-        await deleteFile(file.url);
-        setProductUrl('');
-        setCoverFileList([]);
-        message.success('封面删除成功');
+        const res = await deleteFile(file.url);
+        if (res) {
+          setProductUrl('');
+          setCoverFileList([]);
+          message.success('封面删除成功');
+        }
       } catch (error) {
         console.error('删除失败', error);
         message.error('封面删除失败');
@@ -334,14 +342,16 @@ const ProductManagement: React.FC = () => {
   const handlePictureRemove = async (file: UploadFile) => {
     if (file.url) {
       try {
-        await deleteFile(file.url);
-        const newPictures = pictures.filter((url) => url !== file.url);
-        setPictures(newPictures);
+        const res = await deleteFile(file.url);
+        if (res) {
+          const newPictures = pictures.filter((url) => url !== file.url);
+          setPictures(newPictures);
 
-        const newFileList = pictureFileList.filter((item) => item.url !== file.url);
-        setPictureFileList(newFileList);
+          const newFileList = pictureFileList.filter((item) => item.url !== file.url);
+          setPictureFileList(newFileList);
 
-        message.success('介绍图片删除成功');
+          message.success('介绍图片删除成功');
+        }
       } catch (error) {
         console.error('删除失败', error);
         message.error('介绍图片删除失败');
@@ -554,9 +564,11 @@ const ProductManagement: React.FC = () => {
               pictureList: pictures,
             };
 
-            await saveProductData(submitData);
-            message.success('提交成功');
-            tableRef.current?.reload();
+            const res = await saveProductData(submitData);
+            if (res) {
+              message.success('提交成功');
+              tableRef.current?.reload();
+            }
             setCreateModalVisible(false);
             return true;
           } catch (error) {

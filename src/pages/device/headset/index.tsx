@@ -47,9 +47,11 @@ const HeadSetList: React.FC = () => {
 
   const handleDelete = async (record: API.Headset) => {
     console.log('删除设备', record);
-    await deleteHeadset(record);
-    message.success('删除成功');
-    tableRef.current?.reload();
+    const res = await deleteHeadset(record);
+    if (res) {
+      message.success('删除成功');
+      tableRef.current?.reload();
+    }
   };
 
   // 使用自定义组件作为刷新控制
@@ -230,8 +232,8 @@ const HeadSetList: React.FC = () => {
           search: false,
           fullScreen: false,
           reload: true,
-          setting: true,
-          density: false,
+          setting: false,
+          density: true,
         }}
         dateFormatter="string"
         headerTitle="VR头显设备管理"
@@ -266,10 +268,12 @@ const HeadSetList: React.FC = () => {
         onFinish={async (values) => {
           console.log('编辑或者新增头显', values, editingDevice);
           const newValues = editingDevice ? { ...values, id: editingDevice.id } : values;
-          await saveHeadsetList(newValues);
+          const res = await saveHeadsetList(newValues);
           // 这里添加实际的保存 API 调用
-          message.success('提交成功');
-          tableRef.current?.reload();
+          if (res) {
+            message.success('提交成功');
+            tableRef.current?.reload();
+          }
           setCreateModalVisible(false);
           return true;
         }}

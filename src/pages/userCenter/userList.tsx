@@ -41,9 +41,11 @@ const UserCenter: React.FC = () => {
   // TODO: 替换为实际的 API 调用
   const handleDelete = async (record: API.User) => {
     try {
-      await deleteUser({ userId: record.userId });
-      message.success('删除成功');
-      tableRef.current?.reload();
+      const res = await deleteUser({ userId: record.userId });
+      if (res) {
+        message.success('删除成功');
+        tableRef.current?.reload();
+      }
     } catch (error) {
       message.error('删除失败');
     }

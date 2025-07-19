@@ -22,10 +22,11 @@ const GameServer: React.FC = () => {
     const operationText =
       type === SERVER_OPERATION.START ? '启动' : type === SERVER_OPERATION.STOP ? '停止' : '重启';
 
-    await operateServer({ id: record.id, operateType: type });
-
-    message.success(`设备${operationText}成功`);
-    tableRef.current?.reload();
+    const res = await operateServer({ id: record.id, operateType: type });
+    if (res) {
+      message.success(`设备${operationText}成功`);
+      tableRef.current?.reload();
+    }
   };
 
   const columns: ProColumns<API.Server>[] = [
@@ -98,9 +99,8 @@ const GameServer: React.FC = () => {
       valueType: 'option',
       ellipsis: true,
       align: 'center',
-      width: 200,
       render: (_, record) => (
-        <Space wrap split={<Divider type="vertical" />}>
+        <Space split={<Divider type="vertical" />}>
           <Button
             key="start"
             type="link"
@@ -175,7 +175,8 @@ const GameServer: React.FC = () => {
         dateFormatter="string"
         headerTitle="游戏server"
         options={{
-          setting: true,
+          setting: false,
+          density: true,
           reload: true,
         }}
         toolbar={{

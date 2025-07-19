@@ -123,7 +123,7 @@ export const errorConfig: RequestConfig = {
 
       if (code !== 200) {
         message.error(errorInfo || msg);
-        return response.data || response;
+        return false;
       }
       if (code === 200) {
         return data;

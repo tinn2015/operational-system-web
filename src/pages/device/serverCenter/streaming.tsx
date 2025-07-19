@@ -22,10 +22,11 @@ const StreamingManager: React.FC = () => {
     const operationText =
       type === SERVER_OPERATION.START ? '启动' : type === SERVER_OPERATION.STOP ? '停止' : '重启';
 
-    await operateServer({ id: record.id, operateType: type });
-
-    message.success(`设备${operationText}成功`);
-    tableRef.current?.reload();
+    const res = await operateServer({ id: record.id, operateType: type });
+    if (res) {
+      message.success(`设备${operationText}成功`);
+      tableRef.current?.reload();
+    }
   };
 
   const columns: ProColumns<API.Server>[] = [
@@ -175,7 +176,8 @@ const StreamingManager: React.FC = () => {
         dateFormatter="string"
         headerTitle="串流服务"
         options={{
-          setting: true,
+          setting: false,
+          density: true,
           reload: true,
         }}
         toolbar={{

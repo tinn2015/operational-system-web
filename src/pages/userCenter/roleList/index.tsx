@@ -32,9 +32,11 @@ const RoleList: React.FC = () => {
   // 删除角色
   const handleDelete = async (record: RoleType) => {
     try {
-      await deleteRole({ roleId: record.id });
-      message.success('删除成功');
-      tableRef.current?.reload();
+      const res = await deleteRole({ roleId: record.id });
+      if (res) {
+        message.success('删除成功');
+        tableRef.current?.reload();
+      }
     } catch (error) {
       message.error('删除失败');
     }
@@ -201,9 +203,11 @@ const RoleList: React.FC = () => {
               values.id = editingRole.id;
             }
             console.log('==角色==', values);
-            await saveRole(values);
-            message.success('提交成功');
-            tableRef.current?.reload();
+            const res = await saveRole(values);
+            if (res) {
+              message.success('提交成功');
+              tableRef.current?.reload();
+            }
             setCreateModalVisible(false);
             return true;
           } catch (error) {

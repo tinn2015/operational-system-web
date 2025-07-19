@@ -95,9 +95,11 @@ const TeamList: React.FC = () => {
   // 删除队伍
   const handleDisband = async (record: TeamType) => {
     try {
-      await disbandTeam({ teamId: record.teamId });
-      message.success('解散成功');
-      tableRef.current?.reload();
+      const res = await disbandTeam({ teamId: record.teamId });
+      if (res) {
+        message.success('解散成功');
+        tableRef.current?.reload();
+      }
     } catch (error) {
       message.error('删除失败');
     }

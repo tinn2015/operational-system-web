@@ -112,8 +112,10 @@ const AdvancedForm: FC<Record<string, any>> = () => {
   const onFinish = async (values: Record<string, any>) => {
     setError([]);
     try {
-      await fakeSubmitForm(values);
-      message.success('提交成功');
+      const res = await fakeSubmitForm(values);
+      if (res) {
+        message.success('提交成功');
+      }
     } catch {
       // console.log
     }

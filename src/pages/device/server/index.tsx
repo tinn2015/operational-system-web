@@ -49,10 +49,12 @@ const HeadSetList: React.FC = () => {
 
     try {
       // 这里添加实际的 API 调用
-      await rebootDevice({
+      const res = await rebootDevice({
         id: record.id,
       });
-      message.success(`设备重启成功`);
+      if (res) {
+        message.success(`设备重启成功`);
+      }
     } catch (error) {
       message.error(`设备重启失败`);
     }
@@ -60,9 +62,11 @@ const HeadSetList: React.FC = () => {
 
   const handleDelete = async (record: API.Device) => {
     console.log('删除设备', record);
-    await deleteDevice(record);
-    message.success('删除成功');
-    tableRef.current?.reload();
+    const res = await deleteDevice(record);
+    if (res) {
+      message.success('删除成功');
+      tableRef.current?.reload();
+    }
   };
 
   const handleViewStatus = async (record: API.Device) => {
@@ -255,8 +259,8 @@ const HeadSetList: React.FC = () => {
           search: false,
           fullScreen: false,
           reload: true,
-          setting: true,
-          density: false,
+          setting: false,
+          density: true,
         }}
         dateFormatter="string"
         headerTitle="服务器设备管理"
@@ -290,10 +294,12 @@ const HeadSetList: React.FC = () => {
         onFinish={async (values) => {
           console.log('编辑或者新增服务器', values, editingDevice);
           const newValues = editingDevice ? { ...values, id: editingDevice.id } : values;
-          await saveDevice(newValues);
+          const res = await saveDevice(newValues);
           // 这里添加实际的保存 API 调用
-          message.success('提交成功');
-          tableRef.current?.reload();
+          if (res) {
+            message.success('提交成功');
+            tableRef.current?.reload();
+          }
           setCreateModalVisible(false);
           return true;
         }}
