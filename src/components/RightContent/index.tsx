@@ -47,7 +47,6 @@ export const SelectVenue = ({ options }: { options: any[] }) => {
     //   },
     // });
     setCurrentVenue(currentVenue);
-    debugger;
     localStorage.setItem('X-Venue-Id', currentVenue.id);
     window.location.reload();
   };
