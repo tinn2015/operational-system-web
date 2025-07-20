@@ -520,6 +520,11 @@ const ProductManagement: React.FC = () => {
         search={{
           labelWidth: 'auto',
         }}
+        options={{
+          setting: false,
+          density: true,
+          reload: true,
+        }}
         dateFormatter="string"
         headerTitle="商品管理"
         toolBarRender={() => [
@@ -766,15 +771,15 @@ const ProductManagement: React.FC = () => {
             }}
             name="timeRange"
             format="HH:mm"
-            disabledTime={() => ({
-              disabledHours: () => {
-                // 禁用0-8点和23点之后
-                const hours = [];
-                for (let i = 0; i < 9; i++) hours.push(i); // 0~8
-                for (let i = 23; i < 24; i++) hours.push(i); // 23
-                return hours;
-              },
-            })}
+            // disabledTime={() => ({
+            //   disabledHours: () => {
+            //     // 禁用0-8点和23点之后
+            //     const hours = [];
+            //     for (let i = 0; i < 9; i++) hours.push(i); // 0~8
+            //     for (let i = 23; i < 24; i++) hours.push(i); // 23
+            //     return hours;
+            //   },
+            // })}
           />
           <Button
             style={{ marginLeft: 20 }}

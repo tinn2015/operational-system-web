@@ -3,7 +3,6 @@
  */
 import AutoRefreshControls from '@/components/AutoRefreshControls';
 import useAutoRefresh from '@/hooks/useAutoRefresh';
-import { getRecentProducts } from '@/services/product';
 import {
   disbandTeam,
   getTeamDetail,
@@ -141,7 +140,7 @@ const TeamList: React.FC = () => {
     try {
       const res = await unbindHeadset({ uid: player.id });
       console.log('解绑成功', res);
-      if (res.code === 200) {
+      if (res) {
         message.success('解绑成功');
         fetchTeamDetail(currentTeam?.teamId || '');
       }
@@ -254,7 +253,7 @@ const TeamList: React.FC = () => {
           >
             查看玩家
           </Button>
-          <Button
+          {/* <Button
             key="edit"
             type="link"
             onClick={async () => {
@@ -267,7 +266,7 @@ const TeamList: React.FC = () => {
             }}
           >
             编辑
-          </Button>
+          </Button> */}
           <Popconfirm
             title="确认删除"
             description="确定要删除该队伍吗？"

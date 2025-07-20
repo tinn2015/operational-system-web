@@ -124,9 +124,9 @@ const Login: React.FC = () => {
       // 登录
       const pwd = sha256Hash(values.password);
       const msg = await login({ ...values, password: pwd });
-      setUserLoginState(msg as LoginStateType);
       console.log('登录结果', msg);
       if (msg) {
+        setUserLoginState(msg as LoginStateType);
         if (msg.VerificationCode) {
           const base64Str = handleBase64Image(msg.VerificationCode);
           console.log('base64Str', base64Str);
@@ -393,13 +393,9 @@ const Login: React.FC = () => {
                   },
                 ]}
                 onGetCaptcha={async (phone) => {
-                  const result = await getFakeCaptcha({
+                  await getFakeCaptcha({
                     phone,
                   });
-                  if (!result) {
-                    return;
-                  }
-                  message.success('获取验证码成功！验证码为：1234');
                 }}
               />
             </>

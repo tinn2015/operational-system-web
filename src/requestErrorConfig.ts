@@ -120,7 +120,11 @@ export const errorConfig: RequestConfig = {
         history.push('/user/login');
         return false;
       }
-
+      // 账号密码错误
+      if (code === 100002) {
+        message.error(errorInfo || msg);
+        return data
+      }
       if (code !== 200) {
         message.error(errorInfo || msg);
         return false;

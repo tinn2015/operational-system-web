@@ -29,16 +29,16 @@ export const SelectVenue = ({ options }: { options: any[] }) => {
   // const { initialState, setInitialState } = useModel('@@initialState');
   console.log('SelectVenue options', options);
   const items = options.map((item) => ({
-    key: item.venueCode,
+    key: item.id,
     label: item.venueName,
   }));
   const originalVenue =
-    options.find((item) => item.venueCode === localStorage.getItem('X-Venue-Id')) || options[0];
+    options.find((item) => item.id === localStorage.getItem('X-Venue-Id')) || options[0];
   console.log('X-Venue-Id', localStorage.getItem('X-Venue-Id'));
   const [currentVenue, setCurrentVenue] = useState<any>(originalVenue);
   console.log('SelectVenue originalVenue', originalVenue);
   const handleSelect = (key: string) => {
-    const currentVenue = options.find((item) => item.venueCode === key);
+    const currentVenue = options.find((item) => item.id === key);
     console.log('SelectVenue handleSelect', key, currentVenue);
     // setInitialState({
     //   currentUser: {
@@ -47,7 +47,8 @@ export const SelectVenue = ({ options }: { options: any[] }) => {
     //   },
     // });
     setCurrentVenue(currentVenue);
-    localStorage.setItem('X-Venue-Id', currentVenue.venueCode);
+    debugger;
+    localStorage.setItem('X-Venue-Id', currentVenue.id);
     window.location.reload();
   };
   return (
