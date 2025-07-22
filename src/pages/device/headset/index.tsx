@@ -200,7 +200,7 @@ const HeadSetList: React.FC = () => {
           const headsetList = await getHeadsetList({
             pageSize: params.pageSize,
             pageNum: params.current,
-            // ...params,
+            ...params,
           });
           console.log('headsetList', headsetList);
           return {

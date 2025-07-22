@@ -256,6 +256,7 @@ const PlayerList: React.FC = () => {
               pageNum: params.current,
               beginDate: dateRange[0],
               endDate: dateRange[1],
+              ...params,
             });
             return {
               data: playerList.data || [],

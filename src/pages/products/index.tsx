@@ -500,6 +500,7 @@ const ProductManagement: React.FC = () => {
           const _params = {
             pageSize: params.pageSize,
             pageNum: params.current,
+            ...params,
           };
           const productList = await getProductList(_params);
           console.log('productList', productList);

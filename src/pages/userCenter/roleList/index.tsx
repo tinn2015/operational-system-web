@@ -129,6 +129,7 @@ const RoleList: React.FC = () => {
           const roleList = await getRoleList({
             pageSize: params.pageSize,
             pageNum: params.current,
+            ...params,
           });
           return {
             data: roleList.items || [],

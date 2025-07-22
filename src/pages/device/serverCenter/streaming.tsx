@@ -156,6 +156,7 @@ const StreamingManager: React.FC = () => {
           const deviceList = await getServerList({
             pageSize: params.pageSize,
             pageNum: params.current,
+            ...params,
             serverType: 1, // 只查询串流相关的服务器类型
           });
           return {

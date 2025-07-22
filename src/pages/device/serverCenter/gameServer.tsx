@@ -156,6 +156,7 @@ const GameServer: React.FC = () => {
           const deviceList = await getServerList({
             pageSize: params.pageSize,
             pageNum: params.current,
+            ...params,
             serverType: 3,
           });
           return {

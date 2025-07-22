@@ -156,6 +156,7 @@ const Pose: React.FC = () => {
           const deviceList = await getServerList({
             pageSize: params.pageSize,
             pageNum: params.current,
+            ...params,
             serverType: 5,
           });
           return {
