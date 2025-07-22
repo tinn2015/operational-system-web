@@ -337,7 +337,7 @@ const TeamList: React.FC = () => {
           fullScreen: false,
           reload: true,
           setting: false,
-          density: false,
+          density: true,
         }}
         dateFormatter="string"
         headerTitle="组队管理"

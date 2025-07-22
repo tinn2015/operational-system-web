@@ -295,8 +295,8 @@ const PlayerList: React.FC = () => {
           search: false,
           fullScreen: false,
           reload: true,
-          setting: true,
-          density: false,
+          setting: false,
+          density: true,
         }}
         dateFormatter="string"
         headerTitle="玩家信息表"
