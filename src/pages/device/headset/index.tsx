@@ -66,14 +66,6 @@ const HeadSetList: React.FC = () => {
 
   const columns: ProColumns<API.Headset>[] = [
     {
-      title: '设备编号',
-      dataIndex: 'headsetNo',
-      copyable: true,
-      ellipsis: true,
-      align: 'center',
-      width: 150,
-    },
-    {
       title: '绑定服务器IP',
       dataIndex: 'serverIp',
       ellipsis: true,
@@ -86,6 +78,14 @@ const HeadSetList: React.FC = () => {
       //   });
       //   return values;
       // },
+    },
+    {
+      title: '设备编号',
+      dataIndex: 'headsetNo',
+      copyable: true,
+      ellipsis: true,
+      align: 'center',
+      width: 150,
     },
     // {
     //   title: '设备类型',
@@ -198,9 +198,9 @@ const HeadSetList: React.FC = () => {
           // 这里替换为实际的 API 请求
           console.log('头显查询', params, sorter, filter);
           const headsetList = await getHeadsetList({
-            pageSize: 1000,
-            pageNum: 1,
-            ...params,
+            pageSize: params.pageSize,
+            pageNum: params.current,
+            // ...params,
           });
           console.log('headsetList', headsetList);
           return {

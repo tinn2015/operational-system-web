@@ -305,7 +305,6 @@ const TeamList: React.FC = () => {
             pageNum: params.current,
             beginDate: teamDateRange[0],
             endDate: teamDateRange[1],
-            ...params,
           });
           return {
             data: teamList.data || [],

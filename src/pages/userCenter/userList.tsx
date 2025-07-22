@@ -177,7 +177,6 @@ const UserCenter: React.FC = () => {
           const userList = await getUserList({
             pageSize: params.pageSize,
             pageNum: params.current,
-            ...params,
           });
           console.log('userList', userList);
           return {

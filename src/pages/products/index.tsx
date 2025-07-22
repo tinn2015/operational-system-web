@@ -500,9 +500,7 @@ const ProductManagement: React.FC = () => {
           const _params = {
             pageSize: params.pageSize,
             pageNum: params.current,
-            ...params,
           };
-          delete _params.current;
           const productList = await getProductList(_params);
           console.log('productList', productList);
           return {

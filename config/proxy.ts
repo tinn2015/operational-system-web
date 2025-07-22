@@ -35,9 +35,8 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/wz/': {
-      // target: 'https://proapi.azurewebsites.net',
-      // target: 'http://115.190.83.238:8201', //敏哥
-      target: 'http://1.94.137.57:8000',
+      // target: 'http://1.94.137.57:8000', // 测试环境
+      target: 'https://hub.innomix.cn', // 测试环境
       changeOrigin: true,
       pathRewrite: { '/wz': '' },
     },

@@ -236,9 +236,8 @@ const HeadSetList: React.FC = () => {
           // 这里替换为实际的 API 请求
           console.log('服务器查询', params, sorter, filter);
           const deviceList = await getDeviceList({
-            pageSize: 1000,
-            pageNum: 1,
-            ...params,
+            pageSize: params.pageSize,
+            pageNum: params.current,
           });
           console.log('deviceList', deviceList);
           return {
