@@ -540,7 +540,16 @@ const TeamList: React.FC = () => {
                   性别: {player.sexCode === '1' ? '男' : player.sexCode === '2' ? '女' : '未知'}
                 </p>
                 <p>身高: {player.height}</p>
-                <p>年龄段: {player.age === 1 ? '成人' : player.age === 2 ? '儿童' : '未知'}</p>
+                <p>
+                  年龄段:{' '}
+                  {player.age === 1
+                    ? '成人'
+                    : player.age === 2
+                      ? '青少年'
+                      : player.age === 3
+                        ? '儿童'
+                        : '未知'}
+                </p>
                 <p style={{ display: 'flex', alignItems: 'center' }}>
                   玩家二维码: <QRCode level="H" size={100} bordered={false} value={player.qrCode} />
                 </p>

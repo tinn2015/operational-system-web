@@ -89,7 +89,8 @@ const PlayerList: React.FC = () => {
       search: false,
       valueEnum: {
         1: { text: '成人', status: 'Processing' },
-        2: { text: '儿童', status: 'Warning' },
+        2: { text: '青少年', status: 'Warning' },
+        3: { text: '儿童', status: 'Success' },
       },
     },
     // {
@@ -161,12 +162,14 @@ const PlayerList: React.FC = () => {
       dataIndex: 'beginTime',
       width: 180,
       align: 'center',
+      search: false,
     },
     {
       title: '游戏结束时间',
       dataIndex: 'endTime',
       width: 180,
       align: 'center',
+      search: false,
     },
     {
       title: '最后关卡',
