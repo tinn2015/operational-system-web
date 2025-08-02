@@ -37,9 +37,22 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (![loginPath, '/user/register', '/user/register-result'].includes(location.pathname)) {
     const currentUser = await fetchUserInfo();
-    if (!localStorage.getItem('X-Venue-Id') && currentUser?.venueList) {
-      localStorage.setItem('X-Venue-Id', currentUser.venueList[0].id);
+
+    // 优化场馆ID管理逻辑
+    if (currentUser?.venueList?.length > 0) {
+      const storedVenueId = localStorage.getItem('X-Venue-Id');
+      const venueList = currentUser?.venueList;
+
+      // 检查存储的场馆ID是否有效
+      const isValidVenue =
+        storedVenueId && venueList.some((venue: { id: string }) => venue.id === storedVenueId);
+
+      // 如果存储的ID无效或不存在，使用第一个场馆
+      if (!isValidVenue) {
+        localStorage.setItem('X-Venue-Id', venueList[0].id);
+      }
     }
+
     return {
       fetchUserInfo,
       currentUser,
