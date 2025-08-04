@@ -35,8 +35,8 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/wz/': {
-      // target: 'http://1.94.137.57:8000', // 测试环境
-      target: 'https://hub.innomix.cn', // 测试环境
+      target: 'http://1.94.137.57:8000', // 测试环境
+      // target: 'https://hub.innomix.cn', // 测试环境
       changeOrigin: true,
       pathRewrite: { '/wz': '' },
     },

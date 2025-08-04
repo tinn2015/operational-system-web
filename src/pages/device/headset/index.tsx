@@ -30,7 +30,9 @@ const HeadSetList: React.FC = () => {
       pageNum: 1,
       serverType: 2,
     }).then((res) => {
-      setStreamingServerList(res.data);
+      if (res && res.data) {
+        setStreamingServerList(res.data);
+      }
     });
   }, []);
 

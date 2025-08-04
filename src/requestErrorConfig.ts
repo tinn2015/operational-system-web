@@ -116,9 +116,12 @@ export const errorConfig: RequestConfig = {
       const { data } = response as unknown as ResponseStructure;
       console.log('[response]', response.request.responseURL, response);
       const { code, errorInfo, message: msg } = data;
-      if (code === 401) {
+      if (code === 401 || code === 110007) {
         history.push('/user/login');
-        return false;
+        localStorage.removeItem('token');
+        localStorage.removeItem('X-Venue-Id');
+        // message.error(errorInfo || msg);
+        return data;
       }
       // 账号密码错误
       if (code === 100002) {
