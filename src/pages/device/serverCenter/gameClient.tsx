@@ -101,17 +101,18 @@ const GameClient: React.FC = () => {
       valueType: 'option',
       ellipsis: true,
       align: 'center',
-      hideInTable: !access.serverStartBtn,
       render: (_, record) => (
         <Space wrap split={<Divider type="vertical" />}>
-          <Button
-            key="start"
-            type="link"
-            icon={<PlayCircleOutlined />}
-            onClick={() => handleDeviceOperation(SERVER_OPERATION.START, record)}
-          >
-            启动
-          </Button>
+          {access.serverStartBtn && (
+            <Button
+              key="start"
+              type="link"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleDeviceOperation(SERVER_OPERATION.START, record)}
+            >
+              启动
+            </Button>
+          )}
           <Popconfirm
             title="确认停止"
             description="确定要停止该设备吗？"
@@ -123,17 +124,19 @@ const GameClient: React.FC = () => {
               停止
             </Button>
           </Popconfirm>
-          <Popconfirm
-            title="确认重启"
-            description="确定要重启该设备吗？"
-            okText="确认"
-            cancelText="取消"
-            onConfirm={() => handleDeviceOperation(SERVER_OPERATION.REBOOT, record)}
-          >
-            <Button key="restart" variant="text" color="purple">
-              重启
-            </Button>
-          </Popconfirm>
+          {access.serverStartBtn && (
+            <Popconfirm
+              title="确认重启"
+              description="确定要重启该设备吗？"
+              okText="确认"
+              cancelText="取消"
+              onConfirm={() => handleDeviceOperation(SERVER_OPERATION.REBOOT, record)}
+            >
+              <Button key="restart" variant="text" color="purple">
+                重启
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
