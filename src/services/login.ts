@@ -18,27 +18,34 @@ import { request } from '@umijs/max';
  * @returns
  */
 export async function login(options?: { [key: string]: any }) {
-    return request<API.LoginResult>(`${PROXY_PREFIX_LOGIN}/admin/login`, {
-        method: 'POST',
-        data: {
-            ...(options || {}),
-        },
-    });
+  return request<API.LoginResult>(`${PROXY_PREFIX_LOGIN}/admin/login`, {
+    method: 'POST',
+    data: {
+      ...(options || {}),
+    },
+  });
 }
 
 /** 获取登录用户信息 */
 export async function getUserInfo(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/getLoginUserInfo`, {
-        method: 'GET',
-    });
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/getLoginUserInfo`, {
+    method: 'GET',
+  });
 }
 
 /** 获取验证码 */
 export async function getCaptcha(options?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/captchas/images`, {
-        method: 'GET',
-        params: {
-            ...(options || {}),
-        },
-    });
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/captchas/images`, {
+    method: 'GET',
+    params: {
+      ...(options || {}),
+    },
+  });
+}
+
+/** 获取用户权限 */
+export async function getUserProf(options?: { [key: string]: any }) {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/api/getUserProf`, {
+    method: 'GET',
+  });
 }

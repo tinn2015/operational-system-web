@@ -7,8 +7,10 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormSelect, ProFormText, ProTable } from '@ant-design/pro-components';
 import { Button, Col, Divider, message, Popconfirm, Row, Space, Tag } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import { useAccess } from 'umi';
 
 const HeadSetList: React.FC = () => {
+  const access = useAccess();
   const tableRef = useRef<ActionType>();
   const formRef = useRef<any>(null);
 
@@ -151,7 +153,8 @@ const HeadSetList: React.FC = () => {
           >
             编辑
           </Button>
-          {record.status !== 2 &&
+          {access.serverStartBtn &&
+            record.status !== 2 &&
             (record.status !== 1 ? (
               <Button
                 key="start"

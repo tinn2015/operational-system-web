@@ -17,22 +17,30 @@ declare namespace API {
     geographic?: {
       province?: { label?: string; key?: string };
       city?: { label?: string; key?: string };
-  };
-  address?: string;
-  phone?: string;
-  corpId?: string;
-  currentVenue?: {
-    venueCode?: string;
-    venueName?: string;
-  };
-  venueList?: {
-    venueCode?: string;
-    venueName?: string;
+    };
+    address?: string;
+    phone?: string;
     corpId?: string;
-  }[];
-};
+    currentVenue?: {
+      venueCode?: string;
+      venueName?: string;
+    };
+    venueList?: {
+      venueCode?: string;
+      venueName?: string;
+      corpId?: string;
+    }[];
+  };
+  type UserPermission = {
+    /** 是否有启动游戏的权限 */
+    gameProf: boolean;
+  };
+  type LoginResult = {
+    status?: string;
+    type?: string;
+    currentAuthority?: string;
+  };
 
-type LoginResult = {
   type ErrorResponse = {
     /** 业务约定的错误码 */
     errorCode: string;

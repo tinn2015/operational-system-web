@@ -7,8 +7,10 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Divider, message, Popconfirm, Space } from 'antd';
 import React, { useRef } from 'react';
+import { useAccess } from 'umi';
 
 const GameClient: React.FC = () => {
+  const access = useAccess();
   const tableRef = useRef<ActionType>();
 
   // 使用自定义Hook管理自动刷新
@@ -99,6 +101,7 @@ const GameClient: React.FC = () => {
       valueType: 'option',
       ellipsis: true,
       align: 'center',
+      hideInTable: !access.serverStartBtn,
       render: (_, record) => (
         <Space wrap split={<Divider type="vertical" />}>
           <Button

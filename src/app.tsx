@@ -5,7 +5,7 @@ import type { RequestConfig, RunTimeLayoutConfig } from '@umijs/max';
 import { history, Link } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
-import { getUserInfo } from './services/login';
+import { getUserInfo, getUserProf } from './services/login';
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
@@ -15,8 +15,11 @@ const loginPath = '/user/login';
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
+  userPermission?: API.UserPermission;
   loading?: boolean;
+  permission?: API.UserPermission;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserPermission?: () => Promise<API.UserPermission | undefined>;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -32,6 +35,11 @@ export async function getInitialState(): Promise<{
       }
     }
     return undefined;
+  };
+  const fetchUserPermission = async (): Promise<API.UserPermission> => {
+    const msg = await getUserProf();
+    console.log('getUserProf', msg);
+    return msg as API.UserPermission;
   };
   // 如果不是登录页面，执行
   const { location } = history;
@@ -52,10 +60,12 @@ export async function getInitialState(): Promise<{
         localStorage.setItem('X-Venue-Id', venueList[0].id);
       }
     }
-
+    const userPermission = await fetchUserPermission();
     return {
       fetchUserInfo,
+      fetchUserPermission,
       currentUser,
+      userPermission,
       settings: defaultSettings as Partial<LayoutSettings>,
     };
   }
