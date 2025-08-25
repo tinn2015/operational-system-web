@@ -140,6 +140,18 @@ export default defineConfig({
       name: 'viewport',
       content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
     },
+    {
+      'http-equiv': 'Cache-Control',
+      content: 'no-cache, no-store, must-revalidate',
+    },
+    {
+      'http-equiv': 'Pragma',
+      content: 'no-cache',
+    },
+    {
+      'http-equiv': 'Expires',
+      content: '0',
+    },
   ],
   //================ pro 插件配置 =================
   presets: ['umi-presets-pro'],
