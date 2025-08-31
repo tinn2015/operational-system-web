@@ -129,7 +129,13 @@ export default defineConfig({
    */
   headScripts: [
     // 解决首次加载时白屏的问题
-    { src: '/wz-admin/scripts/loading.js', async: true },
+    {
+      src:
+        process.env.NODE_ENV === 'production'
+          ? '/wz-admin/scripts/loading.js'
+          : '/scripts/loading.js',
+      async: true,
+    },
   ],
   /**
    * @name <head> 中额外的 meta 标签

@@ -264,6 +264,23 @@ export default [
       },
     ],
   },
+  {
+    path: '/system',
+    name: '系统管理',
+    icon: 'setting',
+    routes: [
+      {
+        path: '/system',
+        redirect: '/system/software',
+      },
+      {
+        name: '软件版本管理',
+        icon: 'smile',
+        path: '/system/software',
+        component: './system/software',
+      },
+    ],
+  },
   // {
   //   path: '/show',
   //   name: '放映管理',
