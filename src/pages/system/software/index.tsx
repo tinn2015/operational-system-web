@@ -1,4 +1,5 @@
 import { deleteHeadset, getHeadsetList } from '@/services/headset';
+import { uploadToObs } from '@/services/softwareUpdate';
 import { InboxOutlined, PlayCircleOutlined, PoweroffOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ModalForm, ProFormText, ProFormTextArea, ProTable } from '@ant-design/pro-components';
@@ -386,6 +387,32 @@ const HeadSetList: React.FC = () => {
             showUploadList={false}
             beforeUpload={(file) => {
               setUploadFile(file);
+              const obsConfig = {
+                accessKeyId: 'HPUAIOZNYKEAPWTTMWRJ', // 密钥AK
+                bucket: 'userplayer', // 需要上传的桶名
+                callbackBodyType: 'application/json', // 响应体格式
+                signature: 'w9u3wuq9SEmwbAB7C8gNdoJfjRTRyofFKHS2FCgi', // POST上传的签名
+                prefix: 'wz-software-update', // POST上传对象名前缀
+                // host: 'obs.cn-north-4.myhuaweicloud.com', // POST上传host地址
+                host: 'obs.cn-east-3.myhuaweicloud.com', // POST上传host地址
+                callbackUrl: 'http://obs-demo.huaweicloud.com:23450/callback', // POST上传回调的地址
+                policy: 'eyJleHBpcmF***************************************ifV19', // POST上传policy
+                callbackBody: 'key=$(key)&hash=$(etag)&fname=$(fname)&fsize=$(size)', // POST上传回调的请求体
+              };
+              const uploadFileFormData = new FormData();
+              uploadFileFormData.append('file', file);
+              uploadFileFormData.append('key', obsConfig.prefix + '/' + file.name);
+              uploadFileFormData.append('x-obs-acl', 'public-read');
+              uploadFileFormData.append('policy', obsConfig.policy);
+              uploadFileFormData.append('OSSAccessKeyId', obsConfig.accessKeyId);
+              uploadFileFormData.append('AccessKeyId', obsConfig.accessKeyId);
+              uploadFileFormData.append('signature', obsConfig.signature);
+              uploadFileFormData.append('callbackUrl', obsConfig.callbackUrl);
+              uploadFileFormData.append('callbackBody', obsConfig.callbackBody);
+              uploadFileFormData.append('callbackBodyType', obsConfig.callbackBodyType);
+
+              const obsEndpoint = `https://${obsConfig.bucket}.${obsConfig.host}`;
+              uploadToObs(obsEndpoint, uploadFileFormData);
               // 模拟上传进度
               let progress = 0;
               const timer = setInterval(() => {
