@@ -85,3 +85,27 @@ export async function unbindHeadset(options?: { [key: string]: any }) {
     params: options,
   });
 }
+
+/**
+ * 结束单人游戏
+ * @param options
+ * @returns
+ */
+export async function endSingleGame(options?: { [key: string]: any }) {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/control/game/single/end`, {
+    method: 'GET',
+    params: options,
+  });
+}
+
+/**
+ * 玩家移除小队
+ * @param options
+ * @returns
+ */
+export async function removePlayer(options?: { [key: string]: any }) {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/control/game/player/remove`, {
+    method: 'GET',
+    params: options,
+  });
+}

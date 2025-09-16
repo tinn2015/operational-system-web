@@ -5,13 +5,14 @@ import AutoRefreshControls from '@/components/AutoRefreshControls';
 import useAutoRefresh from '@/hooks/useAutoRefresh';
 import {
   disbandTeam,
+  endSingleGame,
   getTeamDetail,
   getTeamList,
-  quitTeam,
+  removePlayer,
   saveTeam,
   unbindHeadset,
 } from '@/services/team';
-import { DeleteOutlined, SearchOutlined, UserAddOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserAddOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   ModalForm,
@@ -56,7 +57,7 @@ interface TeamType {
   maxMembers: number;
   currentMembers: number;
   isFull: boolean;
-  gameStatus: string;
+  gameStatus: number;
   members: TeamMember[];
   players: API.Player[];
 }
@@ -108,6 +109,7 @@ const TeamList: React.FC = () => {
   const fetchTeamDetail = async (teamId: string) => {
     try {
       const response = await getTeamDetail({ teamId });
+      setCurrentTeam(response as TeamType);
       setCurrentTeamPlayers(response.memberList || []);
     } catch (error) {
       message.error('获取队伍详情失败');
@@ -115,16 +117,44 @@ const TeamList: React.FC = () => {
   };
 
   // 踢出玩家
-  const handleQuitPlayer = async (playerId: string) => {
+  // const handleQuitPlayer = async (playerId: string) => {
+  //   try {
+  //     const res = await quitTeam({ teamId: currentTeam?.teamId, uid: playerId });
+  //     console.log('踢出成功', res);
+  //     if (res) {
+  //       message.success('踢出成功');
+  //       fetchTeamDetail(currentTeam?.teamId || '');
+  //     }
+  //   } catch (error) {
+  //     message.error('踢出失败');
+  //   }
+  // };
+
+  // 结束游戏
+  const handleEndGame = async (playerId: string) => {
     try {
-      const res = await quitTeam({ teamId: currentTeam?.teamId, uid: playerId });
-      console.log('踢出成功', res);
+      const res = await endSingleGame({ uid: playerId });
+      console.log('结束游戏成功', res);
       if (res) {
-        message.success('踢出成功');
+        message.success('结束游戏成功');
         fetchTeamDetail(currentTeam?.teamId || '');
       }
     } catch (error) {
-      message.error('踢出失败');
+      message.error('结束游戏失败');
+    }
+  };
+
+  // 移除小队
+  const handleRemovePlayer = async (playerId: string) => {
+    try {
+      const res = await removePlayer({ uid: playerId, teamId: currentTeam?.teamId });
+      console.log('移除小队成功', res);
+      if (res) {
+        message.success('移除小队成功');
+        fetchTeamDetail(currentTeam?.teamId || '');
+      }
+    } catch (error) {
+      message.error('移除小队失败');
     }
   };
 
@@ -137,6 +167,10 @@ const TeamList: React.FC = () => {
 
   // 解绑头显
   const handleUnbindHeadset = async (player: API.Player) => {
+    if (currentTeam?.gameStatus === 1) {
+      message.error('正在游戏中，请先结束游戏，再进行解绑头显”');
+      return;
+    }
     try {
       const res = await unbindHeadset({ uid: player.id });
       console.log('解绑成功', res);
@@ -524,15 +558,37 @@ const TeamList: React.FC = () => {
               <Card
                 title={player.nickName}
                 extra={
-                  <Button
-                    type="link"
-                    icon={<DeleteOutlined />}
-                    onClick={() => handleQuitPlayer(player.id)}
-                    danger
-                    size="small"
-                  >
-                    踢出
-                  </Button>
+                  <div>
+                    {/* <Button
+                      type="link"
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleQuitPlayer(player.id)}
+                      danger
+                      size="small"
+                    >
+                      踢出
+                    </Button> */}
+                    {player.endGameButton && (
+                      <Button
+                        type="link"
+                        onClick={() => handleEndGame(player.id)}
+                        danger
+                        size="small"
+                      >
+                        结束游戏
+                      </Button>
+                    )}
+                    {player.removeTeamButton && (
+                      <Button
+                        type="link"
+                        onClick={() => handleRemovePlayer(player.id)}
+                        danger
+                        size="small"
+                      >
+                        移除小队
+                      </Button>
+                    )}
+                  </div>
                 }
               >
                 <p>用户ID: {player.userId}</p>

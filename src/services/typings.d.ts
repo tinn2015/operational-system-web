@@ -134,6 +134,8 @@ declare namespace API {
     productId: string;
     productName: string;
     numberId: string;
+    endGameButton: boolean;
+    removeTeamButton: boolean;
   };
 
   type Server = {

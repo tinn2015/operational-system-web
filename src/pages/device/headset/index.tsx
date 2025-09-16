@@ -89,6 +89,14 @@ const HeadSetList: React.FC = () => {
       align: 'center',
       width: 150,
     },
+    {
+      title: '设备SN码',
+      dataIndex: 'serialNumber',
+      copyable: true,
+      ellipsis: true,
+      align: 'center',
+      width: 200,
+    },
     // {
     //   title: '设备类型',
     //   dataIndex: 'headsetType',
@@ -281,7 +289,7 @@ const HeadSetList: React.FC = () => {
         }}
       >
         <Row gutter={20}>
-          <Col span={12}>
+          <Col span={8}>
             <ProFormText
               name="headsetNo"
               label="头显编码"
@@ -289,7 +297,15 @@ const HeadSetList: React.FC = () => {
               rules={[{ required: true, message: '请输入头显编码' }]}
             />
           </Col>
-          <Col span={12}>
+          <Col span={8}>
+            <ProFormText
+              name="serialNumber"
+              label="头显SN码"
+              placeholder="请输入头显SN码"
+              rules={[{ required: true, message: '请输入头显SN码' }]}
+            />
+          </Col>
+          <Col span={8}>
             <ProFormText
               name="headsetIp"
               label="头显IP"
