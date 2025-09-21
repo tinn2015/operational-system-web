@@ -93,6 +93,17 @@ const PlayerList: React.FC = () => {
         3: { text: '儿童', status: 'Success' },
       },
     },
+    {
+      title: '票务类型',
+      dataIndex: 'ticketType',
+      width: 150,
+      align: 'center',
+      search: false,
+      valueEnum: {
+        1: { text: '营业售票', status: 'Processing' },
+        2: { text: '赠票', status: 'Success' },
+      },
+    },
     // {
     //   title: '关联卡券',
     //   dataIndex: 'relatedCoupons',
@@ -124,6 +135,31 @@ const PlayerList: React.FC = () => {
         2: { text: '结束', status: 'error' },
         3: { text: '即将结束', status: 'warning' },
       },
+    },
+    {
+      title: '游戏时长',
+      dataIndex: 'gameDuration',
+      width: 120,
+      align: 'center',
+      search: false,
+      // valueEnum: {
+      //   1: { text: '小于5分钟', status: 'processing' },
+      //   2: { text: '5-25分钟', status: 'success' },
+      //   3: { text: '大于25分钟', status: 'error' },
+      // },
+    },
+    {
+      title: '当前关卡',
+      dataIndex: 'currentStuck',
+      width: 150,
+      align: 'center',
+      search: false,
+      // valueEnum: {
+      //   0: { text: '组队中', status: 'processing' },
+      //   1: { text: '游戏中', status: 'success' },
+      //   2: { text: '结束', status: 'error' },
+      //   3: { text: '即将结束', status: 'warning' },
+      // },
     },
     {
       title: '头显IP',
