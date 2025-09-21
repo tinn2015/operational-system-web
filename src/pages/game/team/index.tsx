@@ -144,17 +144,17 @@ const TeamList: React.FC = () => {
     }
   };
 
-  // 移除小队
+  // 移出小队
   const handleRemovePlayer = async (playerId: string) => {
     try {
       const res = await removePlayer({ uid: playerId, teamId: currentTeam?.teamId });
-      console.log('移除小队成功', res);
+      console.log('移出小队成功', res);
       if (res) {
-        message.success('移除小队成功');
+        message.success('移出小队成功');
         fetchTeamDetail(currentTeam?.teamId || '');
       }
     } catch (error) {
-      message.error('移除小队失败');
+      message.error('移出小队失败');
     }
   };
 
@@ -585,7 +585,7 @@ const TeamList: React.FC = () => {
                         danger
                         size="small"
                       >
-                        移除小队
+                        移出小队
                       </Button>
                     )}
                   </div>
