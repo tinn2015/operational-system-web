@@ -40,6 +40,23 @@ const PlayerList: React.FC = () => {
     dayjs().format('YYYY-MM-DD'),
   ]);
 
+  // const [gameContentEnum, setGameContentEnum] = useState<Record<string, string>>({});
+
+  // useEffect(() => {
+  //   const getGameContentList = async () => {
+  //     const res = await queryGameContent();
+  //     if (res) {
+  //       const gameContentEnum = res.reduce((acc: Record<string, string>, item: API.GameContent) => {
+  //         acc[item.contentId] = item.contentName;
+  //         return acc;
+  //       }, {});
+  //       console.log('gameContentEnum', gameContentEnum);
+  //       setGameContentEnum(gameContentEnum);
+  //     }
+  //   };
+  //   getGameContentList();
+  // }, []);
+
   // 使用自定义Hook管理自动刷新
   const { autoRefresh, setAutoRefresh, refreshInterval, setRefreshInterval } = useAutoRefresh(
     () => {
@@ -55,6 +72,15 @@ const PlayerList: React.FC = () => {
       ellipsis: true,
       width: 150,
       align: 'center',
+    },
+    {
+      title: '游戏名称',
+      dataIndex: 'productName',
+      copyable: true,
+      ellipsis: true,
+      width: 150,
+      align: 'center',
+      // valueEnum: gameContentEnum,
     },
     {
       title: '队伍批次',
