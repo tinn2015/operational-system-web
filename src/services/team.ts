@@ -109,3 +109,14 @@ export async function removePlayer(options?: { [key: string]: any }) {
     params: options,
   });
 }
+
+/**
+ * 查询游戏内容
+ * @param options
+ * @returns
+ */
+export async function queryGameContent() {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/control/game/content/query`, {
+    method: 'GET',
+  });
+}
