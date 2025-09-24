@@ -113,6 +113,8 @@ declare namespace API {
     saleBeginTime: string;
     saleEndTime: string;
     listingList: timeRange[];
+    contentId: string;
+    contentName: string;
   };
   type timeRange = {
     id?: string;
@@ -161,5 +163,9 @@ declare namespace API {
     pageSize: number;
     total: number;
     data: Server[];
+  };
+  type GameContent = {
+    contentId: string;
+    contentName: string;
   };
 }

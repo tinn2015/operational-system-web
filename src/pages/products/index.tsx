@@ -8,12 +8,14 @@ import {
   onSaleProduct,
   saveProduct,
 } from '@/services/product';
+import { queryGameContent } from '@/services/team';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   ModalForm,
   ProFormDateTimePicker,
   ProFormDigit,
+  ProFormSelect,
   ProFormText,
   ProFormTextArea,
   ProTable,
@@ -35,7 +37,7 @@ import {
 } from 'antd';
 import type { UploadFile, UploadFileStatus } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useStyles from './index.style';
 
 // const updateProductStatus = async (id: string, status: number) => {
@@ -84,6 +86,23 @@ const ProductManagement: React.FC = () => {
     saleEndTime: '',
   });
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
+
+  const [gameContentEnum, setGameContentEnum] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const getGameContentList = async () => {
+      const res = await queryGameContent();
+      if (res) {
+        const gameContentEnum = res.reduce((acc: Record<string, string>, item: API.GameContent) => {
+          acc[item.contentId] = item.contentName;
+          return acc;
+        }, {});
+        console.log('gameContentEnum', gameContentEnum);
+        setGameContentEnum(gameContentEnum);
+      }
+    };
+    getGameContentList();
+  }, []);
 
   // 处理商品状态更新
   const handleOnSaleProduct = async (record: API.Product) => {
@@ -384,6 +403,13 @@ const ProductManagement: React.FC = () => {
       width: 150,
     },
     {
+      title: '游戏内容',
+      dataIndex: 'contentId',
+      width: 150,
+      // search: false,
+      valueEnum: gameContentEnum,
+    },
+    {
       title: '商品封面',
       dataIndex: 'productUrl',
       width: 120,
@@ -542,7 +568,7 @@ const ProductManagement: React.FC = () => {
 
       <ModalForm<API.Product>
         title={editingProduct ? '编辑商品' : '新增商品'}
-        width={1200}
+        width={1000}
         formRef={formRef}
         open={createModalVisible}
         onOpenChange={(visible) => {
@@ -566,6 +592,8 @@ const ProductManagement: React.FC = () => {
               id: editingProduct?.id || '',
               productUrl,
               pictureList: pictures,
+              contentId: values.contentId,
+              contentName: gameContentEnum[values.contentId],
             };
 
             const res = await saveProductData(submitData);
@@ -582,7 +610,7 @@ const ProductManagement: React.FC = () => {
         }}
       >
         <Row gutter={24}>
-          <Col span={6}>
+          <Col span={8}>
             <ProFormText
               name="productName"
               label="商品名称"
@@ -590,7 +618,7 @@ const ProductManagement: React.FC = () => {
               rules={[{ required: true, message: '请输入商品名称' }]}
             />
           </Col>
-          <Col span={6}>
+          <Col span={8}>
             <ProFormDigit
               name="showTime"
               label="放映时长（分钟）"
@@ -602,7 +630,21 @@ const ProductManagement: React.FC = () => {
               rules={[{ required: true, message: '请输入放映时长' }]}
             />
           </Col>
-          <Col span={6}>
+          <Col span={8}>
+            <ProFormSelect
+              name="contentId"
+              label="游戏内容"
+              disabled={!!editingProduct}
+              fieldProps={{
+                options: Object.entries(gameContentEnum).map(([key, value]) => ({
+                  label: value,
+                  value: key,
+                })),
+              }}
+              rules={[{ required: true, message: '请选择游戏内容' }]}
+            />
+          </Col>
+          <Col span={12}>
             <ProFormDateTimePicker
               name="saleBeginTime"
               label="销售开始时间"
@@ -620,7 +662,7 @@ const ProductManagement: React.FC = () => {
               rules={[{ required: true, message: '请选择销售开始时间' }]}
             />
           </Col>
-          <Col span={6}>
+          <Col span={12}>
             <ProFormDateTimePicker
               name="saleEndTime"
               label="销售结束时间"
