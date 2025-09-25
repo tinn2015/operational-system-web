@@ -112,6 +112,18 @@ export const errorConfig: RequestConfig = {
   // 响应拦截器
   responseInterceptors: [
     (response) => {
+      // Blob 文件直接放行（导出下载场景）
+      try {
+        const ct = (response as any)?.headers?.['content-type'] || '';
+        const isBlobType =
+          (response as any)?.request?.responseType === 'blob' ||
+          (typeof Blob !== 'undefined' && (response as any)?.data instanceof Blob) ||
+          /application\/octet-stream|application\/x-download|application\/vnd|text\/csv/i.test(ct);
+        if (isBlobType) {
+          return response; // 直接返回，不做JSON处理
+        }
+      } catch {}
+
       // 拦截响应数据，进行个性化处理
       const { data } = response as unknown as ResponseStructure;
       console.log('[response]', response.request.responseURL, response);
@@ -126,7 +138,7 @@ export const errorConfig: RequestConfig = {
       // 账号密码错误
       if (code === 100002) {
         message.error(errorInfo || msg);
-        return data
+        return data;
       }
       if (code !== 200) {
         message.error(errorInfo || msg);
