@@ -8,23 +8,39 @@ import { request } from '@umijs/max';
  * @param options
  * @returns
  */
-export async function uploadFile(options?: { [key: string]: any }, params?: { [key: string]: any }) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/file/upload`, {
-        method: 'POST',
-        params,
-        data: options,
-    });
+export async function uploadFile(
+  options?: { [key: string]: any },
+  params?: { [key: string]: any },
+) {
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/file/upload`, {
+    method: 'POST',
+    params,
+    data: options,
+  });
 }
 
 /**
  * 删除文件
  * @param fileUrl 文件URL
- * @returns 
+ * @returns
  */
 export async function deleteFile(fileUrl: string) {
-    return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/file/remove`, {
-        method: 'DELETE',
-        params: { filePaths: fileUrl },
-    });
+  return request<Record<string, any>>(`${PROXY_PREFIX_LOGIN}/admin/file/remove`, {
+    method: 'DELETE',
+    params: { filePaths: fileUrl },
+  });
 }
 
+/**
+ * 导出玩家
+ * @param options
+ * @returns
+ */
+export async function exportPlayer(options?: { [key: string]: any }) {
+  return request<Blob>(`${PROXY_PREFIX_LOGIN}/control/file/player/export`, {
+    method: 'GET',
+    params: options,
+    responseType: 'blob',
+    getResponse: true, // 保留完整的响应对象以获取headers
+  });
+}
